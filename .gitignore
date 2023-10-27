@@ -1,0 +1,10 @@
+/FlightReservationSystem/dist/
+/FlightReservationSystem/build/
+/FlightReservationSystem/FlightReservationSystemLibrary/dist/
+/FlightReservationSystem/FlightReservationSystemLibrary/build/
+/FlightReservationSystem/FlightReservationSystem-ejb/dist/
+/FlightReservationSystem/FlightReservationSystem-ejb/build/
+/FlightReservationSystem/FRSReservationClient/dist/
+/FlightReservationSystem/FRSReservationClient/build/
+/FlightReservationSystem/FRSManagementClient/build/
+/FlightReservationSystem/FRSManagementClient/dist/
