@@ -55,7 +55,6 @@ public class Payment implements Serializable {
     }
     
     public void setCreditCard(String cardNumber, String nameOnCard, String expiryDate, String cvv) {
-
         this.creditCard.add(cardNumber);
         this.creditCard.add(nameOnCard);
         this.creditCard.add(expiryDate);

@@ -6,6 +6,16 @@
     <class>entity.Partner</class>
     <class>entity.Payment</class>
     <class>entity.Reservation</class>
+    <class>entity.FlightSchedule</class>
+    <class>entity.Flight</class>
+    <class>entity.FlightSchedulePlan</class>
+    <class>entity.Airport</class>
+    <class>entity.FlightRoute</class>
+    <class>entity.Fare</class>
+    <class>entity.AirCraftConfig</class>
+    <class>entity.AirCraftType</class>
+    <class>entity.CabinClass</class>
+    <class>entity.Employee</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.schema-generation.database.action" value="create"/>
