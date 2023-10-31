@@ -22,9 +22,10 @@ public class Main {
     
     public static void main(String[] args) {
         // TODO code application logic here
+        System.out.println("deployed1");
          MainApp mainApp = new MainApp(employeeSessionBeanRemote);
         
-        System.out.println("deployed");
+        System.out.println("deployed2");
         mainApp.runApp();
     }
     
