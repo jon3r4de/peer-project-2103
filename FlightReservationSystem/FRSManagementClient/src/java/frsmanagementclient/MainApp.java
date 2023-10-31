@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import entity.Employee;
+import enumeration.EmployeeEnum;
 import java.util.Scanner;
 import util.exception.InvalidLoginCredentialException;
 
@@ -23,7 +24,7 @@ public class MainApp {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
     }
     
-public void runApp() {
+    public void runApp() {
         Scanner scanner = new Scanner(System.in);
         int response;
         
@@ -41,20 +42,38 @@ public void runApp() {
                     response = scanner.nextInt();
 
                     if (response == 1) {
+                        
+                        System.out.println("*** FRS Management :: Employee Login ***\n");
+                        System.out.print("Enter username> ");
+                        scanner.nextLine(); // Consume the newline character
+                        String username = scanner.nextLine().trim();
+                        System.out.print("Enter password> ");
+                        String password = scanner.nextLine().trim();
+                           
                         try {
-                            System.out.println("Please enter your username:");
-                            scanner.nextLine(); // Consume the newline character
-                            String username = scanner.nextLine();
-                            System.out.println("Please enter your password:");
-                            String password = scanner.nextLine();
-                            
-                            Employee currentEmployee = this.employeeSessionBeanRemote.doLogin(username, password);
-                            this.employee = currentEmployee;
-                            
-                            System.out.println("Login successful. Welcome, " + currentEmployee.getUsername() + "!");
-                            this.loggedInView();
-                        } catch (InvalidLoginCredentialException ex) { //will be thrown by login 
-                            System.out.println("Invalid login credential: " + ex.getMessage());
+                            this.employee = this.employeeSessionBeanRemote.doLogin(username, password);
+                        } catch (InvalidLoginCredentialException ex) {
+                            System.out.println(ex.getMessage() + "\n");
+                            break;
+                        }
+                        
+                        System.out.println("Login successful!\n");
+
+                        if (employee.getUserRole().equals(EmployeeEnum.FLEETMANAGER)) {
+                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
+                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
+                            flightPlanningModule.menuFlightPlanning();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.ROUTEPLANNER)) {
+                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
+                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
+                            flightPlanningModule.menuFlightPlanning();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
+                            /*FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote,
+                                    aircraftConfigurationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, employee);
+                            flightOperationModule.menuFlightOperation();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
+                            /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);
+                            salesManagementModule.menuSalesManagement();*/
                         }
                     } else if (response == 2) {
                         System.out.println("Exiting the application.");

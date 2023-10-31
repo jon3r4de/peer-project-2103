@@ -123,7 +123,7 @@ public class MainApp {
     }
     
     public void doLogin() { //should return custiomer imo --> atm void just to have no errors
-        
+        //this.loggedInView();
     }
     
     public void doRegister() { //can decide whether auto login after register or not 
