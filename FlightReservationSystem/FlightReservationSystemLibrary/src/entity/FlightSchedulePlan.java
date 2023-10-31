@@ -6,10 +6,13 @@ package entity;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -25,20 +28,20 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
         
-   /* @OneToOne(optional = true)
+    @OneToOne(optional = true)
     private FlightSchedulePlan complementaryReturnSchedulePlan;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private Flight flight;*/
+    private Flight flight;
     
     private String flightNumber;
     
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
     
-    /*@OneToMany(mappedBy = "flightSchedulePlan", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Fare> fares;*/
+    @OneToMany(mappedBy = "flightSchedulePlan", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<Fare> fares;
     
     //private Long firstDepartureTimeLong;
     

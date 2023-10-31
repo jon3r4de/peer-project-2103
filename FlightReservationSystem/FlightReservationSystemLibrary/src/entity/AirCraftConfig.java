@@ -17,9 +17,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-//import javax.validation.constraints.Max;
-//import javax.validation.constraints.Min;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 
 /**
  *
@@ -36,8 +36,8 @@ public class AirCraftConfig implements Serializable {
     @Column(nullable = false, length = 64, unique = true)
     private String airCraftConfigName;
     
-    //@Min(1)
-    //@Max(4)
+    @Min(1)
+    @Max(4)
     private Integer numOfCabinClasses;
 
     public Long getAirCraftConfigId() {
@@ -50,16 +50,16 @@ public class AirCraftConfig implements Serializable {
     @JoinColumn(nullable = false)
     private AirCraftType airCraftType;
     
-    /*
-    @OneToMany(mappedBy = "aircraftConfiguration", fetch = FetchType.EAGER)
+    
+    @OneToMany(mappedBy = "airCraftConfig", fetch = FetchType.EAGER)
     private List<Flight> flights;
     
-    @OneToMany(mappedBy = "aircraftConfiguration", cascade = CascadeType.PERSIST)
-    private List<CabinClass> cabinClasses;*/
+    @OneToMany(mappedBy = "airCraftConfig", cascade = CascadeType.PERSIST)
+    private List<CabinClass> cabinClasses;
     
     public AirCraftConfig() {
-        //this.cabinClasses = new ArrayList<>();
-        //this.flights = new ArrayList<>();
+        this.cabinClasses = new ArrayList<>();
+        this.flights = new ArrayList<>();
     }
 
 

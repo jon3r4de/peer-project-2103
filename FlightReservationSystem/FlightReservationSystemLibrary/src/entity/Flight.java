@@ -13,6 +13,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -32,21 +34,20 @@ public class Flight implements Serializable {
     private String flightNumber;
     private boolean disabled;
     
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
+    private FlightRoute flightRoute;
+    
     @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
     private List<FlightSchedulePlan> flightSchedulePlans;
     
-    @OneToOne(optional = true)
+    //@OneToOne(optional = true)
     private boolean hasComplementaryReturnFlight;
     
-    //@ManyToOne(optional = false)
-    //@JoinColumn(nullable = false)
-    //private FlightRoute flightRoute;
-    
-    /*
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private AircraftConfiguration aircraftConfiguration;
-    */
+    private AirCraftConfig airCraftConfig;
+   
     
     public Flight() {
         this.flightSchedulePlans = new ArrayList<>();

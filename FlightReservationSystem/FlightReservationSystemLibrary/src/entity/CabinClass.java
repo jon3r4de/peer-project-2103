@@ -6,12 +6,17 @@ package entity;
 
 import enumeration.CabinClassEnum;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -22,7 +27,7 @@ public class CabinClass implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
     
     private String numberOfAisle;
@@ -30,19 +35,48 @@ public class CabinClass implements Serializable {
     private String maxSeatCapacity;
     private String numOfSeatsAbreast;
     private String actualSeatingConfig;
+    
+     @Column(nullable = false)
     private CabinClassEnum cabinClassType;
+     
+    @ManyToOne()
+    @JoinColumn()
+    private FlightSchedule flightSchedule;
+    
+    //@ManyToOne(optional = false)
+    //@JoinColumn(nullable = false)
+    private AirCraftConfig airCraftConfig;
+     
     List<String> listOfSeatNumber;
-    private String availableSeats;
-    private String reservedSeats;
-    private String balanceSeats;
+    
+    @Min(0)
+    private Integer availableSeats;
+    
+    @Min(0)
+    private Integer reservedSeats;
+    
+    @Min(0)
+    private Integer balanceSeats;
+    
     private boolean availableForBooking;
     
     @OneToMany()
     private List<Fare> fares;
     
     //private List<Seats> seats;
-     
+    public CabinClass() {
+        this.reservedSeats = 0;
+        this.availableSeats = 0; // Initialize availableSeats explicitly
+        this.listOfSeatNumber = new ArrayList<>(); // Initialize the list of seat numbers
+        this.fares = new ArrayList<>(); // Initialize the list of fares
+        // Consider moving the logical operation to a method
+        updateAvailableForBooking();
+    }
 
+    private void updateAvailableForBooking() {
+        this.availableForBooking = (this.availableSeats > 0);
+    }
+     
     public Long getCabinClassId() {
         return cabinClassId;
     }

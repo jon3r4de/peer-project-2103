@@ -29,7 +29,7 @@ public class FlightRoute implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightRouteId;
     
-    @OneToOne(optional = true)
+    //@OneToOne(optional = true)
     private boolean hasComplementaryReturnRoute;
     
     private String ODPair;
