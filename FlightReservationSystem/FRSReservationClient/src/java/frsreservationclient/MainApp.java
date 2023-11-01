@@ -4,8 +4,11 @@
  */
 package frsreservationclient;
 
+import ejb.session.stateless.CustomerSessionBeanRemote;
 import entity.Customer;
 import java.util.Scanner;
+import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -13,9 +16,15 @@ import java.util.Scanner;
  */
 public class MainApp {
     private Customer customer;
+    private CustomerSessionBeanRemote customerSessionBeanRemote;
     
     public MainApp() {
        
+    }
+    
+    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote) {
+       this();
+       this.customerSessionBeanRemote = customerSessionBeanRemote;
     }
     
     public void runApp() {
@@ -39,10 +48,15 @@ public class MainApp {
 
                     switch (response) {
                         case 1:
-                            this.doLogin();
-                            break; // Exiting the switch after handling login
+                            try {
+                                this.customer = this.doLogin(scanner);
+                                break; // Exiting the switch after handling login
+                            } catch (InvalidLoginCredentialException ex) {
+                                System.out.println("Invalid login: " + ex.getMessage() + " Please try again!");
+                                break;
+                            }
                         case 2:
-                            this.doRegister();
+                            this.doRegister(scanner);
                             break; 
                         case 3:
                             this.searchFlight();
@@ -60,9 +74,12 @@ public class MainApp {
                 }
             }
 
-            if (response == 2) {
-                break;
+            if (customer != null) {
+                loggedInView();
             }
+//            if (response == 2) {
+//                break;
+//            }
         }
     }
 
@@ -122,17 +139,78 @@ public class MainApp {
         
     }
     
-    public void doLogin() { //should return custiomer imo --> atm void just to have no errors
+    public Customer doLogin(Scanner sc) throws InvalidLoginCredentialException { //should return custiomer imo --> atm void just to have no errors
         //this.loggedInView();
+        String username = "";
+        String password = "";
+    
+        System.out.println("Please enter your login details.");
+
+        System.out.println("Enter Username:");
+        System.out.print("> ");
+        username = sc.nextLine().trim();
+
+        System.out.println("Enter Password:");
+        System.out.print("> ");
+
+        password = sc.nextLine().trim();
+        
+        try {
+            Customer customer = customerSessionBeanRemote.login(username, password);
+            return customer;
+        } catch (InvalidLoginCredentialException ex) {
+            throw ex;
+        }
     }
     
-    public void doRegister() { //can decide whether auto login after register or not 
+    public void doRegister(Scanner sc) { //can decide whether auto login after register or not 
+        String firstName = "";
+        String lastName = "";
+        String email = "";
+        String contactNumber = "";
+        String address = "";
+        String username = "";
+        String password = "";
+
         
+        System.out.println("Enter First Name:");
+        System.out.print("> ");
+        firstName = sc.nextLine().trim();
+
+        System.out.println("Enter Last Name:");
+        System.out.print("> ");
+        lastName = sc.nextLine().trim();
+
+        System.out.println("Enter Email:");
+        System.out.print("> ");
+        email = sc.nextLine().trim();
+
+        System.out.println("Enter Contact Number:");
+        System.out.print("> ");
+        contactNumber = sc.nextLine().trim();
+
+        System.out.println("Enter Address:");
+        System.out.print("> ");
+        address = sc.nextLine().trim();
+
+        System.out.println("Enter Username:");
+        System.out.print("> ");
+        username = sc.nextLine().trim();
+
+        System.out.println("Enter Password:");
+        System.out.print("> ");
+        password = sc.nextLine().trim();
+        
+        try {
+            Long newCustId = customerSessionBeanRemote.registerCustomer(new Customer(firstName, lastName, email, contactNumber, address, username, password));
+            System.out.println("New Customer Created. Their ID is: " + newCustId);
+        } catch (UnknownPersistenceException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
     
     
     public void doLogOut() {
         this.customer = null;
     }
-    
 }

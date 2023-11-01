@@ -63,10 +63,7 @@ public class Customer implements Serializable {
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(min = 1, max = 64)
-    private String password;
-    
-    private customerEnum memberStatus;  // if username and password not null assign enum (?)
-    
+    private String password;    
         
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
@@ -90,7 +87,6 @@ public class Customer implements Serializable {
         this.address = address;
         this.username = username;
         this.password = password;
-        this.memberStatus = customerEnum.REGISTERED;
     }
 
     public String getFirstName() {

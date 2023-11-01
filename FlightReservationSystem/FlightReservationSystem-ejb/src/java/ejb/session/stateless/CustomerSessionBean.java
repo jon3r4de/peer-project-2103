@@ -4,9 +4,16 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import util.exception.CustomerNotFoundException;
+import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -19,4 +26,54 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
     
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
+    public CustomerSessionBean() {
+    }
+    
+    @Override
+    public Long registerCustomer(Customer c) throws UnknownPersistenceException {
+        try {
+            em.persist(c);
+            em.flush();
+            return c.getCustomerId(); 
+        } catch (PersistenceException ex) {
+            throw new UnknownPersistenceException(ex.getMessage());
+        }
+    }
+    
+    @Override
+    public Customer login(String username, String password) throws InvalidLoginCredentialException {
+        try {
+            Customer c = this.retrieveCustomerByUsername(username);
+            if (c.getPassword().equals(password)) {
+                return c;
+            } else {
+                throw new InvalidLoginCredentialException("Incorrect password.");
+            }
+        } catch (CustomerNotFoundException ex) {
+            throw new InvalidLoginCredentialException(ex.getMessage());
+        }
+    }
+    
+    private Customer retrieveCustomerByUsername(String username) throws CustomerNotFoundException {
+        CustomerNotFoundException noCustomerException = new CustomerNotFoundException("No customer with that username exists.");
+    
+        try {
+            Query query = em.createQuery("SELECT c FROM Customer c WHERE c.username = :username");
+            query.setParameter("username", username);
+        
+            // Execute the query and retrieve the result
+            Customer result = (Customer) query.getSingleResult();
+
+            // Check if there's a matching employee
+            if (result != null) {
+                return result;
+            } else {
+                // No employee found with the provided username
+                throw noCustomerException;
+            }
+        } catch (NoResultException ex) {
+            // Handle the case where no result is found
+            throw noCustomerException;
+        }
+    }
 }

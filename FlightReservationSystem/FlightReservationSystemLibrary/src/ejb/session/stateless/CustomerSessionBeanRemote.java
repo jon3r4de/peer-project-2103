@@ -4,7 +4,10 @@
  */
 package ejb.session.stateless;
 
+import entity.Customer;
 import javax.ejb.Remote;
+import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -12,5 +15,6 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface CustomerSessionBeanRemote {
-    
+    public Long registerCustomer(Customer c) throws UnknownPersistenceException;
+    public Customer login(String username, String password) throws InvalidLoginCredentialException;
 }
