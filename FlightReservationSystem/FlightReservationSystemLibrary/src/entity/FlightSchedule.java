@@ -22,6 +22,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -38,6 +39,7 @@ public class FlightSchedule implements Serializable {
     private Long flightScheduleId;
    
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date departureDateTime;
   
     //@Temporal(TemporalType.TIMESTAMP)
@@ -45,25 +47,17 @@ public class FlightSchedule implements Serializable {
     //actual flight duration can be calculated from manipulation of arrival and departure time
    
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     private Date arrivalDateTime;
    
     @Column(nullable = false, length = 6, unique = true)
     private String flightNumber;
-  
-    /*@OneToOne(optional = false)
-    private Airport departureAirport;
 
-    @OneToOne(optional = false)
-    private Airport destinationAirport;
-    
-
-
-    @ManyToMany(mappedBy = "flightSchedules")
-    private List<FlightReservation> flightReservations;
+    @JoinColumn(nullable = false)
+    private Reservation reservations;
     
     @OneToMany(mappedBy = "flightSchedule")
     private List<CabinClass> cabinClasses;
-    */
    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)

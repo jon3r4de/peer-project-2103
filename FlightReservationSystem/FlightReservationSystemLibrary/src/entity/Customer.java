@@ -16,6 +16,8 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 /**
  *
  * @author jonang
@@ -27,41 +29,60 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-    @Column(nullable = false, length = 16)
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
     private String firstName;
-    @Column(nullable = false, length = 16)
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
     private String lastName;
-    @Column(length = 64, unique = true)
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
     private String email;
-    @Column(length = 8)
-    private String phoneNumber;
-    private String address;
-    @Column(nullable = false, length = 16, unique = true)
-    private String username;
+    
     @Column(nullable = false, length = 32)
+    @NotNull
+    @Size(min = 1, max = 32)
+    private String phoneNumber;
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
+    private String address;
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
+    private String username;
+    
+    @Column(nullable = false, length = 64)
+    @NotNull
+    @Size(min = 1, max = 64)
     private String password;
+    
     private customerEnum memberStatus;  // if username and password not null assign enum (?)
     
         
-    /*@OneToMany(mappedBy = "customer")
-    private List<FlightReservation> flightReservations;
+    @OneToMany(mappedBy = "customer")
+    private List<Reservation> reservations;
     
     @OneToMany(mappedBy = "customer")
     private List<Payment> payments;
-    
-    @OneToMany(mappedBy = "customer")
-    private List<CreditCard> creditCards;
+
 
     public Customer() {
-        flightReservations = new ArrayList<>();
+        reservations = new ArrayList<>();
         payments = new ArrayList<>();
-    }*/
-
-    public Customer() {
-        
     }
-    
+
     public Customer(String firstName, String lastName, String email, String phoneNumber, String address, String username, String password) {
+        this();
+        
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -69,6 +90,7 @@ public class Customer implements Serializable {
         this.address = address;
         this.username = username;
         this.password = password;
+        this.memberStatus = customerEnum.REGISTERED;
     }
 
     public String getFirstName() {

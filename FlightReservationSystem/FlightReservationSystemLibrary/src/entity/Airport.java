@@ -14,6 +14,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -24,19 +26,34 @@ public class Airport implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long airportId;
+    
     @Column(nullable = false, length = 64)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String airportName;
-    @Column(nullable = false, length = 3, unique = true)
+    
+    @Column(nullable = false, unique = true, length = 3)
+    @Size(min = 3, max = 3)
+    @NotNull
     private String iataAirportcode;
-    @Column(nullable = false)
+    
+    @Column(nullable = false, length = 64)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String city;
+    
+    @Column(nullable = false, length = 64)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String stateOrProvince;
-    @Column(nullable = false)
+        
+    @Column(nullable = false, length = 64)
+    @Size(min = 1, max = 64)
+    @NotNull
     private String country;
     
-    //need timezone?
     
     @OneToMany(mappedBy = "origin", fetch = FetchType.EAGER)
     private List<FlightRoute> flightsFromAirport;

@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 
 /**
@@ -36,14 +37,12 @@ public class AirCraftConfig implements Serializable {
     @Column(nullable = false, length = 64, unique = true)
     private String airCraftConfigName;
     
+    @Column(nullable = false)
     @Min(1)
     @Max(4)
+    @NotNull
     private Integer numOfCabinClasses;
 
-    public Long getAirCraftConfigId() {
-        return airCraftConfigId;
-    }
-    
     private Integer maxSeatCapacity;
     
     @ManyToOne(optional = false)
@@ -61,10 +60,22 @@ public class AirCraftConfig implements Serializable {
         this.cabinClasses = new ArrayList<>();
         this.flights = new ArrayList<>();
     }
+    
+    public AirCraftConfig(String airCraftConfigName, Integer numOfCabinClasses) {
+        this();
+        
+        this.airCraftConfigName = airCraftConfigName;
+        this.numOfCabinClasses = numOfCabinClasses;
+    }
+
 
 
     public void setAirCraftConfigId(Long airCraftConfigId) {
         this.airCraftConfigId = airCraftConfigId;
+    }
+    
+    public Long getAirCraftConfigId() {
+        return airCraftConfigId;
     }
 
     @Override

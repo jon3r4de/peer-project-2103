@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -27,13 +28,16 @@ public class Fare implements Serializable {
     private Long fareId;
     
     @Column(nullable = false, length = 3, unique = true)
+    @NotNull
     private String fareBasisCode;
     
     private String restriction;
     
-    //@Column(nullable = false)
-    //private CabinClassType cabinClassType;
+    @JoinColumn(nullable = false)
+    private CabinClass cabinClass;
     
+    @Column(nullable = false, precision = 11, scale = 2)
+    @NotNull
     private BigDecimal fareAmount;
     
     @ManyToOne(optional = false)

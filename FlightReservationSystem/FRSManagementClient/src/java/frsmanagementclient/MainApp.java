@@ -58,23 +58,8 @@ public class MainApp {
                         }
                         
                         System.out.println("Login successful!\n");
-
-                        if (employee.getUserRole().equals(EmployeeEnum.FLEETMANAGER)) {
-                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
-                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
-                            flightPlanningModule.menuFlightPlanning();*/
-                        } else if (employee.getUserRole().equals(EmployeeEnum.ROUTEPLANNER)) {
-                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
-                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
-                            flightPlanningModule.menuFlightPlanning();*/
-                        } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
-                            /*FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote,
-                                    aircraftConfigurationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, employee);
-                            flightOperationModule.menuFlightOperation();*/
-                        } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
-                            /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);
-                            salesManagementModule.menuSalesManagement();*/
-                        }
+                        this.logInView();
+                            
                     } else if (response == 2) {
                         System.out.println("Exiting the application.");
                         break;
@@ -94,32 +79,65 @@ public class MainApp {
     }
 
 
-    public void loggedInView() {
-        //1 create new employee
-        //2 create new partner
-        //3 create new Airport
-        //4 create new aircraft type
-        //5 Employee Logout 
-        //6 create new AirCraft configuration
-        //7 View all aircraft configuration
-        //8 View aircraft configuration detail
-        //9 create new flight route 
-        //10 view all flight routes
-        //11 delete flight route 
-        //12 create new flight record
-        //13 view all flights
-        //14 view flight details
-        //15 update flight 
-        //16 delete flight
-        //17 create flight schedule plan
-        //18 view all flight schedule plans
-        //19 view  flight schedule plan detail 
-        //20 update flight schedule plan
-        //21 delete flight schedule plan
-        //22 view seat inventory 
-        //23 view flight reservation
+    public void logInView() {
+                Scanner scanner = new Scanner(System.in);
+        int response;
         
+        while (true) {
+            System.out.println("*** Welcome to frs management client system " + this.employee.getUsername() + ", what would you like to do today? ***\n");
+            System.out.println("1: Hop into module");
+            System.out.println("2: Logout\n");
+
+            response = 0;
+
+            while (response < 1 || response > 2) {
+                System.out.print("> ");
+
+                if (scanner.hasNextInt()) {
+                    response = scanner.nextInt();
+
+                    if (response == 1) {
+
+                        if (employee.getUserRole().equals(EmployeeEnum.FLEETMANAGER)) {
+                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
+                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
+                            flightPlanningModule.menuFlightPlanning();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.ROUTEPLANNER)) {
+                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
+                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
+                            flightPlanningModule.menuFlightPlanning();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
+                            /*FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote,
+                                    aircraftConfigurationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, employee);
+                            flightOperationModule.menuFlightOperation();*/
+                        } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
+                            /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);
+                            salesManagementModule.menuSalesManagement();*/
+                        }
+                    } else if (response == 2) {
+                        System.out.println("You are logging out.");
+                        this.doLogOut();
+                        break;
+                    } else {
+                        System.out.println("Invalid option, please try again!");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a number.");
+                    scanner.next(); // Clear the invalid input
+                }
+            }
+
+            if (response == 2) {
+                break;
+            }
+        }
+
         
+    }
+    
+    public void doLogOut() {
+        this.employee = null;
+        System.out.println("You are logged out, See you Again!");
     }
     
 }

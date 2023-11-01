@@ -7,11 +7,14 @@ package entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 /**
  *
@@ -33,15 +36,22 @@ public class Reservation implements Serializable {
     private String departureAirport;
     private String destinationAirport;
     private LocalDate departureDate;
+    
     @Column(nullable = true)
     private LocalDate returnDate;
     
-    //either or customer/partner
+    @ManyToOne(optional = true)
+    @JoinColumn(nullable = false)
     private Customer customer;
     
+    @ManyToOne(optional = true)
+    @JoinColumn(nullable = false)
     private Partner partner;
     
     private Payment payment;
+    
+    @JoinColumn(nullable = false)
+    private FlightSchedule flightSchedule;
     
     public Reservation() {
         

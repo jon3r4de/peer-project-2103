@@ -6,6 +6,7 @@ package entity;
 
 import enumeration.partnerEnum;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ public class Partner implements Serializable {
     private partnerEnum partnerRole;
     
     public Partner() {
-        
+        partnerCustomerList = new ArrayList<>();
     }
     
 

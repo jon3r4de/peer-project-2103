@@ -21,7 +21,7 @@ public class Employee implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
     @Column(nullable = false, length = 36)
@@ -30,7 +30,7 @@ public class Employee implements Serializable {
     @Column(nullable = false, length = 36)
     private String lastName;
     
-    @Column(nullable = false, length = 18, unique = true)
+    @Column(nullable = false, length = 36, unique = true)
     private String username;
     
     @Column(nullable = false, length = 18)

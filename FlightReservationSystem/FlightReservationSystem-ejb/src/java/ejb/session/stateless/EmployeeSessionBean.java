@@ -5,6 +5,7 @@
 package ejb.session.stateless;
 
 import entity.Employee;
+import enumeration.EmployeeEnum;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -14,10 +15,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.transaction.UserTransaction;
 import util.exception.EmployeeNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -43,6 +46,19 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
         } catch (InvalidLoginCredentialException ex) {
             throw ex;
         }
+    }
+    
+    @Override
+    public Employee createEmployee(String firstName, String lastName, String username, String password, EmployeeEnum userRole) throws UnknownPersistenceException {
+            Employee newEmployee = new Employee(firstName, lastName, username, password, userRole);
+        try {
+            em.persist(newEmployee);
+            em.flush();
+        } catch (PersistenceException ex) {
+            throw new UnknownPersistenceException(ex.getMessage());
+        }
+        
+        return newEmployee;
     }
     
     private Employee retrieveEmployeebyUserName(String username) throws EmployeeNotFoundException {

@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  *
@@ -30,21 +31,41 @@ public class CabinClass implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cabinClassId;
     
-    private String numberOfAisle;
-    private String numberOfRows;
-    private String maxSeatCapacity;
-    private String numOfSeatsAbreast;
-    private String actualSeatingConfig;
+    @Column(nullable = false)
+    @Min(0)
+    //@Max(3)
+    @NotNull
+    private Integer numberOfAisle;
+    
+    @Column(nullable = false)
+    @Min(1)
+    @NotNull
+    private Integer numberOfRows;
+    
+    @Column(nullable = false)
+    @Min(1)
+    @NotNull
+    private Integer maxSeatCapacity;
+    
+    @Column(nullable = false)
+    @Min(1)
+    @NotNull
+    private Integer numOfSeatsAbreast;
     
      @Column(nullable = false)
+     //@Size(min=1, max=5)
+    @NotNull
+    private String actualSeatingConfig;
+    
+    @Column(nullable = false)
     private CabinClassEnum cabinClassType;
      
     @ManyToOne()
     @JoinColumn()
     private FlightSchedule flightSchedule;
     
-    //@ManyToOne(optional = false)
-    //@JoinColumn(nullable = false)
+    @ManyToOne(optional = false)
+    @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
      
     List<String> listOfSeatNumber;

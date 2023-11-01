@@ -5,6 +5,8 @@
 package entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -28,8 +30,16 @@ public class FlightSchedulePlan implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long flightSchedulePlanId;
         
-    @OneToOne(optional = true)
     private FlightSchedulePlan complementaryReturnSchedulePlan;
+    
+    //only for n days recurrence
+    private Integer recurrence;
+    
+    //(Monday - Sunday) Only for reccurent by week
+    private Date reccurrentDay;
+    private Date startDate;
+    private Date endDate;
+    private Date layoverDuration;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -43,7 +53,11 @@ public class FlightSchedulePlan implements Serializable {
     @OneToMany(mappedBy = "flightSchedulePlan", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Fare> fares;
     
-    //private Long firstDepartureTimeLong;
+    public FlightSchedulePlan() {
+        flightSchedules = new ArrayList<>();
+        fares = new ArrayList<>();
+        this.disabled = false;
+    }
     
     private Boolean disabled;
 
