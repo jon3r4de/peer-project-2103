@@ -78,6 +78,56 @@ public class AirCraftConfig implements Serializable {
         return airCraftConfigId;
     }
 
+    public String getAirCraftConfigName() {
+        return airCraftConfigName;
+    }
+
+    public void setAirCraftConfigName(String airCraftConfigName) {
+        this.airCraftConfigName = airCraftConfigName;
+    }
+
+    public Integer getNumOfCabinClasses() {
+        return numOfCabinClasses;
+    }
+
+    public void setNumOfCabinClasses(Integer numOfCabinClasses) {
+        this.numOfCabinClasses = numOfCabinClasses;
+    }
+
+    public Integer getMaxSeatCapacity() {
+        return maxSeatCapacity;
+    }
+
+    public void setMaxSeatCapacity(Integer maxSeatCapacity) {
+        this.maxSeatCapacity = maxSeatCapacity;
+    }
+
+    public AirCraftType getAirCraftType() {
+        return airCraftType;
+    }
+
+    public void setAirCraftType(AirCraftType airCraftType) {
+        this.airCraftType = airCraftType;
+    }
+
+    public List<Flight> getFlights() {
+        return flights;
+    }
+
+    public void setFlights(List<Flight> flights) {
+        this.flights = flights;
+    }
+
+    public List<CabinClass> getCabinClasses() {
+        return cabinClasses;
+    }
+
+    public void setCabinClasses(List<CabinClass> cabinClasses) {
+        this.cabinClasses = cabinClasses;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;

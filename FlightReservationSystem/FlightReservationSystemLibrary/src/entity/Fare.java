@@ -52,6 +52,48 @@ public class Fare implements Serializable {
         this.fareId = fareId;
     }
 
+    public String getFareBasisCode() {
+        return fareBasisCode;
+    }
+
+    public void setFareBasisCode(String fareBasisCode) {
+        this.fareBasisCode = fareBasisCode;
+    }
+
+    public String getRestriction() {
+        return restriction;
+    }
+
+    public void setRestriction(String restriction) {
+        this.restriction = restriction;
+    }
+
+    public CabinClass getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(CabinClass cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+
+    public BigDecimal getFareAmount() {
+        return fareAmount;
+    }
+
+    public void setFareAmount(BigDecimal fareAmount) {
+        this.fareAmount = fareAmount;
+    }
+
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;

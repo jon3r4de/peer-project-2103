@@ -82,6 +82,64 @@ public class Airport implements Serializable {
         this.airportId = airportId;
     }
 
+    public String getAirportName() {
+        return airportName;
+    }
+
+    public void setAirportName(String airportName) {
+        this.airportName = airportName;
+    }
+
+    public String getIataAirportcode() {
+        return iataAirportcode;
+    }
+
+    public void setIataAirportcode(String iataAirportcode) {
+        this.iataAirportcode = iataAirportcode;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getStateOrProvince() {
+        return stateOrProvince;
+    }
+
+    public void setStateOrProvince(String stateOrProvince) {
+        this.stateOrProvince = stateOrProvince;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public List<FlightRoute> getFlightsFromAirport() {
+        return flightsFromAirport;
+    }
+
+    public void setFlightsFromAirport(List<FlightRoute> flightsFromAirport) {
+        this.flightsFromAirport = flightsFromAirport;
+    }
+
+    public List<FlightRoute> getFlightsToAirport() {
+        return flightsToAirport;
+    }
+
+    public void setFlightsToAirport(List<FlightRoute> flightsToAirport) {
+        this.flightsToAirport = flightsToAirport;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 0;

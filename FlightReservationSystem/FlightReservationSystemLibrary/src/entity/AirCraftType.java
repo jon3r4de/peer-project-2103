@@ -75,15 +75,6 @@ public class AirCraftType implements Serializable {
         this.configs = configs;
     }
     
-    
-
-    public Long getId() {
-        return aircraftTypeId;
-    }
-
-    public void setId(Long id) {
-        this.aircraftTypeId = id;
-    }
 
     @Override
     public int hashCode() {

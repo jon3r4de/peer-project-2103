@@ -83,9 +83,6 @@ public class FlightOperationModule {
                 }
             }
 
-            /*if (response == 11) {
-                break;
-            }*/
         }
     }
     

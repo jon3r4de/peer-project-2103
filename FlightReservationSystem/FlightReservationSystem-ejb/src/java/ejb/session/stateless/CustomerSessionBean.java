@@ -64,11 +64,11 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
             // Execute the query and retrieve the result
             Customer result = (Customer) query.getSingleResult();
 
-            // Check if there's a matching employee
+            // Check if there's a matching customer
             if (result != null) {
                 return result;
             } else {
-                // No employee found with the provided username
+                // No customer found with the provided username
                 throw noCustomerException;
             }
         } catch (NoResultException ex) {

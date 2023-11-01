@@ -4,13 +4,35 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.AircraftconfigSessionBeanRemote;
+import ejb.session.stateless.aircraftTypeSessionBeanRemote;
+import entity.AirCraftConfig;
+import entity.AirCraftType;
+import entity.CabinClass;
+import enumeration.CabinClassEnum;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import util.exception.AirCraftTypeNotFoundException;
+import util.exception.AircraftConfigExistExcetpion;
+import util.exception.AircraftConfigNotFoundException;
+import util.exception.ExceedMaximumSeatCapacityException;
+import util.exception.GeneralException;
 
 /**
  *
  * @author jonang
  */
 public class FlightPlanningModule {
+    
+    private aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
+    
+    private AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote;
+    
+    public FlightPlanningModule(aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote) {
+        this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
+        this.aircraftconfigSessionBeanRemote = aircraftconfigSessionBeanRemote;
+    }
     
     public void fleetManagerFlightPlanningModule() {
         Scanner scanner = new Scanner(System.in);
@@ -32,13 +54,23 @@ public class FlightPlanningModule {
 
                 switch (response) {
                     case 1:
+                        try {
                         createAircraftConfig();
+                        } catch (ExceedMaximumSeatCapacityException ex) {
+                        System.out.println("The New Aircraft Configuration Exceed Maximum Seat Capacity of the aircraft");
+                        } catch (AirCraftTypeNotFoundException ex) {
+                            System.out.println(ex);
+                        }
                         break;
                     case 2:
                         viewAllAircraftConfig();
                         break;
                     case 3:
+                        try{
                         viewAircraftConfigDetails();
+                        } catch (AircraftConfigNotFoundException ex) {
+                            System.out.println(ex);
+                        }
                         break;
                     case 4:
                         System.out.println("Exiting the application.");
@@ -48,23 +80,96 @@ public class FlightPlanningModule {
                         break;
                 }
             }
-
-            /*if (response == 11) {
-                break;
-            }*/
         }
     }
     //
-    public void createAircraftConfig() {
+    private void createAircraftConfig() throws ExceedMaximumSeatCapacityException, AirCraftTypeNotFoundException {
+        Scanner scanner = new Scanner(System.in);
         
+        System.out.print("Enter Aircraft Configuration Name> ");
+        String aircraftConfigurationName = scanner.nextLine().trim();
+        System.out.print("Enter Aircraft Type Name> ");
+        String aircraftTypeName = scanner.nextLine().trim();
+        System.out.print("Enter Aircraft Capacity> ");
+        Integer aircraftCapacity = Integer.valueOf(scanner.nextLine().trim());
+        
+        AirCraftType aircraftType = aircraftTypeSessionBeanRemote.retrieveAircraftTypeByName(aircraftTypeName);
+        
+        if (aircraftType.getMaxPassengerSeatCapacity() < aircraftCapacity) {
+            System.out.println("Current configuration exceeds the maximum capacity of the " + aircraftType.getAircraftTypeName() + "!\n");
+        } else {
+            
+            Integer numOfCabinClasses = 0;
+            while (numOfCabinClasses < 1 || numOfCabinClasses > 4) {
+                System.out.print("Enter Number of Cabin Classes (1 to 4)> ");
+                numOfCabinClasses = Integer.valueOf(scanner.nextLine().trim());
+            }
+            
+            AirCraftConfig newAircraftConfiguration = new AirCraftConfig(aircraftConfigurationName, numOfCabinClasses);
+
+        //to create each cabin class configuration
+        List<CabinClass> cabinClasses = new ArrayList<>();
+        for (int i = 0; i < numOfCabinClasses; i++) {
+            
+            System.out.print("Select Cabin Class Code to be created> ");
+            String cabinClassCode = scanner.nextLine().trim();
+            System.out.print("Enter Number of Aisles> ");
+            Integer numOfAisles = Integer.valueOf(scanner.nextLine().trim());
+            System.out.print("Enter Number of Rows> ");
+            Integer numOfRows = Integer.valueOf(scanner.nextLine().trim());
+            System.out.print("Enter Number of Seats Abreast> ");
+            Integer numOfSeatsAbreast = Integer.valueOf(scanner.nextLine().trim());
+            System.out.print("Enter Seating Configuration Per Column> ");
+            String seatingConfigurationPerColumn = scanner.nextLine().trim();
+            System.out.print("Enter Capacity of the Cabin Class> ");
+            Integer cabinClassCapacity = Integer.valueOf(scanner.nextLine().trim());
+            
+            //CabinClassConfiguration cabinClassConfiguration = new CabinClassConfiguration(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity);
+            
+            if (cabinClassCode.charAt(0) == 'F') {
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST));
+            } else if (cabinClassCode.charAt(0) == 'J') {
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity,CabinClassEnum.BUSINESS));
+            } else if (cabinClassCode.charAt(0) == 'W') {
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.PREMIUMECONOMY));
+            } else if (cabinClassCode.charAt(0) == 'Y') {
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.ECONOMY));
+            }
+           }
+            
+            Long aircraftConfigurationId;
+            try {
+                aircraftConfigurationId = aircraftconfigSessionBeanRemote.createNewAircraftConfiguration(newAircraftConfiguration, aircraftType, cabinClasses);
+                System.out.println("\nAircraft Confirguration With ID: " + aircraftConfigurationId + " is created successfully!\n");
+            } catch (AircraftConfigExistExcetpion | GeneralException ex) {
+                System.out.println("Error: " + ex.getMessage());
+            } 
+        }  
     }
     
     public void viewAllAircraftConfig() {
         
+        List<AirCraftConfig> aircraftConfigurations = aircraftconfigSessionBeanRemote.retrieveAllAircraftConfigurations();
+        if (aircraftConfigurations.isEmpty()) {
+            System.out.println("No Available Aircraft Configurations!\n");
+        } else {
+            for (AirCraftConfig aircraftConfiguration : aircraftConfigurations) {
+                System.out.println(aircraftConfiguration + "\n");
+            }
+        }
     }
     
-    public void viewAircraftConfigDetails() {
-        
+    public void viewAircraftConfigDetails() throws AircraftConfigNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter Aircraft Configuration Name> ");
+        String nameOfAircraftConfiguration = scanner.nextLine().trim();
+        AirCraftConfig aircraftConfiguration = aircraftconfigSessionBeanRemote.retrieveAircraftConfigurationByName(nameOfAircraftConfiguration);
+        System.out.println();
+        System.out.println(aircraftConfiguration);
+        for (CabinClass cabinClass: aircraftConfiguration.getCabinClasses()) {
+            System.out.println("\t" + cabinClass);
+        }
+        System.out.println();
     }
     
     
@@ -106,16 +211,11 @@ public class FlightPlanningModule {
                 }
             }
 
-            /*if (response == 11) {
-                break;
-            }*/
         }
     }
     
     //
-    public void createFlightRoutes() {
-        
-    }
+
     
     public void viewAllFlightRoutes() {
         
@@ -125,5 +225,8 @@ public class FlightPlanningModule {
         
     }
     
+    public void createFlightRoutes() {
+        
+    }
     
 }

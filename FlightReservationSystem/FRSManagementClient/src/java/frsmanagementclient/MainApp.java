@@ -4,7 +4,9 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.AircraftconfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
+import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import entity.Employee;
 import enumeration.EmployeeEnum;
 import java.util.Scanner;
@@ -20,8 +22,14 @@ public class MainApp {
     
     private EmployeeSessionBeanRemote employeeSessionBeanRemote;
     
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote) {
+    private aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote;
+    
+    private AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote;
+    
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
+        this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
+        this.aircraftconfigSessionBeanRemote = aircraftconfigSessionBeanRemote;
     }
     
     public void runApp() {
@@ -51,6 +59,8 @@ public class MainApp {
                         String password = scanner.nextLine().trim();
                            
                         try {
+                            //System.out.println("debug 1");
+                            //System.out.println("this is the " + username + " this is the password" + password);
                             this.employee = this.employeeSessionBeanRemote.doLogin(username, password);
                         } catch (InvalidLoginCredentialException ex) {
                             System.out.println(ex.getMessage() + "\n");
@@ -99,13 +109,11 @@ public class MainApp {
                     if (response == 1) {
 
                         if (employee.getUserRole().equals(EmployeeEnum.FLEETMANAGER)) {
-                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
-                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
-                            flightPlanningModule.menuFlightPlanning();*/
+                            FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote);
+                            flightPlanningModule.fleetManagerFlightPlanningModule();
                         } else if (employee.getUserRole().equals(EmployeeEnum.ROUTEPLANNER)) {
-                            /*FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftConfigurationSessionBeanRemote, airportSessionBeanRemote,
-                                    flightRouteSessionBeanRemote, aircraftTypeSessionBeanRemote, cabinClassSessionBeanRemote, employee);
-                            flightPlanningModule.menuFlightPlanning();*/
+                            FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote);
+                            //flightPlanningModule.routePlannerFlightPlanningModule();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
                             /*FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote,
                                     aircraftConfigurationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, employee);

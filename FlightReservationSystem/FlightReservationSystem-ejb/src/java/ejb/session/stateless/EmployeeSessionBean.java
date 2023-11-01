@@ -34,11 +34,17 @@ public class EmployeeSessionBean implements EmployeeSessionBeanRemote, EmployeeS
     
     @Override
     public Employee doLogin(String username, String password) throws InvalidLoginCredentialException {
+        System.out.println("debug 2");
+        
         try {
+            System.out.println("debug 3");
             Employee employee = retrieveEmployeebyUserName(username);
+            System.out.println("debug 4");
             if (employee.getPassword().equals(password)) {
+                System.out.println("debug 5");
                 return employee;
             } else {
+                System.out.println("debug 6");
                 throw new InvalidLoginCredentialException("Password is incorrect, please try again!");
             }
         } catch (EmployeeNotFoundException ex) {
