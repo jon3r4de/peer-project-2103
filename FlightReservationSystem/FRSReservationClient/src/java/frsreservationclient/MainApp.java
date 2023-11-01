@@ -45,6 +45,7 @@ public class MainApp {
 
                 if (scanner.hasNextInt()) {
                     response = scanner.nextInt();
+                    scanner.nextLine();
 
                     switch (response) {
                         case 1:
@@ -97,8 +98,8 @@ public class MainApp {
         while (true) {
             System.out.println("*** Welcome to the FRS reservation client system ***\n");
             System.out.println("1: Search Flight");
-            System.out.println("2: view flight");
-            System.out.println("3: view flight reservation detail");
+            System.out.println("2: View Flight");
+            System.out.println("3: View Flight Reservation Detail");
             System.out.println("4: logout\n"); 
 
             int response;
@@ -201,11 +202,17 @@ public class MainApp {
         System.out.print("> ");
         password = sc.nextLine().trim();
         
-        try {
+        if (firstName.length() > 0 && lastName.length() > 0 && email.length() > 0 && contactNumber.length() > 0 && address.length() > 0 && username.length() > 0 && password.length() > 0) {
+            Customer newCustomer = new Customer(firstName, lastName, email, contactNumber, address, username, password);
+            try {
             Long newCustId = customerSessionBeanRemote.registerCustomer(new Customer(firstName, lastName, email, contactNumber, address, username, password));
-            System.out.println("New Customer Created. Their ID is: " + newCustId);
-        } catch (UnknownPersistenceException ex) {
-            System.out.println(ex.getMessage());
+                System.out.println("Registered succefully! Customer ID: " + newCustId + "\n");
+                customer = newCustomer;
+            } catch (UnknownPersistenceException ex) {
+                System.out.println(ex.getMessage());
+            }
+        } else {
+            System.out.println("Incomplete information, please try again!\n");
         }
     }
     
