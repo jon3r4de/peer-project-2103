@@ -35,6 +35,9 @@ public class FlightRoute implements Serializable {
     @NotNull
     private boolean hasComplementaryReturnRoute;
     
+    //@OneToOne(optional = true)
+    private FlightRoute complementaryReturn;
+    
     private String ODPair;
     
     @Column(nullable = false)
@@ -103,7 +106,13 @@ public class FlightRoute implements Serializable {
         this.flights = flights;
     }
     
-    
+        public FlightRoute getComplementaryReturn() {
+        return complementaryReturn;
+    }
+
+    public void setComplementaryReturn(FlightRoute complementaryReturn) {
+        this.complementaryReturn = complementaryReturn;
+    }
 
     public Long getFlightRouteId() {
         return flightRouteId;
