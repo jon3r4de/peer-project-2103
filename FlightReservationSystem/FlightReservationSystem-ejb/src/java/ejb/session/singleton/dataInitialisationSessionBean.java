@@ -4,7 +4,11 @@
  */
 package ejb.session.singleton;
 
+import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
+import ejb.session.stateless.aircraftTypeSessionBeanLocal;
+import entity.AirCraftType;
+import entity.Airport;
 import entity.Employee;
 import enumeration.EmployeeEnum;
 import javax.annotation.PostConstruct;
@@ -14,6 +18,9 @@ import javax.ejb.LocalBean;
 import javax.ejb.Startup;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import util.exception.AircraftTypeExistException;
+import util.exception.AirportExistException;
+import util.exception.GeneralException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -32,23 +39,49 @@ public class dataInitialisationSessionBean {
     @EJB(name = "EmployeeSessionBeanLocal")
     private EmployeeSessionBeanLocal employeeSessionBeanLocal;
     
+    @EJB(name = "AirportSessionBeanLocal")
+    private AirportSessionBeanLocal airportSessionBeanLocal;
+    
+    
+    @EJB(name = "aircraftTypeSessionBeanLocal")
+    private aircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
+    
     @PostConstruct
     public void postConstruct()
     {
-        System.out.println("initialised!!!!!!!!!!");
+        System.out.println("initialised_1");
+        
         if(em.find(Employee.class, 1L) == null)
         {
-            doDataInitialisation();
+            doInitialiseEmployee();
+        } 
+        
+        System.out.println("initialised_2");
+        
+        if(em.find(Airport.class, 1l) == null)
+        {
+            doInitialiseAirport();
         }
+        
+        System.out.println("initialised_3");
+        
+        if(em.find(AirCraftType.class, 1l) == null)
+        {
+            doInitialiseAircraftType();
+        }
+        
+        System.out.println("initialised_4");
+                
     }
     
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
 
-    private void doDataInitialisation() {
+    private void doInitialiseEmployee() {
 
         try {
+            System.out.println("created employee");
             employeeSessionBeanLocal.createEmployee("bonobo","toot","FLEETMANAGER","password", EmployeeEnum.FLEETMANAGER);
             employeeSessionBeanLocal.createEmployee("bonobo1","toot","ROUTEPLANNER","password", EmployeeEnum.ROUTEPLANNER);
             employeeSessionBeanLocal.createEmployee("bonobo2","toot","SCHEDULEMANAGER","password", EmployeeEnum.SCHEDULEMANAGER);
@@ -59,6 +92,33 @@ public class dataInitialisationSessionBean {
         }
         
     }
+    
+    //String airportName, String iataAirportcode, String city, String stateOrProvince, String country
+    private void doInitialiseAirport() {
+        try {
+            System.out.println("created airport");
+            airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Tokyo", "TKY", "Tokyo", "Tokyo", "Japan"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Zimbabwe", "ZPE", "zims", "zas", "zaz"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Viridian", "VRD", "Johto", "Johto", "Pokemon"));
+        } catch (AirportExistException | GeneralException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+    
+    private void doInitialiseAircraftType()
+    {
+        try {
+            System.out.println("created airCraft Type");
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer1", 500));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer2", 700));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer3", 900));
+        } catch (AircraftTypeExistException | GeneralException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+
+
     
 
     // Add business logic below. (Right-click in editor and choose

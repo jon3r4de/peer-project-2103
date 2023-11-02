@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -38,7 +39,9 @@ public class FlightRoute implements Serializable {
     //@OneToOne(optional = true)
     private FlightRoute complementaryReturn;
     
-    private String ODPair;
+    @Column(nullable = false, unique = true)
+    @NotNull
+    private String odPair;
     
     @Column(nullable = false)
     @NotNull
@@ -59,11 +62,12 @@ public class FlightRoute implements Serializable {
         this.flights = new ArrayList<>();
         this.disabled = false;
     }
-
+    
     public FlightRoute(Airport origin, Airport destination) {
         this();
         this.origin = origin;
         this.destination = destination;
+        this.odPair = origin.getIataAirportcode() + "-" + destination.getIataAirportcode();
     }
 
     public Airport getOrigin() {
@@ -82,12 +86,12 @@ public class FlightRoute implements Serializable {
         this.hasComplementaryReturnRoute = hasComplementaryReturnRoute;
     }
 
-    public String getODPair() {
-        return ODPair;
+    public String getOdPair() {
+        return odPair;
     }
 
-    public void setODPair(String ODPair) {
-        this.ODPair = ODPair;
+    public void setOdPair(String odPair) {
+        this.odPair = odPair;
     }
 
     public boolean isDisabled() {

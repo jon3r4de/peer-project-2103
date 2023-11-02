@@ -76,7 +76,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             {
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
             }
-        }
+        } 
     }
     
     @Override 
