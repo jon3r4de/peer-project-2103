@@ -45,9 +45,6 @@ public class SalesManagementModule {
                 }
             }
 
-            /*if (response == 11) {
-                break;
-            }*/
         }
     }
         

@@ -48,7 +48,7 @@ public class Reservation implements Serializable {
     @JoinColumn(nullable = false)
     private Partner partner;
     
-    private Payment payment;
+    //private Payment payment;
     
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
@@ -143,14 +143,6 @@ public class Reservation implements Serializable {
 
     public void setPartner(Partner partner) {
         this.partner = partner;
-    }
-
-    public Payment getPayment() {
-        return payment;
-    }
-
-    public void setPayment(Payment payment) {
-        this.payment = payment;
     }
 
     public Long getReservationId() {

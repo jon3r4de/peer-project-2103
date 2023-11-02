@@ -68,13 +68,10 @@ public class Customer implements Serializable {
     @OneToMany(mappedBy = "customer")
     private List<Reservation> reservations;
     
-    @OneToMany(mappedBy = "customer")
-    private List<Payment> payments;
 
 
     public Customer() {
         reservations = new ArrayList<>();
-        payments = new ArrayList<>();
     }
 
     public Customer(String firstName, String lastName, String email, String phoneNumber, String address, String username, String password) {
