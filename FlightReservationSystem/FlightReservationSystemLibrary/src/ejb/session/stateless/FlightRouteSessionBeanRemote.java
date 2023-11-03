@@ -31,5 +31,7 @@ public interface FlightRouteSessionBeanRemote {
     public List<FlightRoute> retrieveAllFlightRoutes();
 
     public FlightRoute retrieveFlightRouteById(Long flightRouteId) throws FlightRouteNotFoundException;
+    
+    public Boolean checkIfComplementaryFlightRouteExist(String originCode, String destinationCode) throws FlightRouteNotFoundException;
 }
 

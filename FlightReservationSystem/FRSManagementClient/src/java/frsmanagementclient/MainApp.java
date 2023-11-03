@@ -7,6 +7,7 @@ package frsmanagementclient;
 import ejb.session.stateless.AircraftconfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import entity.Employee;
 import enumeration.EmployeeEnum;
@@ -29,11 +30,14 @@ public class MainApp {
     
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     
-    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote) {
+    private FlightSessionBeanRemote flightSessionBeanRemote;
+    
+    public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
         this.aircraftconfigSessionBeanRemote = aircraftconfigSessionBeanRemote;
         this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
+        this.flightSessionBeanRemote = flightSessionBeanRemote;
     }
     
     public void runApp() {
@@ -119,9 +123,8 @@ public class MainApp {
                             FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, flightRouteSessionBeanRemote);
                             flightPlanningModule.routePlannerFlightPlanningModule();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
-                            /*FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote,
-                                    aircraftConfigurationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSchedulePlanSessionBeanRemote, employee);
-                            flightOperationModule.menuFlightOperation();*/
+                            FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote);
+                            flightOperationModule.menuFlightOperation();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
                             /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);
                             salesManagementModule.menuSalesManagement();*/

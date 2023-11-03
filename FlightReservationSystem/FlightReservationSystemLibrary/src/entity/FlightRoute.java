@@ -110,7 +110,7 @@ public class FlightRoute implements Serializable {
         this.flights = flights;
     }
     
-        public FlightRoute getComplementaryReturn() {
+    public FlightRoute getComplementaryReturn() {
         return complementaryReturn;
     }
 

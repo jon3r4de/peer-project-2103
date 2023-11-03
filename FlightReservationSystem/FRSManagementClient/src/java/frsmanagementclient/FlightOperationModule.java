@@ -4,13 +4,34 @@
  */
 package frsmanagementclient;
 
+import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
+import entity.CabinClass;
+import entity.Flight;
+import java.util.List;
 import java.util.Scanner;
+import util.exception.AircraftConfigNotFoundException;
+import util.exception.DeleteFlightException;
+import util.exception.FlightExistException;
+import util.exception.FlightNotFoundException;
+import util.exception.FlightRouteDisabledException;
+import util.exception.FlightRouteNotFoundException;
+import util.exception.GeneralException;
 
 /**
  *
  * @author jonang
  */
 public class FlightOperationModule {
+    
+    private FlightSessionBeanRemote flightSessionBeanRemote;
+    
+    private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
+    
+    FlightOperationModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote) {
+        this.flightSessionBeanRemote = flightSessionBeanRemote;
+        this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
+    }
     
     public void menuFlightOperation() {
         Scanner scanner = new Scanner(System.in);
@@ -21,8 +42,8 @@ public class FlightOperationModule {
             System.out.println("1: Create Flight ");
             System.out.println("2: View All Flights");
             System.out.println("3: View Flight Details");
-            System.out.println("4: update Flight");
-            System.out.println("5: delete Flight");
+            //System.out.println("4: update Flight");
+            //System.out.println("5: delete Flight");
             System.out.println("-----------------------");
             System.out.println("6: Create Flight Schedule Plan");
             System.out.println("7: View All Flight Schedule Plans");
@@ -50,11 +71,11 @@ public class FlightOperationModule {
                         viewFlightDetails();
                         break;
                     case 4:
-                        updateFlight();
+                        //updateFlight();
                         //includes viewFlightDetails();
                         break;
                     case 5:
-                        deleteFlight();
+                        //deleteFlight();
                         //includes viewFlightDetails();
                         break;
                     case 6:
@@ -87,23 +108,116 @@ public class FlightOperationModule {
     }
     
     public void createFlight() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("*** FRSManagement :: Flight Operation Module :: Create New Flight ***\n");
+
+            System.out.print("Enter Flight Number> ");
+            String flightNumber = scanner.nextLine().trim();
+            Flight newFlight = new Flight(flightNumber);
+
+            System.out.print("Enter Origin Airport IATA code> ");
+            String originCode = scanner.nextLine().trim();
+
+            System.out.print("Enter Destination Airport IATA code> ");
+            String destinationCode = scanner.nextLine().trim();
+
+            System.out.print("Enter Aircraft Configuration Name> ");
+            String aircraftConfigurationName = scanner.nextLine().trim();
+            
+            Long newFlightId = flightSessionBeanRemote.createNewFlight(newFlight, originCode, destinationCode, aircraftConfigurationName);
+            System.out.println("Flight with ID: " + newFlightId + " is created!\n");
+
+            if (flightRouteSessionBeanRemote.checkIfComplementaryFlightRouteExist(originCode, destinationCode)) {
+                System.out.print("Create a complementary return flight? (Y/N)> ");
+                String createOption = scanner.nextLine().trim();
+                if (createOption.equals("Y")) {
+
+                    System.out.print("Enter Complementary Flight Number> ");
+                    String complementaryFlightNumber = scanner.nextLine().trim();
+                    Flight newComplementaryFlight = new Flight(complementaryFlightNumber);
+
+                    Long newComplementaryReturnFlightId = flightSessionBeanRemote.createNewFlight(newComplementaryFlight, destinationCode, originCode, aircraftConfigurationName);
+                    flightSessionBeanRemote.associateComplementaryFlight(newFlightId, newComplementaryReturnFlightId);
+                    System.out.println("Complementary Flight with ID: " + newComplementaryReturnFlightId + " is created!\n");
+                }
+            }
+        } catch (FlightExistException | GeneralException | FlightRouteNotFoundException | AircraftConfigNotFoundException | FlightRouteDisabledException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
         
     }
     
     public void viewAllFlights() {
+       
+        List<Flight> flights = flightSessionBeanRemote.retrieveAllFlights();
+        
+        if (flights.isEmpty()) {
+            System.out.println("No Available Flights!\n");
+        }
+        
+        flights.stream().map(flight -> {
+            System.out.println(flight);
+            return flight;
+        }).filter(flight -> (flight.getComplementaryReturnFlight() != null)).forEachOrdered(flight -> {
+            System.out.println("Complementary Flight = [" + flight.getComplementaryReturnFlight() + "]");
+        });
+        
+        System.out.println();
         
     }
     
     public void viewFlightDetails() {
+            try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter Flight Number> ");
+            String flightNumber = scanner.nextLine().trim();
+
+            Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
+
+            System.out.println(flight);
+            System.out.println(flight.getFlightRoute());
+            for (CabinClass cabinClass : flight.getAirCraftConfig().getCabinClasses()) {
+                System.out.println(cabinClass.getCabinClassType());
+                System.out.println("Available seats = " + cabinClass.getMaxSeatCapacity());
+            }
+            System.out.println();
+
+            System.out.print("Update details of this flight? (Y/N)> ");
+            if (scanner.nextLine().trim().equals("Y")) {
+                updateFlight(flight);
+            }
+
+            System.out.print("Delete this flight? (Y/N)> ");
+            if (scanner.nextLine().trim().equals("Y")) {
+                deleteFlight(flight);
+            }
+        } catch (FlightNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
         
     }
     
-    public void updateFlight() {
-        
+    public void updateFlight(Flight flight) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight ***\n");
+        System.out.print("Enter New Aircraft Configuration Name> ");
+        String newAircraftConfigurationName = scanner.nextLine().trim();
+
+        try {
+            flightSessionBeanRemote.updateFlight(flight, newAircraftConfigurationName);
+        } catch (AircraftConfigNotFoundException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }        
     }
     
-    public void deleteFlight() {
-        
+    public void deleteFlight(Flight flight) {
+        try {
+            flightSessionBeanRemote.deleteFlight(flight);
+        } catch (FlightNotFoundException | DeleteFlightException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
     }
     
     public void createFlightSchedulePlan() {

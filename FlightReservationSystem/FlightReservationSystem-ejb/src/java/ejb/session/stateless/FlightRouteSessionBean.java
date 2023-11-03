@@ -134,6 +134,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             throw new FlightRouteNotFoundException("Flight route with origin " + originCode + " and destination " + destinationCode + " is not found!");
         }
     }
+    
 
     @Override
     public Long deleteFlightRoute(String originCode, String destinationCode) throws FlightRouteNotFoundException, DeleteFlightRouteException
@@ -166,7 +167,14 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         }
     }
 
-    public void persist(Object object) {
-        em.persist(object);
+    @Override
+    public Boolean checkIfComplementaryFlightRouteExist(String originCode, String destinationCode) throws FlightRouteNotFoundException {
+        String compOriginCode = destinationCode;
+        String compDestinationCode = originCode;
+        
+        FlightRoute flightRoute = retrieveFlightRouteByOdPair(compOriginCode, compDestinationCode);
+        
+        return (flightRoute.getComplementaryReturn() != null);
+
     }
 }

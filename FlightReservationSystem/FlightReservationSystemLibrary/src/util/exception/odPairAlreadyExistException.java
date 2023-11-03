@@ -8,13 +8,13 @@ package util.exception;
  *
  * @author jonang
  */
-public class odPairAlreadtExistException extends Exception {
+public class odPairAlreadyExistException extends Exception {
 
     /**
      * Creates a new instance of <code>odPairAlreadtExistException</code>
      * without detail message.
      */
-    public odPairAlreadtExistException() {
+    public odPairAlreadyExistException() {
     }
 
     /**
@@ -23,7 +23,7 @@ public class odPairAlreadtExistException extends Exception {
      *
      * @param msg the detail message.
      */
-    public odPairAlreadtExistException(String msg) {
+    public odPairAlreadyExistException(String msg) {
         super(msg);
     }
 }

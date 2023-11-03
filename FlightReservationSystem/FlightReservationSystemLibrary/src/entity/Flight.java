@@ -53,6 +53,9 @@ public class Flight implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
+    
+    //@OneToOne(optional = true)
+    private Flight complementaryReturnFlight;
    
     
     public Flight() {
@@ -65,6 +68,31 @@ public class Flight implements Serializable {
         this.flightNumber = flightNumber;
     }
 
+    public FlightRoute getFlightRoute() {
+        return flightRoute;
+    }
+
+    public void setFlightRoute(FlightRoute flightRoute) {
+        this.flightRoute = flightRoute;
+    }
+    
+    public Flight getComplementaryReturnFlight() {
+        return complementaryReturnFlight;
+    }
+
+    public void setComplementaryReturnFlight(Flight complementaryReturnFlight) {
+        this.complementaryReturnFlight = complementaryReturnFlight;
+    }
+
+    public AirCraftConfig getAirCraftConfig() {
+        return airCraftConfig;
+    }
+
+    public void setAirCraftConfig(AirCraftConfig airCraftConfig) {
+        this.airCraftConfig = airCraftConfig;
+    }
+
+    
 
     public String getFlightNumber() {
         return flightNumber;
