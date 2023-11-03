@@ -232,14 +232,18 @@ public class FlightPlanningModule {
         if (flightRoutes.isEmpty()) {
             System.out.println("No Available Flight Routes!\n");
         } else {
-            System.out.println("*** FRSManagement :: Flight Planning Module :: View All Flight Routes ***\n");
+            //System.out.println("*** FRSManagement :: Flight Planning Module :: View All Flight Routes ***\n");
             for (FlightRoute flightRoute : flightRoutes) {
-                if (flightRoute.isDisabled()) {
+               
+                /*if (flightRoute.isDisabled()) {
                     System.out.println(flightRoute + " [Disabled]");
                 } else {
                     System.out.println(flightRoute);
-                }
-                
+                }*/
+
+                System.out.println(flightRoute.isDisabled() ? flightRoute + " [Disabled]" : flightRoute);
+
+            
                 if (flightRoute.getComplementaryReturn() != null) {
                     System.out.println("[Complementary " + flightRoute.getComplementaryReturn()+ "]");
                 }
@@ -283,7 +287,7 @@ public class FlightPlanningModule {
             Long newFlightRouteId = flightRouteSessionBeanRemote.createNewFlightRoute(originIataCode, destinationIataCode);
             System.out.println("Flight route " + newFlightRouteId + " is created!\n");
             
-            System.out.print("Create complementary flight? (Y/N)> ");
+            System.out.print("Create complementary flight route? (Y/N)> ");
             String response = scanner.nextLine().trim();
             if ("Y".equals(response)) {
                 Long newComplementaryFlightRouteId = flightRouteSessionBeanRemote.createNewFlightRoute(destinationIataCode, originIataCode);

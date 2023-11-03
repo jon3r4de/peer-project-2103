@@ -148,7 +148,7 @@ public class FlightRoute implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightRoute[ id=" + flightRouteId + " ]";
+        return "FlightRoute [" + "Origin = " + getOrigin().getIataAirportcode() + ", Destination = " + getDestination().getIataAirportcode() + ']';
     }
     
 }
