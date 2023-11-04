@@ -196,15 +196,46 @@ public class FlightOperationModule {
             }
             System.out.println();
 
-            System.out.print("Update details of this flight? (Y/N)> ");
-            if (scanner.nextLine().trim().equals("Y")) {
-                updateFlight(flight);
+            // do it such that 1 is linked to update, 2 is linked ot delete and 3 is contiunue
+            System.out.print("would you like to update or delete flight?    \n");
+            System.out.println("1: Update Flight ");
+            System.out.println("2: Delete Flights");
+            System.out.println("3: out of here queen ~slay~ ");
+            
+            int response = 0;
+            
+             while (response < 1 || response > 3) {
+                System.out.print("> ");
+
+                response = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (response) {
+                    
+                    case 1:
+                        System.out.print("Update details of this flight? (Y/N)> ");
+                        
+                        if (scanner.nextLine().trim().equals("Y")) {
+                            updateFlight(flight);
+                        }
+                    break;
+                    
+                    case 2:
+                    System.out.print("Delete this flight? (Y/N)> ");
+                    if (scanner.nextLine().trim().equals("Y")) {
+                        deleteFlight(flight);
+                    }
+                    break;
+                    
+                    case 3:
+                       
+                    return;
+                    
+                    default:
+                    System.out.println("incorrect input please try again");
+                }
             }
 
-            System.out.print("Delete this flight? (Y/N)> ");
-            if (scanner.nextLine().trim().equals("Y")) {
-                deleteFlight(flight);
-            }
         } catch (FlightNotFoundException ex) {
             System.out.println("Error: " + ex.getMessage());
         }

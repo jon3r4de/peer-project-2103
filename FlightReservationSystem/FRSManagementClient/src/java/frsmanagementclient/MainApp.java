@@ -71,8 +71,8 @@ public class MainApp {
                         String password = scanner.nextLine().trim();
                            
                         try {
-                            //System.out.println("debug 1");
-                            //System.out.println("this is the " + username + " this is the password" + password);
+                            System.out.println("debug 1");
+                            System.out.println("this is the " + username + " this is the password" + password);
                             this.employee = this.employeeSessionBeanRemote.doLogin(username, password);
                         } catch (InvalidLoginCredentialException ex) {
                             System.out.println(ex.getMessage() + "\n");
