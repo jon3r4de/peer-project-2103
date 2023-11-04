@@ -276,9 +276,10 @@ public class FlightOperationModule {
                 case 1:
                     doCreateSingleFlightSchedule(scanner, flight);
                     break;
+                default:
+                    System.out.println("not yet");
+                    break;
             }
-            
-            
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -292,7 +293,7 @@ public class FlightOperationModule {
 //        String departureTimeString;
 //        Date departureTime;
 //        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
-//        
+   
         Date departureDateTime;
         DateFormat dateTimeFormat = new SimpleDateFormat("dd MMM yy hh:mm aa");
         

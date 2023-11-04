@@ -59,7 +59,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                     ex.getCause().getCause() != null &&
                     ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
             {
-                throw new FlightSchedulePlanExistException("This flight route already exists!");
+                throw new FlightSchedulePlanExistException("This flight schedule plan already exists!");
             }
             else {
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
