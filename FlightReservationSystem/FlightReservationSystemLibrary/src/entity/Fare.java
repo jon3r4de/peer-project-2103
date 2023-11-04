@@ -4,6 +4,7 @@
  */
 package entity;
 
+import enumeration.CabinClassEnum;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import javax.persistence.Column;
@@ -33,8 +34,8 @@ public class Fare implements Serializable {
     
     private String restriction;
     
-    @JoinColumn(nullable = false)
-    private CabinClass cabinClass;
+    @Column(nullable = false)
+    private CabinClassEnum cabinClassType;
     
     @Column(nullable = false, precision = 11, scale = 2)
     @NotNull
@@ -43,6 +44,16 @@ public class Fare implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
+
+    public Fare() {
+    }
+
+    public Fare(String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount) {
+        this();
+        this.fareBasisCode = fareBasisCode;
+        this.cabinClassType = cabinClassType;
+        this.fareAmount = fareAmount;
+    }
 
     public Long getFareId() {
         return fareId;
@@ -68,12 +79,12 @@ public class Fare implements Serializable {
         this.restriction = restriction;
     }
 
-    public CabinClass getCabinClass() {
-        return cabinClass;
+    public CabinClassEnum getCabinClassType() {
+        return cabinClassType;
     }
 
-    public void setCabinClass(CabinClass cabinClass) {
-        this.cabinClass = cabinClass;
+    public void setCabinClassType(CabinClassEnum cabinClassType) {
+        this.cabinClassType = cabinClassType;
     }
 
     public BigDecimal getFareAmount() {

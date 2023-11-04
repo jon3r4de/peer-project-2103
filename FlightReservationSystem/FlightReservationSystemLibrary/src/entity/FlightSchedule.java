@@ -40,10 +40,14 @@ public class FlightSchedule implements Serializable {
    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date departureDateTime;
+    private Date departureDate;
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date departureTime;
   
-    //@Temporal(TemporalType.TIMESTAMP)
-    private String estimatedflightDuration;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date estimatedFlightDuration;
     //actual flight duration can be calculated from manipulation of arrival and departure time
    
     @Temporal(TemporalType.TIMESTAMP)
@@ -53,8 +57,8 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false, length = 6, unique = true)
     private String flightNumber;
 
-    @JoinColumn(nullable = false)
-    private Reservation reservations;
+    @OneToMany(mappedBy = "flightSchedule")
+    private List<Reservation> reservations;
     
     @OneToMany(mappedBy = "flightSchedule")
     private List<CabinClass> cabinClasses;
@@ -63,16 +67,39 @@ public class FlightSchedule implements Serializable {
     @JoinColumn(nullable = false)
     private FlightSchedulePlan flightSchedulePlan;
 
-    public Date getDepartureDateTime() {
-        return departureDateTime;
+    public FlightSchedule() {
+        this.reservations = new ArrayList<>();
+        this.cabinClasses = new ArrayList<>();
     }
 
-    public void setDepartureDateTime(Date departureDateTime) {
-        this.departureDateTime = departureDateTime;
+    public FlightSchedule(Date departureDate, Date departureTime, Date estimatedFlightDuration, Date arrivalDateTime, String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
+        this.departureDate = departureDate;
+        this.departureTime = departureTime;
+        this.estimatedFlightDuration = estimatedFlightDuration;
+        this.arrivalDateTime = arrivalDateTime;
+        this.flightNumber = flightNumber;
+        this.cabinClasses = cabinClasses;
+        this.flightSchedulePlan = flightSchedulePlan;
     }
 
-    public String getEstimatedFlightDuration() {
-        return estimatedflightDuration;
+    public Date getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDepartureDate(Date departureDate) {
+        this.departureDate = departureDate;
+    }
+
+    public Date getDepartureTime() {
+        return departureTime;
+    }
+
+    public void setDepartureTime(Date departureTime) {
+        this.departureTime = departureTime;
+    }
+    
+    public Date getEstimatedFlightDuration() {
+        return estimatedFlightDuration;
     }
 
 

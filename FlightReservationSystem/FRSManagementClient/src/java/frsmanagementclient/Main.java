@@ -7,6 +7,7 @@ package frsmanagementclient;
 import ejb.session.stateless.AircraftconfigSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import javax.ejb.EJB;
@@ -36,10 +37,13 @@ public class Main {
     @EJB 
     private static FlightSessionBeanRemote flightSessionBeanRemote;
     
+    @EJB
+    private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
+    
     public static void main(String[] args) {
         // TODO code application logic here
         System.out.println("deployed1");
-         MainApp mainApp = new MainApp(employeeSessionBeanRemote, aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, flightRouteSessionBeanRemote, flightSessionBeanRemote);
+         MainApp mainApp = new MainApp(employeeSessionBeanRemote, aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, flightRouteSessionBeanRemote, flightSessionBeanRemote, flightSchedulePlanSessionBeanRemote);
         
         System.out.println("deployed2");
         mainApp.runApp();

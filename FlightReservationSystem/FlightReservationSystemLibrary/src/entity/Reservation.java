@@ -50,6 +50,7 @@ public class Reservation implements Serializable {
     
     //private Payment payment;
     
+    @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
     

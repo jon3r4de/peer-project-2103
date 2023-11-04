@@ -4,11 +4,13 @@
  */
 package entity;
 
+import enumeration.FlightScheduleEnum;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,7 +18,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 /**
  *
@@ -47,19 +48,27 @@ public class FlightSchedulePlan implements Serializable {
     
     private String flightNumber;
     
+    @Column(nullable = false)
+    private FlightScheduleEnum flightScheduleType;
+    
     @OneToMany(mappedBy = "flightSchedulePlan")
     private List<FlightSchedule> flightSchedules;
     
     @OneToMany(mappedBy = "flightSchedulePlan", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Fare> fares;
     
+    private Boolean disabled;
+    
     public FlightSchedulePlan() {
         flightSchedules = new ArrayList<>();
         fares = new ArrayList<>();
         this.disabled = false;
     }
-    
-    private Boolean disabled;
+
+    public FlightSchedulePlan(FlightScheduleEnum flightScheduleType, List<Fare> fares) {
+        this.flightScheduleType = flightScheduleType;
+        this.fares = fares;
+    }
 
     public Long getFlightSchedulePlanId() {
         return flightSchedulePlanId;
@@ -67,6 +76,22 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setFlightSchedulePlanId(Long flightSchedulePlanId) {
         this.flightSchedulePlanId = flightSchedulePlanId;
+    }
+
+    public Flight getFlight() {
+        return flight;
+    }
+
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
+
+    public List<Fare> getFares() {
+        return fares;
+    }
+
+    public void setFares(List<Fare> fares) {
+        this.fares = fares;
     }
 
     public String getFlightNumber() {

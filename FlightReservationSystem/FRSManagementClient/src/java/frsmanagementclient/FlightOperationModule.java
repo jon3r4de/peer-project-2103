@@ -5,9 +5,19 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
+import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
+import entity.Fare;
 import entity.Flight;
+import entity.FlightSchedulePlan;
+import enumeration.CabinClassEnum;
+import enumeration.FlightScheduleEnum;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import util.exception.AircraftConfigNotFoundException;
@@ -28,9 +38,12 @@ public class FlightOperationModule {
     
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     
-    FlightOperationModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote) {
+    private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
+    
+    FlightOperationModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote) {
         this.flightSessionBeanRemote = flightSessionBeanRemote;
         this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
+        this.flightSchedulePlanSessionBeanRemote = flightSchedulePlanSessionBeanRemote;
     }
     
     public void menuFlightOperation() {
@@ -221,7 +234,125 @@ public class FlightOperationModule {
     }
     
     public void createFlightSchedulePlan() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("*** FRSManagement :: Flight Operation Module :: Create New Flight Schedule Plan ***\n");
+            System.out.print("Enter Flight Number> ");
+            String flightNumber = scanner.nextLine().trim();
+
+            Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
+            if (flight.isDisabled() == true) {
+                System.out.println("Unable to create schedule plan for disabled flight. Try again.");
+                return;
+            }
+
+            System.out.println("Select Type of Flight Schedule Plan> ");
+            System.out.println("1: Single");
+            System.out.println("2: Multiple");
+            System.out.println("3: Recurrent schedule every n day");
+            System.out.println("4: Recurrent schedule every week");
+            System.out.print("> ");
+            int response = scanner.nextInt();
+            scanner.nextLine();
+
+            String departureDateString;
+            String departureTimeString;
+            DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+            DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date departureDate;
+            Date departureTime;
+            String durationString;
+            DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
+            Date durationTime;
+            List<Fare> fares = new ArrayList<>();
+            boolean option = true;
+            Long firstDepartureTimeLong = Long.MIN_VALUE;
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan();
+            Date startDateTime;
+            Date endDateTime;
+            Integer recurrence = 0;
+            
+            switch(response) {
+                case 1:
+                    doCreateSingleFlightSchedule(scanner, flight);
+                    break;
+            }
+            
+            
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
         
+    }
+    
+    private void doCreateSingleFlightSchedule(Scanner scanner, Flight flight) {
+        String departureDateString;
+        Date departureDate;
+        DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
+        String departureTimeString;
+        Date departureTime;
+        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+        String durationString;
+        Date estimatedFlightDuration;
+        DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
+        List<Fare> fares = new ArrayList<>();
+        
+        try {
+            System.out.println("*** Create Single Flight Schedule ***\n");
+            System.out.print("Enter Departure Date (day MONTH year) > ");
+            departureDateString = scanner.nextLine().trim();
+            departureDate = departureDateFormat.parse(departureDateString);
+
+            System.out.print("Enter Departure Time (hr:min AM/PM)> ");
+            departureTimeString = scanner.nextLine().trim();
+            departureTime = departureTimeFormat.parse(departureTimeString);
+
+            System.out.print("Enter Flight Duration (xx Hours xx Minute)> ");
+            durationString = scanner.nextLine().trim();
+            estimatedFlightDuration = durationFormat.parse(durationString);
+
+            System.out.println("*** Create Single Flight Schedule :: Enter Fares ***\n");
+            boolean option = true;
+            while (option) {
+                System.out.print("Enter Cabin Class Code (F,J,W,Y)> ");
+                String cabinClassCode = scanner.nextLine().trim();
+                System.out.print("Enter Fare Basis Code> ");
+                String fareBasisCode = scanner.nextLine().trim();
+                System.out.print("Enter Amount> $ ");
+                BigDecimal fareAmount = new BigDecimal(scanner.nextLine().trim());
+
+                CabinClassEnum cabinClassType;
+                
+                if (cabinClassCode.charAt(0) == 'F' ) {
+                    cabinClassType = CabinClassEnum.FIRST;
+                } else if (cabinClassCode.charAt(0) == 'J') {
+                    cabinClassType = CabinClassEnum.BUSINESS;
+                } else if (cabinClassCode.charAt(0) == 'W') {
+                    cabinClassType = CabinClassEnum.PREMIUMECONOMY;
+                } else if (cabinClassCode.charAt(0) == 'Y') {
+                    cabinClassType = CabinClassEnum.ECONOMY;
+                } else {
+                    System.out.println("Invalid Cabin Class Code Entered. Try Again.");
+                    break;
+                }
+
+                Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
+                fares.add(fare);
+
+                System.out.print("Continue to create more fares? (Y/N)> ");
+                String optionString = scanner.nextLine().trim();
+                if (optionString.charAt(0) == 'N') {
+                    option = false;
+                }
+            }
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.SINGLE, fares);
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDate, departureTime, estimatedFlightDuration);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
     
     public void viewAllFlightSchedulePlans() {
