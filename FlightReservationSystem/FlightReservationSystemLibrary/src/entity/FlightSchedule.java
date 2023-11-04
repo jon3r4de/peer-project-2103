@@ -40,11 +40,7 @@ public class FlightSchedule implements Serializable {
    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(nullable = false)
-    private Date departureDate;
-    
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
-    private Date departureTime;
+    private Date departureDateTime;
   
     @Temporal(TemporalType.TIMESTAMP)
     private Date estimatedFlightDuration;
@@ -72,9 +68,8 @@ public class FlightSchedule implements Serializable {
         this.cabinClasses = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDate, Date departureTime, Date estimatedFlightDuration, Date arrivalDateTime, String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
-        this.departureDate = departureDate;
-        this.departureTime = departureTime;
+    public FlightSchedule(Date departureDateTime, Date estimatedFlightDuration, Date arrivalDateTime, String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
+        this.departureDateTime = departureDateTime;
         this.estimatedFlightDuration = estimatedFlightDuration;
         this.arrivalDateTime = arrivalDateTime;
         this.flightNumber = flightNumber;
@@ -82,20 +77,12 @@ public class FlightSchedule implements Serializable {
         this.flightSchedulePlan = flightSchedulePlan;
     }
 
-    public Date getDepartureDate() {
-        return departureDate;
+    public Date getDepartureDateTime() {
+        return departureDateTime;
     }
 
-    public void setDepartureDate(Date departureDate) {
-        this.departureDate = departureDate;
-    }
-
-    public Date getDepartureTime() {
-        return departureTime;
-    }
-
-    public void setDepartureTime(Date departureTime) {
-        this.departureTime = departureTime;
+    public void setDepartureDateTime(Date departureDateTime) {
+        this.departureDateTime = departureDateTime;
     }
     
     public Date getEstimatedFlightDuration() {
@@ -127,6 +114,14 @@ public class FlightSchedule implements Serializable {
         this.flightScheduleId = flightScheduleId;
     }
 
+    public FlightSchedulePlan getFlightSchedulePlan() {
+        return flightSchedulePlan;
+    }
+
+    public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
+        this.flightSchedulePlan = flightSchedulePlan;
+    }
+    
     @Override
     public int hashCode() {
         int hash = 0;

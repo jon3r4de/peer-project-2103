@@ -286,12 +286,16 @@ public class FlightOperationModule {
     }
     
     private void doCreateSingleFlightSchedule(Scanner scanner, Flight flight) {
-        String departureDateString;
-        Date departureDate;
-        DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
-        String departureTimeString;
-        Date departureTime;
-        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+//        String departureDateString;
+//        Date departureDate;
+//        DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
+//        String departureTimeString;
+//        Date departureTime;
+//        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+//        
+        Date departureDateTime;
+        DateFormat dateTimeFormat = new SimpleDateFormat("dd MMM yy hh:mm aa");
+        
         String durationString;
         Date estimatedFlightDuration;
         DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
@@ -299,13 +303,19 @@ public class FlightOperationModule {
         
         try {
             System.out.println("*** Create Single Flight Schedule ***\n");
-            System.out.print("Enter Departure Date (day MONTH year) > ");
-            departureDateString = scanner.nextLine().trim();
-            departureDate = departureDateFormat.parse(departureDateString);
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM)> ");
+            String departureDateTimeString = scanner.nextLine().trim();
 
-            System.out.print("Enter Departure Time (hr:min AM/PM)> ");
-            departureTimeString = scanner.nextLine().trim();
-            departureTime = departureTimeFormat.parse(departureTimeString);
+            // Parse the combined date and time string
+            departureDateTime = dateTimeFormat.parse(departureDateTimeString);
+            
+//            System.out.print("Enter Departure Date (day MONTH year) > ");
+//            departureDateString = scanner.nextLine().trim();
+//            departureDate = departureDateFormat.parse(departureDateString);
+//
+//            System.out.print("Enter Departure Time (hr:min AM/PM)> ");
+//            departureTimeString = scanner.nextLine().trim();
+//            departureTime = departureTimeFormat.parse(departureTimeString);
 
             System.out.print("Enter Flight Duration (xx Hours xx Minute)> ");
             durationString = scanner.nextLine().trim();
@@ -346,7 +356,7 @@ public class FlightOperationModule {
                 }
             }
             FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.SINGLE, fares);
-            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDate, departureTime, estimatedFlightDuration);
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
 

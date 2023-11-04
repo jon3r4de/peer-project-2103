@@ -4,7 +4,11 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightSchedulePlan;
+import java.util.Date;
 import javax.ejb.Local;
+import util.exception.FlightSchedulePlanExistException;
+import util.exception.GeneralException;
 
 /**
  *
@@ -12,5 +16,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
-    
+    public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException; 
 }
