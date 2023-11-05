@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.FlightSchedulePlan;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.Remote;
 import util.exception.FlightSchedulePlanExistException;
 import util.exception.GeneralException;
@@ -17,4 +18,5 @@ import util.exception.GeneralException;
 @Remote
 public interface FlightSchedulePlanSessionBeanRemote {
     public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException; 
+    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Date> estimatedFlightDurations) throws FlightSchedulePlanExistException, GeneralException;
 }

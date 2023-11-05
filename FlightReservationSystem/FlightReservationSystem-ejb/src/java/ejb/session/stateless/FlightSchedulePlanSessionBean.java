@@ -12,6 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -31,6 +32,17 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
+    /**
+     *
+     * @param newFlightSchedulePlan
+     * @param flightId
+     * @param departureDateTime
+     * @param estimatedFlightDuration
+     * @return
+     * @throws FlightSchedulePlanExistException
+     * @throws GeneralException
+     */
+    @Override
     public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
@@ -52,6 +64,54 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
             newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
 
+            em.flush();
+            return newFlightSchedulePlan.getFlightSchedulePlanId();
+        } catch (PersistenceException | ParseException ex) {
+            if(ex.getCause() != null && 
+                    ex.getCause().getCause() != null &&
+                    ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
+            {
+                throw new FlightSchedulePlanExistException("This flight schedule plan already exists!");
+            }
+            else {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }
+        }
+    }
+    
+    /**
+     *
+     * @param newFlightSchedulePlan
+     * @param flightId
+     * @param departureDateTimes
+     * @param estimatedFlightDurations
+     * @return
+     * @throws FlightSchedulePlanExistException
+     * @throws GeneralException
+     */
+    @Override
+    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Date> estimatedFlightDurations) throws FlightSchedulePlanExistException, GeneralException {
+        try {
+            em.persist(newFlightSchedulePlan);
+            
+            // link flight and flightscheduleplan
+            Flight flight = em.find(Flight.class, flightId);
+            newFlightSchedulePlan.setFlight(flight);
+            flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            
+            // link fare and flightscheduleplan
+            for (Fare fare : newFlightSchedulePlan.getFares()) {
+                fare.setFlightSchedulePlan(newFlightSchedulePlan);
+            }
+            
+            for (int i = 0; i < departureDateTimes.size(); i++) {
+                Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
+                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), estimatedFlightDurations.get(i), arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                em.persist(newFlightSchedule);
+                newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+            }
+            
             em.flush();
             return newFlightSchedulePlan.getFlightSchedulePlanId();
         } catch (PersistenceException | ParseException ex) {
