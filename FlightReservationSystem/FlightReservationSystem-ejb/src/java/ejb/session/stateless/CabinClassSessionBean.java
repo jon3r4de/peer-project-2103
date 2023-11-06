@@ -31,5 +31,6 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
         
         return newCabinClass;
     }
+    
 
 }

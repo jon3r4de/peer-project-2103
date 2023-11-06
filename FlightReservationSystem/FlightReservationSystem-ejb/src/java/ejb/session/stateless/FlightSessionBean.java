@@ -167,7 +167,9 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         Flight flight = retrieveFlightByFlightNumber(flightNumber);
         List<FlightSchedule> list = new ArrayList<>();
         List<FlightSchedulePlan> flightSchedulePlans = flight.getFlightSchedulePlans();
+        //lazy loading
         flightSchedulePlans.size();
+        
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             if (flightSchedulePlan.getDisabled() == false) {
                 List<FlightSchedule> flightSchedules = flightSchedulePlan.getFlightSchedules();
@@ -205,6 +207,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
             if (flight != null) {
                 flight.getFlightRoute();
                 flight.getComplementaryReturnFlight();
+                flight.getFlightSchedulePlans().size();
                 for (CabinClass cabinClass: flight.getAirCraftConfig().getCabinClasses()) {
                     cabinClass.getCabinClassType();
                     cabinClass.getMaxSeatCapacity();

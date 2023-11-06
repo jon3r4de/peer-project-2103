@@ -140,13 +140,13 @@ public class FlightPlanningModule {
             
   
             if (cabinClassCode.charAt(0) == 'F') {
-            cabinClasses.add(cabinClassSessionBeanRemote.createNewCabinClass(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST)));
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST));
             } else if (cabinClassCode.charAt(0) == 'J') {
-            cabinClasses.add(cabinClassSessionBeanRemote.createNewCabinClass(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity,CabinClassEnum.BUSINESS)));
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity,CabinClassEnum.BUSINESS));
             } else if (cabinClassCode.charAt(0) == 'W') {
-            cabinClasses.add(cabinClassSessionBeanRemote.createNewCabinClass(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.PREMIUMECONOMY)));
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.PREMIUMECONOMY));
             } else if (cabinClassCode.charAt(0) == 'Y') {
-            cabinClasses.add(cabinClassSessionBeanRemote.createNewCabinClass(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.ECONOMY)));
+            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.ECONOMY));
             }
            }
             

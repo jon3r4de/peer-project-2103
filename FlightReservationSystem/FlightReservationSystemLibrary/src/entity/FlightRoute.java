@@ -47,7 +47,7 @@ public class FlightRoute implements Serializable {
     @NotNull
     private boolean disabled;
     
-    @OneToMany(mappedBy = "flightRoute", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flightRoute")//, fetch = FetchType.EAGER)
     private List<Flight> flights;
     
     @ManyToOne(optional = false)

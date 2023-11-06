@@ -62,7 +62,12 @@ public class AirportSessionBean implements AirportSessionBeanRemote, AirportSess
         
         try
         {
-            return (Airport)query.getSingleResult();
+            //lazy loading
+            Airport airport = (Airport)query.getSingleResult();
+            airport.getFlightsFromAirport().size();
+            airport.getFlightsToAirport().size();
+             
+            return airport;
         }
         catch(NoResultException | NonUniqueResultException ex)
         {

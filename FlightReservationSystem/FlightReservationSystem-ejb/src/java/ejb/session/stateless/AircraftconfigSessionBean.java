@@ -45,7 +45,6 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         em.merge(aircraftType);
         
         for (CabinClass cabinClass : cabinClasses) {
-            em.persist(cabinClass);
             cabinClass.setAirCraftConfig(newAircraftConfiguration);
         }
         
@@ -62,7 +61,15 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
     public List<AirCraftConfig> retrieveAllAircraftConfigurations() {
         Query query = em.createQuery("SELECT ac FROM AirCraftConfig ac ORDER BY ac.airCraftType.aircraftTypeName, ac.airCraftConfigName");
 
-        return query.getResultList();
+        //lazy loading
+        List<AirCraftConfig> aircraftConfiguration = (List<AirCraftConfig>) query.getResultList();
+       
+        for (AirCraftConfig acc : aircraftConfiguration) {
+            acc.getFlights().size();
+        }
+        //lazy loading
+        
+        return aircraftConfiguration;
     }
     
     @Override
