@@ -54,7 +54,7 @@ public class Flight implements Serializable {
     @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
     
-    //@OneToOne(optional = true)
+    @OneToOne(optional = true)
     private Flight complementaryReturnFlight;
    
     

@@ -36,7 +36,7 @@ public class FlightRoute implements Serializable {
     @NotNull
     private boolean hasComplementaryReturnRoute;
     
-    //@OneToOne(optional = true)
+    @OneToOne(optional = true)
     private FlightRoute complementaryReturn;
     
     @Column(nullable = false, unique = true)

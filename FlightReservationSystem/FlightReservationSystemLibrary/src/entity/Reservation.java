@@ -5,7 +5,9 @@
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -27,9 +31,15 @@ public class Reservation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationId;
-    //passenger: firstName, lastName, passportNumber, cabinClass, seatNumber
-    private List<String> passengerDetails;
-    private Long buyerId;
+    //passenger: firstName, lastName, passportNumber
+    
+    @OneToMany(mappedBy = "reservation")
+    private List<Passenger> passengerList;
+    
+    @Column(nullable = false)
+    @Min(1)
+    private Integer numOfPassengers;
+    
     private Long flightId;
     private LocalDate reservationDate;
     private String status;
@@ -48,31 +58,36 @@ public class Reservation implements Serializable {
     @JoinColumn(nullable = false)
     private Partner partner;
     
-    //private Payment payment;
+    @Column(nullable = false)
+    private BigDecimal totalAmount;
+    
+    @Column(nullable = false)
+    private List<String> creditCardInfo;
+    
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
     
     public Reservation() {
-        
+       passengerList = new ArrayList<>();
+    }
+    
+    public Reservation(BigDecimal totalAmount, Integer numOfPassengers, List<String> creditCardInfo) {
+        this();
+        this.numOfPassengers = numOfPassengers;
+        this.totalAmount = totalAmount;
+        this.creditCardInfo = creditCardInfo;
     }
 
-    public List<String> getPassengerDetails() {
-        return passengerDetails;
+    public List<Passenger> getPassengers() {
+        return passengerList;
     }
 
-    public void setPassengerDetails(List<String> passengerDetails) {
-        this.passengerDetails = passengerDetails;
+    public void setPassengerDetails(List<Passenger> passengerList) {
+        this.passengerList = passengerList;
     }
 
-    public Long getBuyerId() {
-        return buyerId;
-    }
-
-    public void setBuyerId(Long buyerId) {
-        this.buyerId = buyerId;
-    }
 
     public Long getFlightId() {
         return flightId;
@@ -154,6 +169,48 @@ public class Reservation implements Serializable {
         this.reservationId = reservationId;
     }
 
+    public List<Passenger> getPassengerList() {
+        return passengerList;
+    }
+
+    public void setPassengerList(List<Passenger> passengerList) {
+        this.passengerList = passengerList;
+    }
+
+    public Integer getNumOfPassengers() {
+        return numOfPassengers;
+    }
+
+    public void setNumOfPassengers(Integer numOfPassengers) {
+        this.numOfPassengers = numOfPassengers;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public List<String> getCreditCardInfo() {
+        return creditCardInfo;
+    }
+
+    public void setCreditCardInfo(List<String> creditCardInfo) {
+        this.creditCardInfo = creditCardInfo;
+    }
+
+    public FlightSchedule getFlightSchedule() {
+        return flightSchedule;
+    }
+
+    public void setFlightSchedule(FlightSchedule flightSchedule) {
+        this.flightSchedule = flightSchedule;
+    }
+
+    
+    
     @Override
     public int hashCode() {
         int hash = 0;
