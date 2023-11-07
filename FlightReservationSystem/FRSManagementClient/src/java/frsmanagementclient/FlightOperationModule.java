@@ -314,8 +314,14 @@ public class FlightOperationModule {
                 case 2:
                     doCreateMultipleFlightSchedulePlan(scanner, flight);
                     break;
+                case 3:
+                    doCreateRecurrentByDayFlightSchedulePlan(scanner, flight);
+                    break;
+                case 4: 
+                    doCreateRecurrentByWeekFlightSchedulePlan(scanner, flight);
+                    break;
                 default:
-                    System.out.println("not yet");
+                    System.out.println("Invalid input. Try again.");
                     break;
             }
         } catch (Exception ex) {
@@ -411,7 +417,7 @@ public class FlightOperationModule {
     private void doCreateSingleFlightSchedulePlan(Scanner scanner, Flight flight) {
         try {
             System.out.println("*** Create Single Flight Schedule ***\n");
-            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM)> ");
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
             String departureDateTimeString = scanner.nextLine().trim();
 
             // Parse the combined date and time string
@@ -442,13 +448,9 @@ public class FlightOperationModule {
 
             boolean option = true;
             while (option) {
-                System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM)> ");
+                System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
                 String departureDateTimeString = scanner.nextLine().trim();
                 Date departureDate = DATE_TIME_FORMAT.parse(departureDateTimeString);
-
-//                if (departureDateTimes.isEmpty()) {
-//                    firstDepartureTimeLong = departureDate.getTime() + departureTime.getTime();
-//                }
 
                 departureDateTimes.add(departureDate);
 
@@ -467,10 +469,95 @@ public class FlightOperationModule {
             System.out.println("*** Create Multiple Flight Schedule :: Enter Fares ***\n");
             List<Fare> fares = createFares(scanner, flight);
             
-            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.MULTIPLE, fares); //rmb to merge flight
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.MULTIPLE, fares);
             Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTimes, estimatedFlightDurations);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private void doCreateRecurrentByDayFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+            System.out.println("*** Create Recurrent by Day Schedule ***\n");
+              
+            int recurrence = 0;
+            while (recurrence <= 0) {
+                System.out.print("Recurrent every _ days?> ");
+                if (scanner.hasNextInt()) {
+                    recurrence = scanner.nextInt();
+                    if (recurrence <= 0) {
+                        System.out.print("Input must be a non-negative integer. Try again.\n");
+                    } else {
+                        System.out.println("Recurrence set to " + recurrence + " day(s).");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a valid integer.");
+                    scanner.next();
+                }
+            }
+            
+
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
+            String departureDateTimeString = scanner.nextLine().trim();
+            Date departureDateTime = DATE_TIME_FORMAT.parse(departureDateTimeString);
+
+            System.out.print("Enter Flight Duration (hr:min)> ");
+            String estimatedFlightDurationString = scanner.nextLine().trim();
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+
+            System.out.print("Enter End Date (day MONTH year))> ");
+            String endDateString = scanner.nextLine().trim();
+            DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date endDate = endDateFormat.parse(endDateString);
+
+            System.out.println("*** Create Recurrent by Day Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTDAY, fares); 
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+            
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private void doCreateRecurrentByWeekFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+            System.out.println("*** Create Recurrent by Week Schedule ***\n");
+              
+            int recurrence = 7;
+            
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
+            String departureDateTimeString = scanner.nextLine().trim();
+            Date departureDateTime = DATE_TIME_FORMAT.parse(departureDateTimeString);
+            
+            // Use SimpleDateFormat to format the day of the week
+            SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
+            String dayOfWeek = dayOfWeekFormat.format(departureDateTime);
+
+            System.out.println("Recurrent day of week chosen: " + dayOfWeek + ".");
+
+            System.out.print("Enter Flight Duration (hr:min)> ");
+            String estimatedFlightDurationString = scanner.nextLine().trim();
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+
+            System.out.print("Enter End Date (day MONTH year))> ");
+            String endDateString = scanner.nextLine().trim();
+            DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date endDate = endDateFormat.parse(endDateString);
+
+            System.out.println("*** Create Recurrent by Day Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares); 
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+            
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }

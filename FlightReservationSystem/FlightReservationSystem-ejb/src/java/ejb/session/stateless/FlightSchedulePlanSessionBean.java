@@ -127,6 +127,49 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
     
+    @Override
+    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
+        try {
+            em.persist(newFlightSchedulePlan);
+            
+            // link flight and flightscheduleplan
+            Flight flight = em.find(Flight.class, flightId);
+            newFlightSchedulePlan.setFlight(flight);
+            flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            
+            // link fare and flightscheduleplan
+            for (Fare fare : newFlightSchedulePlan.getFares()) {
+                fare.setFlightSchedulePlan(newFlightSchedulePlan);
+            }
+            
+            Date tempDate = new Date(departureDateTime.getTime());
+            
+            while (tempDate.getTime() <= endDate.getTime()) {
+                Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
+                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                em.persist(newFlightSchedule);
+                newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+                
+                // move departuredatetime of new flight to date after recurrence
+                tempDate = new Date(tempDate.getTime() + (recurrence * 24 * 60 * 60 * 1000));
+            }
+            
+            em.flush();
+            return newFlightSchedulePlan.getFlightSchedulePlanId();
+        } catch (PersistenceException | ParseException ex) {
+            if(ex.getCause() != null && 
+                    ex.getCause().getCause() != null &&
+                    ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
+            {
+                throw new FlightSchedulePlanExistException("This flight schedule plan already exists!");
+            }
+            else {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }
+        }
+    }
+    
     private Date findArrivalDateTime(Date departureDateTime, Date estimatedFlightDuration) throws ParseException {
         try {
             // Set the departureDateTime and estimatedFlightDuration to appropriate values
