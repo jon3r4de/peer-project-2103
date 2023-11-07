@@ -18,7 +18,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FlightSchedulePlanExistException;
+import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 
 /**
@@ -205,6 +208,41 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 //        
 //        
 //    }
+
+    
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {
+        //Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp ORDER BY fsp.flight.flightNumber ASC, fsp.firstDepartureTimeLong DESC");
+       Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp " +
+            "ORDER BY fsp.flightNumber ASC, " +
+            "(SELECT MIN(fs.departureDateTime) FROM fsp.flightSchedules fs) DESC");
+
+
+        List<FlightSchedulePlan> flightSchedulePlans = query.getResultList();
+
+        for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+            flightSchedulePlan.getComplementaryReturnSchedulePlan();
+            flightSchedulePlan.getFlight();
+            flightSchedulePlan.getFares().size();
+            flightSchedulePlan.getFlightScheduleType();
+            flightSchedulePlan.getFlightSchedules().size();
+        }
+        return flightSchedulePlans;
+    }
+    
+    //@Override
+    public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException {
+        if (flightSchedulePlan.getFlightSchedules().isEmpty()) {
+            flightSchedulePlan.getFlight().getFlightSchedulePlans().remove(flightSchedulePlan); //remove flightSchedulePlan from the flights list of flightSchedulePlan 
+            FlightSchedulePlan complementaryFlightSchedulePlan = flightSchedulePlan.getComplementaryReturnSchedulePlan();
+            complementaryFlightSchedulePlan.getFlight().getFlightSchedulePlans().remove(complementaryFlightSchedulePlan);
+            em.remove(flightSchedulePlan);
+            em.remove(complementaryFlightSchedulePlan);
+        } else {
+            flightSchedulePlan.setDisabled(true);
+            throw new DeleteFlightSchedulePlanException("Flight Schedule Plan with Flight no. " + flightSchedulePlan.getFlight().getFlightNumber()
+                    + " is in use and cannot be deleted! Instead, it is set as disabled. ");
+        }
+    }
     
     private Date findArrivalDateTime(Date departureDateTime, Date estimatedFlightDuration) throws ParseException {
         try {
