@@ -34,7 +34,7 @@ public class FlightSchedulePlan implements Serializable {
     private FlightSchedulePlan complementaryReturnSchedulePlan;
     
     //only for n days recurrence
-    private Integer recurrence;
+    private int recurrence;
     
     //(Monday - Sunday) Only for reccurent by week
     private Date reccurrentDay;
@@ -116,6 +116,38 @@ public class FlightSchedulePlan implements Serializable {
 
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public Date getLayoverDuration() {
+        return layoverDuration;
+    }
+
+    public void setLayoverDuration(Date layoverDuration) {
+        this.layoverDuration = layoverDuration;
+    }
+
+    public FlightScheduleEnum getFlightScheduleType() {
+        return flightScheduleType;
+    }
+
+    public void setFlightScheduleType(FlightScheduleEnum flightScheduleType) {
+        this.flightScheduleType = flightScheduleType;
+    }
+
+    public int getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Integer recurrence) {
+        this.recurrence = recurrence;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
     

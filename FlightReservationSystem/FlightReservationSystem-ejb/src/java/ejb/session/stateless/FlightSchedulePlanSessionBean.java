@@ -10,6 +10,7 @@ import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
+    private FareSessionBeanLocal fareSessionBeanLocal;
+    
     /**
      *
      * @param newFlightSchedulePlan
@@ -51,10 +54,12 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             Flight flight = em.find(Flight.class, flightId);
             newFlightSchedulePlan.setFlight(flight);
             flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
-
+            
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
+                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
+                System.out.println("Fare saved, ID: " + fareSavedId);
             }
 
             Date arrivalDateTime = this.findArrivalDateTime(departureDateTime, estimatedFlightDuration);
@@ -102,6 +107,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
+                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
+                System.out.println("Fare saved, ID: " + fareSavedId);
             }
             
             for (int i = 0; i < departureDateTimes.size(); i++) {
@@ -127,6 +134,18 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
     
+    /**
+     *
+     * @param newFlightSchedulePlan
+     * @param flightId
+     * @param departureDateTime
+     * @param estimatedFlightDuration
+     * @param endDate
+     * @param recurrence
+     * @return
+     * @throws FlightSchedulePlanExistException
+     * @throws GeneralException
+     */
     @Override
     public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
         try {
@@ -140,6 +159,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
+                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
+                System.out.println("Fare saved, ID: " + fareSavedId);
             }
             
             Date tempDate = new Date(departureDateTime.getTime());
@@ -169,6 +190,21 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             }
         }
     }
+    
+//    public Long createNewReturnFlightSchedulePlan(Long newFlightSchedulePlanId,FlightSchedulePlan returnFlightSchedulePlan, Long returnFlightId, Date layoverDurationTime) {
+//        FlightSchedulePlan newFlightSchedulePlan = em.find(FlightSchedulePlan.class, newFlightSchedulePlanId);
+//        Flight returnFlight = em.find(Flight.class, returnFlightId);
+//        
+//        newFlightSchedulePlan.setLayoverDuration(layoverDurationTime);
+//        
+//        for (Fare fare : returnFlightSchedulePlan.getFares()) {
+//            fare.setFlightSchedulePlan(returnFlightSchedulePlan);
+//            Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
+//            System.out.println("Fare saved, ID: " + fareSavedId);
+//        }
+//        
+//        
+//    }
     
     private Date findArrivalDateTime(Date departureDateTime, Date estimatedFlightDuration) throws ParseException {
         try {
