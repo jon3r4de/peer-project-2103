@@ -6,8 +6,11 @@ package ejb.session.stateless;
 
 import entity.FlightSchedulePlan;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FlightSchedulePlanExistException;
+import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 
 /**
@@ -17,4 +20,10 @@ import util.exception.GeneralException;
 @Local
 public interface FlightSchedulePlanSessionBeanLocal {
     public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException; 
+    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Date> estimatedFlightDurations) throws FlightSchedulePlanExistException, GeneralException; 
+    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException;
+
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans();
+
+    public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException;
 }

@@ -12,11 +12,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
+import javax.persistence.Query;
+import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FlightSchedulePlanExistException;
+import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 
 /**
@@ -31,6 +35,17 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
+    /**
+     *
+     * @param newFlightSchedulePlan
+     * @param flightId
+     * @param departureDateTime
+     * @param estimatedFlightDuration
+     * @return
+     * @throws FlightSchedulePlanExistException
+     * @throws GeneralException
+     */
+    @Override
     public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
@@ -64,6 +79,131 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             else {
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
             }
+        }
+    }
+    
+    /**
+     *
+     * @param newFlightSchedulePlan
+     * @param flightId
+     * @param departureDateTimes
+     * @param estimatedFlightDurations
+     * @return
+     * @throws FlightSchedulePlanExistException
+     * @throws GeneralException
+     */
+    @Override
+    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Date> estimatedFlightDurations) throws FlightSchedulePlanExistException, GeneralException {
+        try {
+            em.persist(newFlightSchedulePlan);
+            
+            // link flight and flightscheduleplan
+            Flight flight = em.find(Flight.class, flightId);
+            newFlightSchedulePlan.setFlight(flight);
+            flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            
+            // link fare and flightscheduleplan
+            for (Fare fare : newFlightSchedulePlan.getFares()) {
+                fare.setFlightSchedulePlan(newFlightSchedulePlan);
+            }
+            
+            for (int i = 0; i < departureDateTimes.size(); i++) {
+                Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
+                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), estimatedFlightDurations.get(i), arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                em.persist(newFlightSchedule);
+                newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+            }
+            
+            em.flush();
+            return newFlightSchedulePlan.getFlightSchedulePlanId();
+        } catch (PersistenceException | ParseException ex) {
+            if(ex.getCause() != null && 
+                    ex.getCause().getCause() != null &&
+                    ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
+            {
+                throw new FlightSchedulePlanExistException("This flight schedule plan already exists!");
+            }
+            else {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }
+        }
+    }
+    
+    @Override
+    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
+        try {
+            em.persist(newFlightSchedulePlan);
+            
+            // link flight and flightscheduleplan
+            Flight flight = em.find(Flight.class, flightId);
+            newFlightSchedulePlan.setFlight(flight);
+            flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            
+            // link fare and flightscheduleplan
+            for (Fare fare : newFlightSchedulePlan.getFares()) {
+                fare.setFlightSchedulePlan(newFlightSchedulePlan);
+            }
+            
+            Date tempDate = new Date(departureDateTime.getTime());
+            
+            while (tempDate.getTime() <= endDate.getTime()) {
+                Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
+                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                em.persist(newFlightSchedule);
+                newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+                
+                // move departuredatetime of new flight to date after recurrence
+                tempDate = new Date(tempDate.getTime() + (recurrence * 24 * 60 * 60 * 1000));
+            }
+            
+            em.flush();
+            return newFlightSchedulePlan.getFlightSchedulePlanId();
+        } catch (PersistenceException | ParseException ex) {
+            if(ex.getCause() != null && 
+                    ex.getCause().getCause() != null &&
+                    ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
+            {
+                throw new FlightSchedulePlanExistException("This flight schedule plan already exists!");
+            }
+            else {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }
+        }
+    }
+    
+    public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {
+        //Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp ORDER BY fsp.flight.flightNumber ASC, fsp.firstDepartureTimeLong DESC");
+       Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp " +
+            "ORDER BY fsp.flightNumber ASC, " +
+            "(SELECT MIN(fs.departureDateTime) FROM fsp.flightSchedules fs) DESC");
+
+
+        List<FlightSchedulePlan> flightSchedulePlans = query.getResultList();
+
+        for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+            flightSchedulePlan.getComplementaryReturnSchedulePlan();
+            flightSchedulePlan.getFlight();
+            flightSchedulePlan.getFares().size();
+            flightSchedulePlan.getFlightScheduleType();
+            flightSchedulePlan.getFlightSchedules().size();
+        }
+        return flightSchedulePlans;
+    }
+    
+    //@Override
+    public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException {
+        if (flightSchedulePlan.getFlightSchedules().isEmpty()) {
+            flightSchedulePlan.getFlight().getFlightSchedulePlans().remove(flightSchedulePlan); //remove flightSchedulePlan from the flights list of flightSchedulePlan 
+            FlightSchedulePlan complementaryFlightSchedulePlan = flightSchedulePlan.getComplementaryReturnSchedulePlan();
+            complementaryFlightSchedulePlan.getFlight().getFlightSchedulePlans().remove(complementaryFlightSchedulePlan);
+            em.remove(flightSchedulePlan);
+            em.remove(complementaryFlightSchedulePlan);
+        } else {
+            flightSchedulePlan.setDisabled(true);
+            throw new DeleteFlightSchedulePlanException("Flight Schedule Plan with Flight no. " + flightSchedulePlan.getFlight().getFlightNumber()
+                    + " is in use and cannot be deleted! Instead, it is set as disabled. ");
         }
     }
     

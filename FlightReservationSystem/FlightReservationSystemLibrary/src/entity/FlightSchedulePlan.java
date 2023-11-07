@@ -118,6 +118,22 @@ public class FlightSchedulePlan implements Serializable {
         this.disabled = disabled;
     }
 
+    public FlightSchedulePlan getComplementaryReturnSchedulePlan() {
+        return complementaryReturnSchedulePlan;
+    }
+
+    public void setComplementaryReturnSchedulePlan(FlightSchedulePlan complementaryReturnSchedulePlan) {
+        this.complementaryReturnSchedulePlan = complementaryReturnSchedulePlan;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     
     
     @Override

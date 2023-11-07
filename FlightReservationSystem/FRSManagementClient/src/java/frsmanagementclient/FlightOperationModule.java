@@ -10,6 +10,7 @@ import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
+import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import enumeration.CabinClassEnum;
 import enumeration.FlightScheduleEnum;
@@ -20,13 +21,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import util.exception.AircraftConfigNotFoundException;
 import util.exception.DeleteFlightException;
+import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FlightExistException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightRouteDisabledException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
+import util.exception.UpdateFlightSchedulePlanException;
 
 /**
  *
@@ -39,6 +44,9 @@ public class FlightOperationModule {
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     
     private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
+    
+    private static DateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd MMM yy hh:mm aa");
+    private static DateFormat ESTIMATED_FLIGHT_DURATION_FORMAT = new SimpleDateFormat("hh 'Hours' mm 'Minutes'");
     
     FlightOperationModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote) {
         this.flightSessionBeanRemote = flightSessionBeanRemote;
@@ -55,20 +63,16 @@ public class FlightOperationModule {
             System.out.println("1: Create Flight ");
             System.out.println("2: View All Flights");
             System.out.println("3: View Flight Details");
-            //System.out.println("4: update Flight");
-            //System.out.println("5: delete Flight");
             System.out.println("-----------------------");
-            System.out.println("6: Create Flight Schedule Plan");
-            System.out.println("7: View All Flight Schedule Plans");
-            System.out.println("8: View Flight Schedule Plan Details");
-            System.out.println("9: Update Flight Schedule Plan Details");
-            System.out.println("10: Delete Flight Schedule Plan Details");
+            System.out.println("4: Create Flight Schedule Plan");
+            System.out.println("5: View All Flight Schedule Plans");
+            System.out.println("6: View Flight Schedule Plan Details");
             System.out.println("-----------------------");
-            System.out.println("11: Logout\n");
+            System.out.println("7: Logout\n");
 
             response = 0;
 
-            while (response < 1 || response > 11) {
+            while (response < 1 || response > 7) {
                 System.out.print("> ");
 
                 response = scanner.nextInt();
@@ -84,31 +88,15 @@ public class FlightOperationModule {
                         viewFlightDetails();
                         break;
                     case 4:
-                        //updateFlight();
-                        //includes viewFlightDetails();
-                        break;
-                    case 5:
-                        //deleteFlight();
-                        //includes viewFlightDetails();
-                        break;
-                    case 6:
                         createFlightSchedulePlan();
                         break;
-                    case 7:
+                    case 5:
                         viewAllFlightSchedulePlans();
                         break;
-                    case 8:
+                    case 6:
                         viewFlightSchedulePlanDetails();
                         break;                  
-                    case 9:
-                        updateFlightSchedulePlanDetails();
-                        //include viewFlightSchedulePlanDetails();
-                        break;
-                    case 10:
-                        deleteFlightSchedulePlanDetails();
-                        //include viewFlightSchedulePlanDetails();
-                        break;
-                    case 11:
+                    case 7:
                         System.out.println("Exiting the application.");
                         return; // Exiting the switch after handling exit
                     default:
@@ -293,7 +281,7 @@ public class FlightOperationModule {
             Date departureDate;
             Date departureTime;
             String durationString;
-            DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
+            DateFormat durationFormat = new SimpleDateFormat("hh 'Hours' mm 'Minute'");
             Date durationTime;
             List<Fare> fares = new ArrayList<>();
             boolean option = true;
@@ -305,10 +293,19 @@ public class FlightOperationModule {
             
             switch(response) {
                 case 1:
-                    doCreateSingleFlightSchedule(scanner, flight);
+                    doCreateSingleFlightSchedulePlan(scanner, flight);
+                    break;
+                case 2:
+                    doCreateMultipleFlightSchedulePlan(scanner, flight);
+                    break;
+                case 3:
+                    doCreateRecurrentByDayFlightSchedulePlan(scanner, flight);
+                    break;
+                case 4: 
+                    doCreateRecurrentByWeekFlightSchedulePlan(scanner, flight);
                     break;
                 default:
-                    System.out.println("not yet");
+                    System.out.println("Invalid input. Try again.");
                     break;
             }
         } catch (Exception ex) {
@@ -317,100 +314,426 @@ public class FlightOperationModule {
         
     }
     
-    private void doCreateSingleFlightSchedule(Scanner scanner, Flight flight) {
-//        String departureDateString;
-//        Date departureDate;
-//        DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
-//        String departureTimeString;
-//        Date departureTime;
-//        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
-   
-        Date departureDateTime;
-        DateFormat dateTimeFormat = new SimpleDateFormat("dd MMM yy hh:mm aa");
-        
-        String durationString;
-        Date estimatedFlightDuration;
-        DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
+    private static String mapCabinClassToString(CabinClass cabinClass) {
+        // Mapping logic based on cabinClassType
+        switch (cabinClass.getCabinClassType()) {
+            case FIRST:
+                return "F";
+            case BUSINESS:
+                return "J";
+            case PREMIUMECONOMY:
+                return "W";
+            case ECONOMY:
+                return "Y";
+            default:
+                throw new IllegalArgumentException("Invalid cabin class type");
+        }
+    }
+    
+    private List<Fare> createFares(Scanner scanner, Flight flight) {
+        boolean option = true;
         List<Fare> fares = new ArrayList<>();
+        List<String> inputtedCabinClasses = new ArrayList<>();
         
+        while (option) {
+            List<CabinClass> cabinClassesInFlight = flight.getAirCraftConfig().getCabinClasses();
+            List<String> cabinClassStrings = cabinClassesInFlight.stream()
+                .map(cabinClass -> mapCabinClassToString(cabinClass))
+                .collect(Collectors.toList());
+
+            System.out.print("Enter Cabin Class Code. Available Cabins: " + cabinClassStrings.toString() + ">");
+            String cabinClassCode = scanner.nextLine().trim();
+            System.out.print("Enter Fare Basis Code> ");
+            String fareBasisCode = scanner.nextLine().trim();
+            System.out.print("Enter Amount> $ ");
+            BigDecimal fareAmount = new BigDecimal(scanner.nextLine().trim());
+
+
+            CabinClassEnum cabinClassType;
+
+            if (!cabinClassStrings.contains(cabinClassCode)) {
+                System.out.println("There is no such cabin class in this flight.");
+                break;
+            }
+
+            inputtedCabinClasses.add(cabinClassCode);
+
+            if (cabinClassCode.charAt(0) == 'F') {
+                cabinClassType = CabinClassEnum.FIRST;
+            } else if (cabinClassCode.charAt(0) == 'J') {
+                cabinClassType = CabinClassEnum.BUSINESS;
+            } else if (cabinClassCode.charAt(0) == 'W') {
+                cabinClassType = CabinClassEnum.PREMIUMECONOMY;
+            } else if (cabinClassCode.charAt(0) == 'Y') {
+                cabinClassType = CabinClassEnum.ECONOMY;
+            } else {
+                System.out.println("Invalid Cabin Class Code Entered. Try Again.");
+                break;
+            }
+
+            Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
+            fares.add(fare);
+
+            boolean isCabinClassFareMissing = false;
+            for (String cabinClass : cabinClassStrings) {
+                if (!inputtedCabinClasses.contains(cabinClass)) {
+                    isCabinClassFareMissing = true; // Found a cabin class that is not in the inputted list
+                    break;
+                }
+            }
+
+            System.out.print("Continue to create more fares? (Y/N)> ");
+            String optionString = scanner.nextLine().trim();
+
+            if (optionString.charAt(0) == 'N') {
+                if (isCabinClassFareMissing) {
+                    System.out.print("Not all cabin classes have a fare. Please continue to create more.");
+                    break;
+                } else {
+                    System.out.print("Proceeding...");
+                    option = false;  
+                }  
+            }
+        }
+        return fares;
+    }
+    
+    private void doCreateSingleFlightSchedulePlan(Scanner scanner, Flight flight) {
         try {
             System.out.println("*** Create Single Flight Schedule ***\n");
-            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM)> ");
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
             String departureDateTimeString = scanner.nextLine().trim();
 
             // Parse the combined date and time string
-            departureDateTime = dateTimeFormat.parse(departureDateTimeString);
-            
-//            System.out.print("Enter Departure Date (day MONTH year) > ");
-//            departureDateString = scanner.nextLine().trim();
-//            departureDate = departureDateFormat.parse(departureDateString);
-//
-//            System.out.print("Enter Departure Time (hr:min AM/PM)> ");
-//            departureTimeString = scanner.nextLine().trim();
-//            departureTime = departureTimeFormat.parse(departureTimeString);
+            Date departureDateTime = DATE_TIME_FORMAT.parse(departureDateTimeString);
 
             System.out.print("Enter Flight Duration (xx Hours xx Minute)> ");
-            durationString = scanner.nextLine().trim();
-            estimatedFlightDuration = durationFormat.parse(durationString);
+            String estimatedFlightDurationString = scanner.nextLine().trim();
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
 
             System.out.println("*** Create Single Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.SINGLE, fares);
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private void doCreateMultipleFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+            System.out.println("*** Create Multiple Flight Schedule ***\n");
+            System.out.println("*** Create Single Flight Schedule :: Enter Schedules ***\n");
+            List<Date> departureDateTimes = new ArrayList<>();
+            List<Date> estimatedFlightDurations = new ArrayList<>();
+
             boolean option = true;
             while (option) {
-                System.out.print("Enter Cabin Class Code (F,J,W,Y)> ");
-                String cabinClassCode = scanner.nextLine().trim();
-                System.out.print("Enter Fare Basis Code> ");
-                String fareBasisCode = scanner.nextLine().trim();
-                System.out.print("Enter Amount> $ ");
-                BigDecimal fareAmount = new BigDecimal(scanner.nextLine().trim());
+                System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
+                String departureDateTimeString = scanner.nextLine().trim();
+                Date departureDate = DATE_TIME_FORMAT.parse(departureDateTimeString);
 
-                CabinClassEnum cabinClassType;
-                
-                if (cabinClassCode.charAt(0) == 'F' ) {
-                    cabinClassType = CabinClassEnum.FIRST;
-                } else if (cabinClassCode.charAt(0) == 'J') {
-                    cabinClassType = CabinClassEnum.BUSINESS;
-                } else if (cabinClassCode.charAt(0) == 'W') {
-                    cabinClassType = CabinClassEnum.PREMIUMECONOMY;
-                } else if (cabinClassCode.charAt(0) == 'Y') {
-                    cabinClassType = CabinClassEnum.ECONOMY;
-                } else {
-                    System.out.println("Invalid Cabin Class Code Entered. Try Again.");
-                    break;
-                }
+                departureDateTimes.add(departureDate);
 
-                Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
-                fares.add(fare);
+                System.out.print("Enter Flight Duration (xx Hours xx Minute) > ");
+                String estimatedFlightDurationString = scanner.nextLine().trim();
+                Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+                estimatedFlightDurations.add(estimatedFlightDuration);
 
-                System.out.print("Continue to create more fares? (Y/N)> ");
+                System.out.print("Continue to create more schedules? (Y/N)> ");
                 String optionString = scanner.nextLine().trim();
                 if (optionString.charAt(0) == 'N') {
                     option = false;
                 }
             }
-            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.SINGLE, fares);
-            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration);
+
+            System.out.println("*** Create Multiple Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.MULTIPLE, fares);
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTimes, estimatedFlightDurations);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
-
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
     }
     
-    public void viewAllFlightSchedulePlans() {
-        
-    }
-    
-    public void viewFlightSchedulePlanDetails() {
-        
-    }
+    private void doCreateRecurrentByDayFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+            System.out.println("*** Create Recurrent by Day Schedule ***\n");
+              
+            int recurrence = 0;
+            while (recurrence <= 0) {
+                System.out.print("Recurrent every _ days?> ");
+                if (scanner.hasNextInt()) {
+                    recurrence = scanner.nextInt();
+                    if (recurrence <= 0) {
+                        System.out.print("Input must be a non-negative integer. Try again.\n");
+                    } else {
+                        System.out.println("Recurrence set to " + recurrence + " day(s).");
+                    }
+                } else {
+                    System.out.println("Invalid input. Please enter a valid integer.");
+                    scanner.next();
+                }
+            }
+            
 
-    public void updateFlightSchedulePlanDetails() {
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
+            String departureDateTimeString = scanner.nextLine().trim();
+            Date departureDateTime = DATE_TIME_FORMAT.parse(departureDateTimeString);
+
+            System.out.print("Enter Flight Duration (hr:min)> ");
+            String estimatedFlightDurationString = scanner.nextLine().trim();
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+
+            System.out.print("Enter End Date (day MONTH year))> ");
+            String endDateString = scanner.nextLine().trim();
+            DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date endDate = endDateFormat.parse(endDateString);
+
+            System.out.println("*** Create Recurrent by Day Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTDAY, fares); 
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+            
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+    
+    private void doCreateRecurrentByWeekFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+            System.out.println("*** Create Recurrent by Week Schedule ***\n");
+              
+            int recurrence = 7;
+            
+            System.out.print("Enter Departure Date and Time (day MONTH year hr:min AM/PM - eg: 12 Nov 23 03:30 PM)> ");
+            String departureDateTimeString = scanner.nextLine().trim();
+            Date departureDateTime = DATE_TIME_FORMAT.parse(departureDateTimeString);
+            
+            // Use SimpleDateFormat to format the day of the week
+            SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
+            String dayOfWeek = dayOfWeekFormat.format(departureDateTime);
+
+            System.out.println("Recurrent day of week chosen: " + dayOfWeek + ".");
+
+            System.out.print("Enter Flight Duration (hr:min)> ");
+            String estimatedFlightDurationString = scanner.nextLine().trim();
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+
+            System.out.print("Enter End Date (day MONTH year))> ");
+            String endDateString = scanner.nextLine().trim();
+            DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date endDate = endDateFormat.parse(endDateString);
+
+            System.out.println("*** Create Recurrent by Day Flight Schedule :: Enter Fares ***\n");
+            List<Fare> fares = createFares(scanner, flight);
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares); 
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
+
+            System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
+            
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+       
+    private void viewAllFlightSchedulePlans() {
+        System.out.println("*** FRSManagement :: Flight Operation Module :: View All Flight Schedule Plans ***\n");
+
+        List<FlightSchedulePlan> flightSchedulePlans = flightSchedulePlanSessionBeanRemote.retrieveAllFlightSchedulePlans();
+        if (flightSchedulePlans.isEmpty()) {
+            System.out.println("No Available Flight Schedule Plans!\n");
+        } else {
+
+            for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+                System.out.println(flightSchedulePlan);
+                if (flightSchedulePlan.getComplementaryReturnSchedulePlan() != null) {
+                    System.out.println("Complementary return schedule plan [ " + flightSchedulePlan.getComplementaryReturnSchedulePlan() + " ]");
+                }
+            }
+            System.out.println();
+        }
+    }
+    
+    private void viewFlightSchedulePlanDetails() {
+
+    }
+    
+    public void  deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) {
+        
+        try {
+        flightSchedulePlanSessionBeanRemote.deleteFlightSchedulePlan(flightSchedulePlanSelected);
+        System.out.println("Flight Schedule Plan deleted Successfully!");
+        } catch (FlightSchedulePlanNotFoundException | DeleteFlightSchedulePlanException ex){
+            System.out.println("Error: " + ex.getMessage());
+        }
         
     }
     
-    public void  deleteFlightSchedulePlanDetails() {
-        
+     private void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) throws DeleteFlightScheduleException, ParseException,
+            FlightScheduleExistException, GeneralException, FareExistException, FlightNotFoundException {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan ***\n");
+        System.out.print("Enter New Flight Number> ");
+        String flightNumber = scanner.nextLine().trim();
+        Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
+
+        List<Fare> fares = new ArrayList<>();
+
+        System.out.println("Select Type of Flight Schedule Plan> ");
+        System.out.println("1: Update Fares");
+        System.out.println("2: Update Flight Schedules");
+        System.out.print("> ");
+        Integer response = Integer.valueOf(scanner.nextLine().trim());
+
+        if (response == 1) {
+
+            System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan :: Update Fares***\n");
+            boolean option = true;
+            while (option) {
+                System.out.print("Enter Cabin Class Code> ");
+                String cabinClassCode = scanner.nextLine().trim();
+                System.out.print("Enter Fare Basis Code> ");
+                String fareBasisCode = scanner.nextLine().trim();
+                System.out.print("Enter Amount> $ ");
+                Double fareAmount = Double.valueOf(scanner.nextLine().trim());
+
+                CabinClassEnum cabinClassType;
+                if (cabinClassCode.charAt(0) == 'F') {
+                    cabinClassType = CabinClassEnum.FIRST;
+                } else if (cabinClassCode.charAt(0) == 'J') {
+                    cabinClassType = CabinClassEnum.BUSINESS;
+                } else if (cabinClassCode.charAt(0) == 'W') {
+                    cabinClassType = CabinClassEnum.PREMIUMECONOMY;
+                } else {
+                    cabinClassType = CabinClassEnum.ECONOMY;
+                }
+
+                Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
+                fares.add(fare);
+
+                System.out.print("Continue to create more fare? (Y/N)> ");
+                String optionString = scanner.nextLine().trim();
+                if (optionString.charAt(0) == 'N') {
+                    option = false;
+                }
+            }
+        } else if (response == 2) {
+            System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan :: Update Flight Schedules***\n");
+
+           String departureDateString;
+            String departureTimeString;
+            DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+            DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date departureDate;
+            Date departureTime;
+            String durationString;
+            DateFormat durationFormat = new SimpleDateFormat("hh Hours mm Minute");
+            Date durationTime;
+            boolean option = true;
+            Long firstDepartureTimeLong = Long.MIN_VALUE;
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan();
+            Date endDateTime;
+            Integer recurrence = 0;
+
+            if (flightSchedulePlanSelected.getFlightScheduleType().equals(FlightScheduleEnum.SINGLE)) {
+                try {
+                    System.out.println("*** Update Single Flight Schedule ***\n");
+                    System.out.print("Enter New Departure Date > ");
+                    departureDateString = scanner.nextLine().trim();
+                    departureDate = departureTimeFormat.parse(departureDateString);
+                    
+                    System.out.print("Enter New Departure Time > ");
+                    departureTimeString = scanner.nextLine().trim();
+                    departureTime = departureDateFormat.parse(departureTimeString);
+
+                    System.out.print("Enter Flight Duration (hr:min)> ");
+                    durationString = scanner.nextLine().trim();
+                    durationTime = durationFormat.parse(durationString);
+
+                    flightSchedulePlanSessionBeanRemote.updateSingleFlightSchedule(flightSchedulePlanSelected,
+                            flightSchedulePlanSelected.getFlightSchedules().get(0), departureDate, departureTime, durationTime);
+                    System.out.println("Flight Schedule Plan with ID: " + flightSchedulePlanSelected.getFlightSchedulePlanId() + " is created successfully!\n");
+                } catch (UpdateFlightSchedulePlanException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
+
+            } else if (flightSchedulePlanSelected.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {
+
+                try {
+                    System.out.println("*** Update Multiple Flight Schedule ***\n");
+                    System.out.println("*** Current Flight schedules Under The Plan ***\n");
+
+                    Integer selection = 1;
+                    for (FlightSchedule flightSchedule : flightSchedulePlanSelected.getFlightSchedules()) {
+                        System.out.println("No." + selection + " " + flightSchedule);
+                        selection++;
+                    }
+
+                    System.out.print("Enter no. to update the flight schedule> ");
+                    Integer userSelection = Integer.valueOf(scanner.nextLine().trim());
+                    FlightSchedule flightScheduleSelected = flightSchedulePlanSelected.getFlightSchedules().get(userSelection - 1);
+
+                    System.out.print("Enter New Departure Date > ");
+                    departureDateString = scanner.nextLine().trim();
+                    departureDate = departureTimeFormat.parse(departureDateString);
+                    
+                    System.out.print("Enter New Departure Time > ");
+                    departureTimeString = scanner.nextLine().trim();
+                    departureTime = departureDateFormat.parse(departureTimeString);
+
+                    System.out.print("Enter Flight Duration (hr:min)> ");
+                    durationString = scanner.nextLine().trim();
+                    durationTime = durationFormat.parse(durationString);
+
+                    flightSchedulePlanSessionBeanRemote.updateSingleFlightSchedule(flightSchedulePlanSelected, flightScheduleSelected, departureDate, departureTime, durationTime);
+                    System.out.println("Flight Schedule Plan with ID: " + flightSchedulePlanSelected.getFlightSchedulePlanId() + " is created successfully!\n");
+                } catch (UpdateFlightSchedulePlanException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
+
+            } else if (flightSchedulePlanSelected.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTDAY)) {
+
+                try {
+                    System.out.print("Recurrence by how many days> ");
+                    recurrence = Integer.valueOf(scanner.nextLine().trim());
+
+                    System.out.print("Enter End Date (day MONTH year))> ");
+                    String endDateString = scanner.nextLine().trim();
+                    DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+                    endDateTime = endDateFormat.parse(endDateString);
+
+                    flightSchedulePlanSessionBeanRemote.updateRecurrentDayFlightSchedule(flightSchedulePlanSelected, recurrence, endDateTime);
+                    System.out.println("Flight Schedule Plan with ID: " + flightSchedulePlanSelected.getFlightSchedulePlanId() + " is created successfully!\n");
+                } catch (UpdateFlightSchedulePlanException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
+
+            } else if (flightSchedulePlanSelected.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTWEEK)) {
+                try {
+                    System.out.print("Enter End Date (day MONTH year))> ");
+                    String endDateString = scanner.nextLine().trim();
+                    DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+                    endDateTime = endDateFormat.parse(endDateString);
+
+                    flightSchedulePlanSessionBeanRemote.updateRecurrentWeekFlightSchedule(flightSchedulePlanSelected, endDateTime);
+                    System.out.println("Flight Schedule Plan with ID: " + flightSchedulePlanSelected.getFlightSchedulePlanId() + " is created successfully!\n");
+                } catch (UpdateFlightSchedulePlanException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                }
+            }
+        }
     }
     
 }
