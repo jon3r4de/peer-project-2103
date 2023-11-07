@@ -197,20 +197,21 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
     
-//    public Long createNewReturnFlightSchedulePlan(Long newFlightSchedulePlanId,FlightSchedulePlan returnFlightSchedulePlan, Long returnFlightId, Date layoverDurationTime) {
-//        FlightSchedulePlan newFlightSchedulePlan = em.find(FlightSchedulePlan.class, newFlightSchedulePlanId);
-//        Flight returnFlight = em.find(Flight.class, returnFlightId);
-//        
-//        newFlightSchedulePlan.setLayoverDuration(layoverDurationTime);
-//        
-//        for (Fare fare : returnFlightSchedulePlan.getFares()) {
-//            fare.setFlightSchedulePlan(returnFlightSchedulePlan);
-//            Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
-//            System.out.println("Fare saved, ID: " + fareSavedId);
-//        }
-//        
-//        
-//    }
+    public void setReturnFlightSchedulePlan(Long newFlightSchedulePlanId, Long returnFlightSchedulePlanId) throws GeneralException {
+        try {
+            FlightSchedulePlan newFlightSchedulePlan = em.find(FlightSchedulePlan.class, newFlightSchedulePlanId);
+            FlightSchedulePlan returnFlightSchedulePlan = em.find(FlightSchedulePlan.class, returnFlightSchedulePlanId);
+
+            returnFlightSchedulePlan.setComplementaryReturnSchedulePlan(newFlightSchedulePlan);
+            newFlightSchedulePlan.setComplementaryReturnSchedulePlan(returnFlightSchedulePlan);
+            em.merge(returnFlightSchedulePlan);
+            em.merge(newFlightSchedulePlan);
+            
+            System.out.println("Return flight schedule plan updated to set complementary return plan.");
+        } catch (Exception ex) {
+            throw new GeneralException(ex.getMessage());
+        }
+    }
 
     
     public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {

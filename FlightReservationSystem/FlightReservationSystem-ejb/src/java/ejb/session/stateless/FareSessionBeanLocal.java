@@ -14,5 +14,5 @@ import javax.persistence.PersistenceException;
  */
 @Local
 public interface FareSessionBeanLocal {
-    public Long createNewFare(Fare fare) throws PersistenceException;
+//    public Long createNewFare(Fare fare) throws PersistenceException;
 }

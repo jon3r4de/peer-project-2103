@@ -21,15 +21,15 @@ public class FareSessionBean implements FareSessionBeanRemote, FareSessionBeanLo
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     
-    @Override
-    public Long createNewFare(Fare fare) throws PersistenceException {
-        try {
-            em.persist(fare);
-            em.flush();
-        
-            return fare.getFareId();
-        } catch (PersistenceException ex) {
-            throw ex;
-        }
-    }
+//    @Override
+//    public Long createNewFare(Fare fare) throws PersistenceException {
+//        try {
+//            em.persist(fare);
+//            em.flush();
+//        
+//            return fare.getFareId();
+//        } catch (PersistenceException ex) {
+//            throw ex;
+//        }
+//    }
 }

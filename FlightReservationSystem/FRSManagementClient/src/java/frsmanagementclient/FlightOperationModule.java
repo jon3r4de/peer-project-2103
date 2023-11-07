@@ -318,7 +318,8 @@ public class FlightOperationModule {
                 Date layoverDurationTime = layoverDurationFormat.parse(layoverDurationString);
                 
                 FlightSchedulePlan returnFlightSchedulePlan = new FlightSchedulePlan(newFlightSchedulePlan.getFlightScheduleType(), newFlightSchedulePlan.getFares());
-            
+                Long returnFlightSchedulePlanId;
+                
                 if (returnFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.SINGLE)) {
                     Date estimatedFlightDuration;
                     Date newDepartureDateTime;
@@ -326,7 +327,7 @@ public class FlightOperationModule {
                     estimatedFlightDuration = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDuration();
                     newDepartureDateTime = new Date(newFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDurationTime.getTime());
 
-                    return flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDuration);
+                    returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDuration);
                 } else if (newFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {                            
                     List<Date> estimatedFlightDurations = new ArrayList<>();
                     List<Date> newDepartureDateTimes = new ArrayList<>();
@@ -336,7 +337,7 @@ public class FlightOperationModule {
                         newDepartureDateTimes.add(new Date(flightSchedule.getArrivalDateTime().getTime() + layoverDurationTime.getTime()));
                     }
 
-                    return flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTimes, estimatedFlightDurations);
+                    returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTimes, estimatedFlightDurations);
                 } else {                            
                     Date estimatedFlightDuration;
                     Date newDepartureDateTime;
@@ -344,8 +345,11 @@ public class FlightOperationModule {
                     estimatedFlightDuration = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDuration();
                     newDepartureDateTime = new Date(newFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDurationTime.getTime());
 
-                    return flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDuration, newFlightSchedulePlan.getEndDate(), newFlightSchedulePlan.getRecurrence());
+                    returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDuration, newFlightSchedulePlan.getEndDate(), newFlightSchedulePlan.getRecurrence());
                 }
+                
+                flightSchedulePlanSessionBeanRemote.setReturnFlightSchedulePlan(newFlightSchedulePlan.getFlightSchedulePlanId(),returnFlightSchedulePlan.getFlightSchedulePlanId());
+                return returnFlightSchedulePlanId;
             } else {
                 return null;
             }
