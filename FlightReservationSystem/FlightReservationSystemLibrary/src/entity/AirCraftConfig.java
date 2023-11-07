@@ -50,7 +50,7 @@ public class AirCraftConfig implements Serializable {
     private AirCraftType airCraftType;
     
     
-    @OneToMany(mappedBy = "airCraftConfig", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "airCraftConfig") // fetch = FetchType.EAGER)
     private List<Flight> flights;
     
     @OneToMany(mappedBy = "airCraftConfig", cascade = CascadeType.PERSIST)

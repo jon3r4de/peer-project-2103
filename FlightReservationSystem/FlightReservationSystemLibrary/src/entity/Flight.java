@@ -43,7 +43,7 @@ public class Flight implements Serializable {
     @JoinColumn(nullable = false)
     private FlightRoute flightRoute;
     
-    @OneToMany(mappedBy = "flight", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flight")//, fetch = FetchType.EAGER)
     private List<FlightSchedulePlan> flightSchedulePlans;
     
     @Column(nullable = false)
@@ -54,7 +54,7 @@ public class Flight implements Serializable {
     @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
     
-    //@OneToOne(optional = true)
+    @OneToOne(optional = true)
     private Flight complementaryReturnFlight;
    
     

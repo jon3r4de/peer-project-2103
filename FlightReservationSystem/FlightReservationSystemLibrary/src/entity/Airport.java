@@ -55,9 +55,9 @@ public class Airport implements Serializable {
     private String country;
     
     
-    @OneToMany(mappedBy = "origin", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "origin")// fetch = FetchType.EAGER)
     private List<FlightRoute> flightsFromAirport;
-    @OneToMany(mappedBy = "destination", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "destination")// fetch = FetchType.EAGER)
     private List<FlightRoute> flightsToAirport;
     
     public Airport() {

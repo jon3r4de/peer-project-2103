@@ -101,6 +101,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         
         if(flightRoute != null)
         {
+            //lazy loading
             flightRoute.getFlights().size();
             return flightRoute;
         }
@@ -114,8 +115,14 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
     public List<FlightRoute> retrieveAllFlightRoutes()
     {
         Query query = em.createQuery("SELECT fr FROM FlightRoute fr ORDER BY fr.origin ASC");
+        List<FlightRoute> flightRouteList = (List<FlightRoute>) query.getResultList();
+       
+        //lazyLoading
+        for (FlightRoute fr : flightRouteList) {
+            fr.getFlights().size();
+        }
         
-        return query.getResultList();
+        return flightRouteList;
     }
     
     @Override

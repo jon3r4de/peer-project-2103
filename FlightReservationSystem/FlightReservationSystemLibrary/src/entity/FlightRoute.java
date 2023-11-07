@@ -36,7 +36,7 @@ public class FlightRoute implements Serializable {
     @NotNull
     private boolean hasComplementaryReturnRoute;
     
-    //@OneToOne(optional = true)
+    @OneToOne(optional = true)
     private FlightRoute complementaryReturn;
     
     @Column(nullable = false, unique = true)
@@ -47,7 +47,7 @@ public class FlightRoute implements Serializable {
     @NotNull
     private boolean disabled;
     
-    @OneToMany(mappedBy = "flightRoute", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "flightRoute")//, fetch = FetchType.EAGER)
     private List<Flight> flights;
     
     @ManyToOne(optional = false)

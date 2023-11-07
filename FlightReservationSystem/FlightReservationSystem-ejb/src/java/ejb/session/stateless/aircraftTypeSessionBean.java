@@ -55,7 +55,9 @@ public class aircraftTypeSessionBean implements aircraftTypeSessionBeanRemote, a
         
         try
         {
-            return (AirCraftType)query.getSingleResult();
+            AirCraftType airCraftType = (AirCraftType)query.getSingleResult();
+            airCraftType.getConfigs().size();
+            return airCraftType;
         }
         catch(NoResultException | NonUniqueResultException ex)
         {

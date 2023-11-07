@@ -5,6 +5,7 @@
 package frsmanagementclient;
 
 import ejb.session.stateless.AircraftconfigSessionBeanRemote;
+import ejb.session.stateless.CabinClassSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import entity.AirCraftConfig;
@@ -37,10 +38,14 @@ public class FlightPlanningModule {
     
     private FlightRouteSessionBeanRemote flightRouteSessionBeanRemote;
     
-    public FlightPlanningModule(aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote, FlightRouteSessionBeanRemote flightRouteSessionBeanRemote) {
+    private CabinClassSessionBeanRemote cabinClassSessionBeanRemote;
+    
+    public FlightPlanningModule(aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote, 
+            FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, CabinClassSessionBeanRemote cabinClassSessionBeanRemote) {
         this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
         this.aircraftconfigSessionBeanRemote = aircraftconfigSessionBeanRemote;
         this.flightRouteSessionBeanRemote = flightRouteSessionBeanRemote;
+        this.cabinClassSessionBeanRemote = cabinClassSessionBeanRemote;
     }
     
     public void fleetManagerFlightPlanningModule() {

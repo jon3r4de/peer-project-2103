@@ -30,7 +30,7 @@ public class AirCraftType implements Serializable {
     private String aircraftTypeName;
     private Integer maxPassengerSeatCapacity;
     
-    @OneToMany(mappedBy = "airCraftType", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "airCraftType")// fetch = FetchType.EAGER)
     List<AirCraftConfig> configs;
 
     public AirCraftType() {
