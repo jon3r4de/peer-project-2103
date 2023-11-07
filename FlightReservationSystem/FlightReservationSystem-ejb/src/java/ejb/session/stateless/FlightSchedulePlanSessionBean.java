@@ -70,7 +70,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTime, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
             em.persist(newFlightSchedule);
             newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
-                    em.flush();
+            em.flush();
             newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
 
             em.flush();
@@ -120,6 +120,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), estimatedFlightDurations.get(i), arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                em.flush();
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
             }
             
@@ -163,8 +164,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
-                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
-                System.out.println("Fare saved, ID: " + fareSavedId);
+//                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
+//                System.out.println("Fare saved, ID: " + fareSavedId);
             }
             
             Date tempDate = new Date(departureDateTime.getTime());
@@ -174,6 +175,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                em.flush();
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
                 
                 // move departuredatetime of new flight to date after recurrence
