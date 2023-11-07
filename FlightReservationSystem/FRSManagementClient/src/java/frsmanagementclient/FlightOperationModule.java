@@ -287,22 +287,11 @@ public class FlightOperationModule {
                     break;
                 case 4: 
                     doCreateRecurrentByWeekFlightSchedulePlan(scanner, flight);
-                    doCreateSingleFlightSchedulePlan(scanner, flight);
-                    break;
-                case 2:
-                    doCreateMultipleFlightSchedulePlan(scanner, flight);
-                    break;
-                case 3:
-                    doCreateRecurrentByDayFlightSchedulePlan(scanner, flight);
-                    break;
-                case 4: 
-                    doCreateRecurrentByWeekFlightSchedulePlan(scanner, flight);
                     break;
                 case 5:
                     System.out.println("Exiting...");
                     return;
                 default:
-                    System.out.println("Invalid input. Try again.");
                     System.out.println("Invalid input. Try again.");
                     break;
             }
@@ -421,27 +410,6 @@ public class FlightOperationModule {
                 System.out.println("Invalid Cabin Class Code Entered. Try Again.");
                 break;
             }
-            CabinClassEnum cabinClassType;
-
-            if (!cabinClassStrings.contains(cabinClassCode)) {
-                System.out.println("There is no such cabin class in this flight.");
-                break;
-            }
-
-            inputtedCabinClasses.add(cabinClassCode);
-
-            if (cabinClassCode.charAt(0) == 'F') {
-                cabinClassType = CabinClassEnum.FIRST;
-            } else if (cabinClassCode.charAt(0) == 'J') {
-                cabinClassType = CabinClassEnum.BUSINESS;
-            } else if (cabinClassCode.charAt(0) == 'W') {
-                cabinClassType = CabinClassEnum.PREMIUMECONOMY;
-            } else if (cabinClassCode.charAt(0) == 'Y') {
-                cabinClassType = CabinClassEnum.ECONOMY;
-            } else {
-                System.out.println("Invalid Cabin Class Code Entered. Try Again.");
-                break;
-            }
 
             Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
             fares.add(fare);
@@ -453,17 +421,7 @@ public class FlightOperationModule {
                     break;
                 }
             }
-            Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
-            fares.add(fare);
-
-            boolean isCabinClassFareMissing = false;
-            for (String cabinClass : cabinClassStrings) {
-                if (!inputtedCabinClasses.contains(cabinClass)) {
-                    isCabinClassFareMissing = true; // Found a cabin class that is not in the inputted list
-                    break;
-                }
-            }
-
+           
             System.out.print("Continue to create more fares? (Y/N)> ");
             String optionString = scanner.nextLine().trim();
 
@@ -680,7 +638,7 @@ public class FlightOperationModule {
         
     }
     
-     private void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) throws DeleteFlightScheduleException, ParseException,
+     /*private void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) throws DeleteFlightScheduleException, ParseException,
             FlightScheduleExistException, GeneralException, FareExistException, FlightNotFoundException {
         Scanner scanner = new Scanner(System.in);
 
@@ -834,6 +792,6 @@ public class FlightOperationModule {
                 }
             }
         }
-    }
+    }*/
     
 }
