@@ -16,6 +16,7 @@ import enumeration.CabinClassEnum;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 import util.exception.AirCraftTypeNotFoundException;
 import util.exception.AircraftConfigExistExcetpion;
 import util.exception.AircraftConfigNotFoundException;
@@ -69,9 +70,9 @@ public class FlightPlanningModule {
                 switch (response) {
                     case 1:
                         try {
-                        createAircraftConfig();
+                            createAircraftConfig();
                         } catch (ExceedMaximumSeatCapacityException ex) {
-                        System.out.println("The New Aircraft Configuration Exceed Maximum Seat Capacity of the aircraft");
+                            System.out.println("The New Aircraft Configuration Exceed Maximum Seat Capacity of the aircraft");
                         } catch (AirCraftTypeNotFoundException ex) {
                             System.out.println(ex);
                         }
@@ -80,8 +81,8 @@ public class FlightPlanningModule {
                         viewAllAircraftConfig();
                         break;
                     case 3:
-                        try{
-                        viewAircraftConfigDetails();
+                        try {
+                            viewAircraftConfigDetails();
                         } catch (AircraftConfigNotFoundException ex) {
                             System.out.println(ex);
                         }
@@ -124,6 +125,7 @@ public class FlightPlanningModule {
         List<CabinClass> cabinClasses = new ArrayList<>();
         for (int i = 0; i < numOfCabinClasses; i++) {
             
+            // check for repeated classes
             System.out.print("Select Cabin Class Code to be created (F,J,W,Y) > ");
             String cabinClassCode = scanner.nextLine().trim();
             System.out.print("Enter Number of Aisles> ");
@@ -139,15 +141,15 @@ public class FlightPlanningModule {
 
             
             if (cabinClassCode.charAt(0) == 'F') {
-            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST));
+                cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST));
             } else if (cabinClassCode.charAt(0) == 'J') {
-            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity,CabinClassEnum.BUSINESS));
+                cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity,CabinClassEnum.BUSINESS));
             } else if (cabinClassCode.charAt(0) == 'W') {
-            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.PREMIUMECONOMY));
+                cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.PREMIUMECONOMY));
             } else if (cabinClassCode.charAt(0) == 'Y') {
-            cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.ECONOMY));
+                cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.ECONOMY));
             }
-           }
+        }
             
             Long aircraftConfigurationId;
             AirCraftConfig newAircraftConfiguration = new AirCraftConfig(aircraftConfigurationName, numOfCabinClasses, aircraftCapacity);
@@ -162,14 +164,26 @@ public class FlightPlanningModule {
     }
     
     public void viewAllAircraftConfig() {
-        
         List<AirCraftConfig> aircraftConfigurations = aircraftconfigSessionBeanRemote.retrieveAllAircraftConfigurations();
         if (aircraftConfigurations.isEmpty()) {
             System.out.println("No Available Aircraft Configurations!\n");
         } else {
+            System.out.println("*** All Aircraft Configurations ***\n");
+            System.out.printf("%-20s%-20s%-20s%-20s\n", "Config Name", "Num of Cabins", "Max Seat Capacity", "Cabin Class Types");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+
             for (AirCraftConfig aircraftConfiguration : aircraftConfigurations) {
-                System.out.println(aircraftConfiguration + "\n");
+                String configName = aircraftConfiguration.getAirCraftConfigName();
+                Integer numCabinClass = aircraftConfiguration.getNumOfCabinClasses();
+                Integer maxSeatCapacity = aircraftConfiguration.getMaxSeatCapacity();
+                List<CabinClass> cabinClasses = aircraftConfiguration.getCabinClasses();
+                List<CabinClassEnum> cabinClassType = cabinClasses.stream().map((cc) -> cc.getCabinClassType()).collect(Collectors.toList());
+
+                System.out.printf("%-20s%-20d%-20d%-20s\n",
+                        configName, numCabinClass, maxSeatCapacity,
+                        cabinClassType.toString());
             }
+            System.out.println();
         }
     }
     
@@ -178,12 +192,34 @@ public class FlightPlanningModule {
         System.out.print("Enter Aircraft Configuration Name> ");
         String nameOfAircraftConfiguration = scanner.nextLine().trim();
         AirCraftConfig aircraftConfiguration = aircraftconfigSessionBeanRemote.retrieveAircraftConfigurationByName(nameOfAircraftConfiguration);
+        
+        String configName = aircraftConfiguration.getAirCraftConfigName();
+        Integer maxSeatCapacity = aircraftConfiguration.getMaxSeatCapacity();
+        
+        System.out.println("*** View Aircraft Configuration Details ***\n");
+        System.out.printf("%-20s%-20s\n", "Config Name", "Max Seat Capacity");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+        System.out.printf("%-20s%-20d\n", configName, maxSeatCapacity);
         System.out.println();
-        System.out.println(aircraftConfiguration);
-        for (CabinClass cabinClass: aircraftConfiguration.getCabinClasses()) {
-            System.out.println("\t" + cabinClass);
+
+        // Second Table
+        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "Cabin Class Type", "Num Aisle", "Num Rows", "Max Capacity", "Seats Abreast", "Seating Config");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+        List<CabinClass> cabinClasses = aircraftConfiguration.getCabinClasses();
+
+        for (CabinClass cc : cabinClasses) {
+            CabinClassEnum cabinClassType = cc.getCabinClassType();
+            Integer numAisle = cc.getNumberOfAisle();
+            Integer numRow = cc.getNumberOfRows();
+            Integer ccMaxCapacity = cc.getMaxSeatCapacity();
+            Integer numSeatsAbreast = cc.getNumOfSeatsAbreast();
+            String actualSeatingConfig = cc.getActualSeatingConfig();
+
+            System.out.printf("%-20s%-20d%-20d%-20d%-20d%-20s\n",
+                    cabinClassType, numAisle, numRow, ccMaxCapacity, numSeatsAbreast, actualSeatingConfig);
+            System.out.println();
         }
-        System.out.println();
     }
     
     
