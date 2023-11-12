@@ -54,8 +54,8 @@ public class CabinClass implements Serializable {
     @NotNull
     private Integer numOfSeatsAbreast;
     
-     @Column(nullable = false)
-     @Size(min=1, max=5)
+    @Column(nullable = false)
+    @Size(min=1, max=5)
     @NotNull
     private String actualSeatingConfig;
     
@@ -69,7 +69,7 @@ public class CabinClass implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
-     
+    
     List<String> listOfSeatNumber;
     
     @Min(0)
@@ -83,8 +83,11 @@ public class CabinClass implements Serializable {
     
     private boolean availableForBooking;
     
-    @OneToMany()
+    @OneToMany
     private List<Fare> fares;
+    
+    @OneToMany(mappedBy = "cabinClass")
+    private List<Seat> seats;
     
     //private List<Seats> seats;
     public CabinClass() {
@@ -92,6 +95,7 @@ public class CabinClass implements Serializable {
         this.reservedSeats = 0;
         this.listOfSeatNumber = new ArrayList<>(); // Initialize the list of seat numbers
         this.fares = new ArrayList<>(); // Initialize the list of fares
+        this.seats = new ArrayList<>();
     }
     
     public CabinClass(Integer numOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, String seatingConfiguration, Integer maxCapacity, CabinClassEnum cabinClassType) {
@@ -105,6 +109,14 @@ public class CabinClass implements Serializable {
         this.cabinClassType = cabinClassType;
         this.balanceSeats = this.availableSeats - this.reservedSeats;
     } 
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
+    }
 
     public boolean isAvailableForBooking() {
         return availableForBooking;

@@ -229,26 +229,28 @@ public class FlightOperationModule {
             System.out.printf("%-20s%-20s%-20s%-20s\n", flightNumber, (isDisabled ? "Yes" : "No"), originStr, destinationStr);
             System.out.println();
             
-            System.out.printf("%-20s%-20s%-20s%-20s\n", "Cabin Class Type", "Available Seats", "Reserved Seats", "Balance Seats");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Cabin Class Type", "Num Of Aisles", "Num Of Rows", "Max Seat Capacity", "Actual Seating Config");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
             List<CabinClass> cabinClasses = flight.getAirCraftConfig().getCabinClasses();
 
             for (CabinClass cc : cabinClasses) {
                 CabinClassEnum cabinClassType = cc.getCabinClassType();
-                Integer availableSeats = cc.getAvailableSeats();
-                Integer reservedSeats = cc.getReservedSeats();
-                Integer balanceSeats = cc.getBalanceSeats();
-                System.out.printf("%-20s%-20s%-20s%-20s\n",
-                    cabinClassType, availableSeats, reservedSeats, balanceSeats);
+                
+                Integer numberOfAisle = cc.getNumberOfAisle();
+                Integer numberOfRows = cc.getNumberOfRows();
+                Integer maxSeatCapacity = cc.getMaxSeatCapacity();
+                String actualSeatingConfig = cc.getActualSeatingConfig();
+                System.out.printf("%-20s%-20s%-20s%-20s%-20s\n",
+                    cabinClassType, numberOfAisle, numberOfRows, maxSeatCapacity, actualSeatingConfig);
                 
             }
             System.out.println();
 
             
             // do it such that 1 is linked to update, 2 is linked ot delete and 3 is contiunue
-            System.out.print("would you like to update or delete flight?    \n");
+            System.out.print("Would you like to Update or Delete flight?    \n");
             System.out.println("1: Update Flight ");
-            System.out.println("2: Delete Flights");
+            System.out.println("2: Delete Flight");
             System.out.println("3: out of here queen ~slay~ ");
             
             int response = 0;
@@ -270,18 +272,17 @@ public class FlightOperationModule {
                     break;
                     
                     case 2:
-                    System.out.print("Delete this flight? (Y/N)> ");
-                    if (scanner.nextLine().trim().equals("Y")) {
-                        deleteFlight(flight);
-                    }
+                        System.out.print("Delete this flight? (Y/N)> ");
+                        if (scanner.nextLine().trim().equals("Y")) {
+                            deleteFlight(flight);
+                        }
                     break;
                     
                     case 3:
-                       
                     return;
                     
                     default:
-                    System.out.println("incorrect input please try again");
+                    System.out.println("Invalid input. Try again.");
                 }
             }
 
@@ -356,8 +357,6 @@ public class FlightOperationModule {
                     System.out.println("Invalid input. Try again.");
                     break;
             }
-            
-            
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
@@ -446,7 +445,7 @@ public class FlightOperationModule {
                 .map(cabinClass -> mapCabinClassToString(cabinClass))
                 .collect(Collectors.toList());
 
-            System.out.print("Enter Cabin Class Code. Available Cabins: " + cabinClassStrings.toString() + ">");
+            System.out.print("Enter Cabin Class Code. Available Cabins: " + cabinClassStrings.toString() + "> ");
             String cabinClassCode = scanner.nextLine().trim();
             System.out.print("Enter Fare Basis Code> ");
             String fareBasisCode = scanner.nextLine().trim();
@@ -749,13 +748,11 @@ public class FlightOperationModule {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan ***\n");
-        System.out.print("Enter New Flight Number> ");
+        System.out.print("Enter Flight Number of Schedule Plan> ");
         String flightNumber = scanner.nextLine().trim();
         Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
 
-        List<Fare> fares = new ArrayList<>();
-
-        System.out.println("Select Type of Flight Schedule Plan> ");
+        System.out.println("Select Type of Update> ");
         System.out.println("1: Update Fares");
         System.out.println("2: Update Flight Schedules");
         System.out.print("> ");
@@ -763,40 +760,43 @@ public class FlightOperationModule {
 
         if (response == 1) {
 
-            System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan :: Update Fares***\n");
-            boolean option = true;
-            while (option) {
-                System.out.print("Enter Cabin Class Code> ");
-                String cabinClassCode = scanner.nextLine().trim();
-                System.out.print("Enter Fare Basis Code> ");
-                String fareBasisCode = scanner.nextLine().trim();
-                System.out.print("Enter Amount> $ ");
-                BigDecimal fareAmount =  scanner.nextBigDecimal();
-
-                CabinClassEnum cabinClassType;
-                if (cabinClassCode.charAt(0) == 'F') {
-                    cabinClassType = CabinClassEnum.FIRST;
-                } else if (cabinClassCode.charAt(0) == 'J') {
-                    cabinClassType = CabinClassEnum.BUSINESS;
-                } else if (cabinClassCode.charAt(0) == 'W') {
-                    cabinClassType = CabinClassEnum.PREMIUMECONOMY;
-                } else {
-                    cabinClassType = CabinClassEnum.ECONOMY;
-                }
-
-                Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
-                fares.add(fare);
-
-                System.out.print("Continue to create more fare? (Y/N)> ");
-                String optionString = scanner.nextLine().trim();
-                if (optionString.charAt(0) == 'N') {
-                    option = false;
-                }
-            }
+            System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan :: Update Fares ***\n");
+            
+//            FlightSchedulePlan chosenPlan = flightSchedulePlanSessionBeanRemote.retrieveFlightSchedulePlansByFlightNumber(flightNumber);
+            
+//            boolean option = true;
+//            while (option) {
+//                System.out.print("Enter Cabin Class Code> ");
+//                String cabinClassCode = scanner.nextLine().trim();
+//                System.out.print("Enter Fare Basis Code> ");
+//                String fareBasisCode = scanner.nextLine().trim();
+//                System.out.print("Enter Amount> $ ");
+//                BigDecimal fareAmount =  scanner.nextBigDecimal();
+//
+//                CabinClassEnum cabinClassType;
+//                if (cabinClassCode.charAt(0) == 'F') {
+//                    cabinClassType = CabinClassEnum.FIRST;
+//                } else if (cabinClassCode.charAt(0) == 'J') {
+//                    cabinClassType = CabinClassEnum.BUSINESS;
+//                } else if (cabinClassCode.charAt(0) == 'W') {
+//                    cabinClassType = CabinClassEnum.PREMIUMECONOMY;
+//                } else {
+//                    cabinClassType = CabinClassEnum.ECONOMY;
+//                }
+//
+//                Fare fare = new Fare(fareBasisCode, cabinClassType, fareAmount);
+//                fares.add(fare);
+//
+//                System.out.print("Continue to create more fare? (Y/N)> ");
+//                String optionString = scanner.nextLine().trim();
+//                if (optionString.charAt(0) == 'N') {
+//                    option = false;
+//                }
+//            }
         } else if (response == 2) {
             System.out.println("*** FRSManagement :: Flight Operation Module :: Update Flight Schedule Plan :: Update Flight Schedules***\n");
 
-           String departureDateString;
+            String departureDateString;
             String departureTimeString;
             DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
             DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");

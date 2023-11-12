@@ -23,7 +23,7 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     @Override
-    public CabinClass createNewCabinClass (CabinClass newCabinClass) {
+    public CabinClass createNewCabinClass(CabinClass newCabinClass) {
         
         em.persist(newCabinClass);
         

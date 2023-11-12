@@ -7,7 +7,9 @@ package ejb.session.stateless;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.CabinClass;
+import entity.Seat;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -17,6 +19,7 @@ import javax.persistence.Query;
 import util.exception.AircraftConfigExistExcetpion;
 import util.exception.AircraftConfigNotFoundException;
 import util.exception.GeneralException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -24,6 +27,9 @@ import util.exception.GeneralException;
  */
 @Stateless
 public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemote, AircraftconfigSessionBeanLocal {
+
+    @EJB
+    private SeatSessionBeanLocal seatSessionBeanLocal;
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
@@ -46,6 +52,12 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         
         for (CabinClass cabinClass : cabinClasses) {
             cabinClass.setAirCraftConfig(newAircraftConfiguration);
+            em.flush();
+            try {
+                generateSeats(cabinClass);
+            } catch (UnknownPersistenceException ex) {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }
         }
         
         newAircraftConfiguration.setCabinClasses(cabinClasses);
@@ -58,6 +70,23 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         em.flush();
            
         return newAircraftConfiguration.getAirCraftConfigId();
+    }
+    
+    private void generateSeats(CabinClass cabinClass) throws UnknownPersistenceException {
+        try {
+            Integer numOfRows = cabinClass.getNumberOfRows();
+            Integer numOfSeatsAbreast = cabinClass.getNumOfSeatsAbreast();
+
+            for (int row = 1; row <= numOfRows; row++) {
+                for (int seatLetter = 0; seatLetter < numOfSeatsAbreast; seatLetter++) {
+                    char letter = (char) ('A' + seatLetter);
+                    String seatNumber = row + String.valueOf(letter);
+                    seatSessionBeanLocal.createSeat(new Seat(seatNumber), cabinClass.getCabinClassId());
+                }
+            }
+        } catch (UnknownPersistenceException ex) {
+            throw ex;
+        }        
     }
     
     @Override
