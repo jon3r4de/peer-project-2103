@@ -1,0 +1,181 @@
+*IMPORTANT NOTES*
+=================
+
+Do *NOT* preload any other test data other than those specified above.
+
+You should use a different singleton session bean to load this set of test data for exercising the actual test cases to be given to you on Friday. Just comment/uncomment the @Startup annotation to activate your own development data and the test data.
+
+
+
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+
+
+
+Employee
+========
+
+EmployeeName, Username/Email (either one is acceptable), Password, Role
+-----------------------------------------------------------------------
+Fleet Manager, fleetmanager/fleetmanager@mlair.com.sg, password, Fleet Manager
+Route Planner, routeplanner/routeplanner@mlair.com.sg, password, Route Planner
+Schedule Manager, schedulemanager/schedulemanager@mlair.com.sg, password, Schedule Manager
+Sales Manager, salesmanager/salesmanager@mlair.com.sg, password, Sales Manager
+
+Partner
+=======
+
+PartnerName, Username/Email (either one is acceptable), Password
+----------------------------------------------------------------
+Holiday.com, holidaydotcom/mlair@holiday.com, password
+
+Airport
+=======
+
+AirportName, IATACode, City, State/Province, Country
+----------------------------------------------------
+Changi, SIN, Singapore, Singapore, Singapore
+Hong Kong, HKG, Chek Lap Kok, Hong Kong, China
+Taoyuan, TPE, Taoyuan, Taipei, Taiwan R.O.C.
+Narita, NRT, Narita, Chiba, Japan
+Sydney, SYD, Sydney, New South Wales, Australia
+
+Aircraft Type
+=============
+
+AircraftTypeName, MaximumCapacity
+---------------------------------
+Boeing 737, 200
+Boeing 747, 400
+
+Aircraft Configuration [Cabin Class Configuration]
+==================================================
+
+Name, NumberOfCabinClass, MaximumCapacity [CabinClass, NumberOfAisle, NumberOfRow, NumberOfSeatAbreast, SeatConfiguration, MaxCapacity]
+---------------------------------------------------------------------------------------------------------------------------------------
+Boeing 737 All Economy, 1, 180
+	Y, 1, 30, 6, 3-3, 180
+Boeing 737 Three Classes, 3, 180
+	F, 1, 5, 2, 1-1, 10
+	J, 1, 5, 4, 2-2, 20
+	Y, 1, 25, 6, 3-3, 150
+Boeing 747 All Economy, 1, 380
+	Y, 2, 38, 10, 3-4-3, 380
+Boeing 747 Three Classes, 3, 360
+	F, 1, 5, 2, 1-1, 10
+	J, 2, 5, 6, 2-2-2, 30
+	Y, 2, 32, 10, 3-4-3, 320
+
+Flight Route [Complementary Return Route]
+=========================================
+
+Origin, Destination [Destination, Origin]
+-----------------------------------------
+SIN, HKG
+	HKG, SIN
+SIN, TPE
+	TPE, SIN
+SIN, NRT
+	NRT, SIN
+HKG, NRT
+	NRT, HKG
+TPE, NRT
+	NRT, TPE
+SIN, SYD
+	SYD, SIN
+SYD, NRT
+	NRT, SYD
+
+Flight [Complementary Return Flight]
+====================================
+
+FlightNumber, Origin, Destination, Aircraft Configuration [FlightNumber, Origin, Destination, Aircraft Configuration]
+---------------------------------------------------------------------------------------------------------------------
+ML111, SIN, HKG, Boeing 737 Three Classes
+	ML112, HKG, SIN, Boeing 737 Three Classes
+ML211, SIN, TPE, Boeing 737 Three Classes
+	ML212, TPE, SIN, Boeing 737 Three Classes
+ML311, SIN, NRT, Boeing 747 Three Classes
+	ML312, NRT, SIN, Boeing 747 Three Classes
+ML411, HKG, NRT, Boeing 737 Three Classes
+	ML412, NRT, HKG, Boeing 737 Three Classes
+ML511, TPE, NRT, Boeing 737 Three Classes
+	ML512, NRT, TPE, Boeing 737 Three Classes
+ML611, SIN, SYD, Boeing 737 Three Classes
+	ML612, SYD, SIN, Boeing 737 Three Classes
+ML621, SIN, SYD, Boeing 737 All Economy
+	ML622, SYD, SIN, Boeing 737 All Economy
+ML711, SYD, NRT, Boeing 747 Three Classes
+	ML712, NRT, SYD, Boeing 747 Three Classes
+
+Flight Schedule Plan [Flight Schedule] [Fare] [[Complementary Return Flight Schedule Plan]]
+===========================================================================================
+
+FlightNumber, FlightSchedulePlanType [Day of Week, DepartureTime, Start Date, End Date, FlightDuration | NDay, DepartureTime, Start Date, End Date, FlightDuration | DepartureDate, DepartureTime, FlightDuration] [CabinClass, FareAmount] [[LayoverDuration]]
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ML711, Recurrent Weekly
+	
+	Monday, 9:00 AM, 1 Dec 23, 31 Dec 23, 14 Hours 0 Minute
+		ML712 Layover for 2 Hours
+		
+	F, $6000	
+	J, $3000
+	Y, $1000
+	
+	(Fare basis code not required)
+
+ML611, Recurrent Weekly
+	
+	Sunday, 12:00 PM, 1 Dec 23, 31 Dec 23, 8 Hours 0 Minute
+		ML612 Layover for 2 Hours
+	
+	F, $3000
+	J, $1500
+	Y, $500
+	
+	(Fare basis code not required)
+
+ML621, Recurrent Weekly
+	
+	Tuesday, 10:00 AM, 1 Dec 23, 31 Dec 23, 8 Hours 0 Minute
+		ML622 Layover for 2 Hours
+		
+	Y, $700
+	
+	(Fare basis code not required)
+
+ML311, Recurrent Weekly
+
+	Monday, 10:00 AM, 1 Dec 23, 31 Dec 23, 6 Hours 30 Minute
+		ML312 Layover for 3 Hours
+		
+	F, $3100
+	J, $1600
+	Y, $600
+	
+	(Fare basis code not required)
+
+ML411, Recurrent NDay
+	
+	2, 1:00 PM, 1 Dec 23, 31 Dec 23, 4 Hours 0 Minute
+		ML412 Layover for 4 Hours
+	
+	F, $2900
+	J, $1400
+	Y, $400
+
+ML511, Manual Multiple
+	
+	7 Dec 23, 5:00 PM, 3 Hours 0 Minute
+	8 Dec 23, 5:00 PM, 3 Hours 0 Minute
+	9 Dec 23, 5:00 PM, 3 Hours 0 Minute
+		ML512 Layover for 2 Hours
+	
+	F, $3100
+	J, $1600
+	Y, $600
+
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================
+==========================================================================================================================================================================================================================================================

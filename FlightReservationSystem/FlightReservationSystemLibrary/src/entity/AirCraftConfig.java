@@ -43,6 +43,7 @@ public class AirCraftConfig implements Serializable {
     @NotNull
     private Integer numOfCabinClasses;
 
+    @Min(0)
     private Integer maxSeatCapacity;
     
     @ManyToOne(optional = false)
@@ -61,11 +62,12 @@ public class AirCraftConfig implements Serializable {
         this.flights = new ArrayList<>();
     }
     
-    public AirCraftConfig(String airCraftConfigName, Integer numOfCabinClasses) {
+    public AirCraftConfig(String airCraftConfigName, Integer numOfCabinClasses, Integer maxSeatCapacity) {
         this();
         
         this.airCraftConfigName = airCraftConfigName;
         this.numOfCabinClasses = numOfCabinClasses;
+        this.maxSeatCapacity = maxSeatCapacity;
     }
 
 

@@ -47,6 +47,9 @@ public class dataInitialisationSessionBean {
     @EJB(name = "aircraftTypeSessionBeanLocal")
     private aircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
     
+    @EJB(name = "testDataSessionBean")
+    private testDataSessionBean singleton;
+    
     @PostConstruct
     public void postConstruct()
     {
@@ -67,6 +70,8 @@ public class dataInitialisationSessionBean {
             doInitialiseAircraftType();
             System.out.println("initialised aircraft type");
         }
+        
+        singleton.postConstruct();
     }
     
 
@@ -77,11 +82,11 @@ public class dataInitialisationSessionBean {
 
         try {
             System.out.println("created employee");
-            employeeSessionBeanLocal.createEmployee("bonobo","toot","FLEETMANAGER","password", EmployeeEnum.FLEETMANAGER);
-            employeeSessionBeanLocal.createEmployee("bonobo1","toot","ROUTEPLANNER","password", EmployeeEnum.ROUTEPLANNER);
-            employeeSessionBeanLocal.createEmployee("bonobo2","toot","SCHEDULEMANAGER","password", EmployeeEnum.SCHEDULEMANAGER);
-            employeeSessionBeanLocal.createEmployee("bonobo3","toot","SALESMANAGER","password", EmployeeEnum.SALESMANAGER);
-            employeeSessionBeanLocal.createEmployee("bonobo4","toot","SYSTEMADMINISTRATOR","password", EmployeeEnum.SYSTEMADMINISTRATOR);
+            employeeSessionBeanLocal.createEmployee("Fleet","Manager","fleetmanager","password", EmployeeEnum.FLEETMANAGER);
+            employeeSessionBeanLocal.createEmployee("Route","Planner","routeplanner","password", EmployeeEnum.ROUTEPLANNER);
+            employeeSessionBeanLocal.createEmployee("Schedule","Manager","schedulemanager","password", EmployeeEnum.SCHEDULEMANAGER);
+            employeeSessionBeanLocal.createEmployee("Sales","Manaer","salesmanager","password", EmployeeEnum.SALESMANAGER);
+            employeeSessionBeanLocal.createEmployee("System ","administrator","SYSTEMADMINISTRATOR","password", EmployeeEnum.SYSTEMADMINISTRATOR);
         } catch (UnknownPersistenceException ex) {
             System.out.println("An error has occurred.");
         }
@@ -93,23 +98,25 @@ public class dataInitialisationSessionBean {
         try {
             System.out.println("created airport");
             airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
-            airportSessionBeanLocal.createNewAirport(new Airport("Tokyo", "TKY", "Tokyo", "Tokyo", "Japan"));
-            airportSessionBeanLocal.createNewAirport(new Airport("Zimbabwe", "ZPE", "zims", "zas", "zaz"));
-            airportSessionBeanLocal.createNewAirport(new Airport("Viridian", "VRD", "Johto", "Johto", "Pokemon"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Narita", "Chiba", "Japan"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Hong Kong", "HKG", "Chek Lap Kok", "Hong Kong", "China"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Taoyuan", "TPE", "Taoyuan", "Taipei", "Taiwan R.O.C."));
+            airportSessionBeanLocal.createNewAirport(new Airport("Sydney", "SYD", "Sydney", "New South Wales", "Australia"));
         } catch (AirportExistException | GeneralException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
     }
     
+    
     private void doInitialiseAircraftType()
     {
         try {
             System.out.println("created airCraft Type");
-            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer1", 500));
-            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer2", 700));
-            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("flyer3", 900));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("Boeing 737", 200));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("Boeing 747", 400));
         } catch (AircraftTypeExistException | GeneralException ex) {
             System.out.println("Error: " + ex.getMessage());
         }
     }
+    
 }
