@@ -7,6 +7,7 @@ package ejb.session.singleton;
 import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.aircraftTypeSessionBeanLocal;
+import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.Airport;
 import entity.Employee;
@@ -49,29 +50,23 @@ public class dataInitialisationSessionBean {
     @PostConstruct
     public void postConstruct()
     {
-        System.out.println("initialised_1");
-        
         if(em.find(Employee.class, 1L) == null)
         {
             doInitialiseEmployee();
+            System.out.println("initialised employee");
         } 
-        
-        System.out.println("initialised_2");
         
         if(em.find(Airport.class, 1l) == null)
         {
             doInitialiseAirport();
+            System.out.println("initialised airport");
         }
-        
-        System.out.println("initialised_3");
         
         if(em.find(AirCraftType.class, 1l) == null)
         {
             doInitialiseAircraftType();
+            System.out.println("initialised aircraft type");
         }
-        
-        System.out.println("initialised_4");
-                
     }
     
 
@@ -117,10 +112,4 @@ public class dataInitialisationSessionBean {
             System.out.println("Error: " + ex.getMessage());
         }
     }
-
-
-    
-
-    // Add business logic below. (Right-click in editor and choose
-    // "Insert Code > Add Business Method")
 }

@@ -50,7 +50,7 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date arrivalDateTime;
    
-    @Column(nullable = false, length = 6, unique = true)
+    @Column(nullable = false, length = 6, unique = false)
     private String flightNumber;
 
     @OneToMany(mappedBy = "flightSchedule")
