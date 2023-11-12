@@ -10,10 +10,13 @@ import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
+import entity.Airport;
 import entity.CabinClass;
 import entity.FlightRoute;
 import enumeration.CabinClassEnum;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -54,7 +57,7 @@ public class FlightPlanningModule {
         int response = 0;
 
         while (true) {
-            System.out.println("*** FRS Management :: Flight Planning Module ***\n");
+            System.out.println("*** FRSManagement :: Flight Planning Module ***\n");
             System.out.println("1: Create Aircraft Configuration");
             System.out.println("2: View All Aircraft Configurations");
             System.out.println("3: View Aircraft Configuration Details");
@@ -100,6 +103,7 @@ public class FlightPlanningModule {
     //
     private void createAircraftConfig() throws ExceedMaximumSeatCapacityException, AirCraftTypeNotFoundException {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("*** FRSManagement :: Flight Planning Module :: Create Aircraft Configuration ***\n");
         
         System.out.print("Enter Aircraft Configuration Name> ");
         String aircraftConfigurationName = scanner.nextLine().trim();
@@ -162,11 +166,11 @@ public class FlightPlanningModule {
     }
     
     public void viewAllAircraftConfig() {
+        System.out.println("*** FRSManagement :: Flight Planning Module :: View All Aircraft Configurations ***\n");
         List<AirCraftConfig> aircraftConfigurations = aircraftconfigSessionBeanRemote.retrieveAllAircraftConfigurations();
         if (aircraftConfigurations.isEmpty()) {
             System.out.println("No Available Aircraft Configurations!\n");
         } else {
-            System.out.println("*** All Aircraft Configurations ***\n");
             System.out.printf("%-20s%-20s%-20s%-20s\n", "Config Name", "Num of Cabins", "Max Seat Capacity", "Cabin Class Types");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
 
@@ -186,6 +190,7 @@ public class FlightPlanningModule {
     }
     
     public void viewAircraftConfigDetails() throws AircraftConfigNotFoundException {
+        System.out.println("*** FRSManagement :: Flight Planning Module :: View Aircraft Configuration Details ***\n");
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter Aircraft Configuration Name> ");
         String nameOfAircraftConfiguration = scanner.nextLine().trim();
@@ -194,7 +199,6 @@ public class FlightPlanningModule {
         String configName = aircraftConfiguration.getAirCraftConfigName();
         Integer maxSeatCapacity = aircraftConfiguration.getMaxSeatCapacity();
         
-        System.out.println("*** View Aircraft Configuration Details ***\n");
         System.out.printf("%-20s%-20s\n", "Config Name", "Max Seat Capacity");
         System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
 
@@ -216,12 +220,10 @@ public class FlightPlanningModule {
 
             System.out.printf("%-20s%-20d%-20d%-20d%-20d%-20s\n",
                     cabinClassType, numAisle, numRow, ccMaxCapacity, numSeatsAbreast, actualSeatingConfig);
-            System.out.println();
         }
+        System.out.println();
     }
-    
-    
-    
+
     public void routePlannerFlightPlanningModule() {
         Scanner scanner = new Scanner(System.in);
         int response = 0;
@@ -266,34 +268,61 @@ public class FlightPlanningModule {
 
     
     private void viewAllFlightRoutes() {
-        
+        System.out.println("*** FRSManagement :: Flight Planning Module :: View All Flight Routes ***\n");
         List<FlightRoute> flightRoutes = flightRouteSessionBeanRemote.retrieveAllFlightRoutes();
         
         if (flightRoutes.isEmpty()) {
             System.out.println("No Available Flight Routes!\n");
         } else {
-            //System.out.println("*** FRSManagement :: Flight Planning Module :: View All Flight Routes ***\n");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Route ID", "OD Pair", "Origin", "Destination", "Disabled");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            List<FlightRoute> printedRoutes = new ArrayList<>();
             for (FlightRoute flightRoute : flightRoutes) {
-               
-                /*if (flightRoute.isDisabled()) {
-                    System.out.println(flightRoute + " [Disabled]");
-                } else {
-                    System.out.println(flightRoute);
-                }*/
+                Long routeId = flightRoute.getFlightRouteId();
+                String odPair = flightRoute.getOdPair();
+                Airport origin = flightRoute.getOrigin();
+                Airport destination = flightRoute.getDestination();
+                boolean isDisabled = flightRoute.isDisabled();
 
-                System.out.println(flightRoute.isDisabled() ? flightRoute + " [Disabled]" : flightRoute);
+                if (!printedRoutes.contains(flightRoute)) {
+                    System.out.printf("%-20d%-20s%-20s%-20s%-20s\n",
+                        routeId, odPair, origin.getAirportName(), destination.getAirportName(), (isDisabled ? "Yes" : "No"));
+                    printedRoutes.add(flightRoute);
+                    
+                    if (flightRoute.isHasComplementaryReturnRoute() && flightRoute.getComplementaryReturn() != null) {
+                        FlightRoute complementaryReturn = flightRoute.getComplementaryReturn();
+                        Long complementaryRouteId = complementaryReturn.getFlightRouteId();
+                        String complementaryOdPair = complementaryReturn.getOdPair();
+                        Airport complementaryOrigin = complementaryReturn.getOrigin();
+                        Airport complementaryDestination = complementaryReturn.getDestination();
+                        isDisabled = complementaryReturn.isDisabled();
 
-            
-                if (flightRoute.getComplementaryReturn() != null) {
-                    System.out.println("[Complementary " + flightRoute.getComplementaryReturn()+ "]");
+                        // Print complementary return only if it hasn't been printed before
+                        if (!complementaryReturnAlreadyPrinted(complementaryRouteId, printedRoutes)) {
+                            System.out.printf("%-20d%-20s%-20s%-20s%-20s\n",
+                                    complementaryRouteId, complementaryOdPair, complementaryOrigin.getAirportName(),
+                                    complementaryDestination.getAirportName(), (isDisabled ? "Yes" : "No"));
+                            printedRoutes.add(complementaryReturn);
+                        }
+                    }
                 }
             }
         }
-        
         System.out.println();
     }
     
+    private static boolean complementaryReturnAlreadyPrinted(Long complementaryRouteId, List<FlightRoute> flightRoutes) {
+        for (FlightRoute route : flightRoutes) {
+            if (route.getFlightRouteId().equals(complementaryRouteId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void deleteFlightRoutes() {
+        System.out.println("*** FRSManagement :: Flight Planning Module :: Delete Flight Route ***\n");
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter Origin Airport IATA code> ");
@@ -316,6 +345,7 @@ public class FlightPlanningModule {
     
     public void createFlightRoutes() {
         try {
+            System.out.println("*** FRSManagement :: Flight Planning Module :: Create Flight Route ***\n");
             Scanner scanner = new Scanner(System.in);
             
             System.out.print("Enter Origin Airport IATA code> ");

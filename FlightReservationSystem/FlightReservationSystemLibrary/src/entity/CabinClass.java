@@ -103,7 +103,16 @@ public class CabinClass implements Serializable {
         this.maxSeatCapacity = maxCapacity;
         this.availableSeats = maxCapacity; 
         this.cabinClassType = cabinClassType;
+        this.balanceSeats = this.availableSeats - this.reservedSeats;
     } 
+
+    public boolean isAvailableForBooking() {
+        return availableForBooking;
+    }
+
+    public void setAvailableForBooking(boolean availableForBooking) {
+        this.availableForBooking = availableForBooking;
+    }
 
     private void updateAvailableForBooking() {
         this.availableForBooking = (this.availableSeats > 0);

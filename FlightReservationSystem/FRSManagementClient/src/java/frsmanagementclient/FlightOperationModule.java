@@ -19,6 +19,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
@@ -63,7 +65,7 @@ public class FlightOperationModule {
         int response = 0;
 
         while (true) {
-            System.out.println("*** FRS Management :: Flight Operation Module ***\n");
+            System.out.println("*** FRSManagement :: Flight Operation Module ***\n");
             System.out.println("1: Create Flight ");
             System.out.println("2: View All Flights");
             System.out.println("3: View Flight Details");
@@ -156,38 +158,93 @@ public class FlightOperationModule {
     public void viewAllFlights() {
        
         List<Flight> flights = flightSessionBeanRemote.retrieveAllFlights();
+        System.out.println("*** FRSManagement :: Flight Operation Module :: View All Flights ***\n");
         
         if (flights.isEmpty()) {
             System.out.println("No Available Flights!\n");
+            return;
         }
-        
-        flights.stream().map(flight -> {
-            System.out.println(flight);
-            return flight;
-        }).filter(flight -> (flight.getComplementaryReturnFlight() != null)).forEachOrdered(flight -> {
-            System.out.println("Complementary Flight = [" + flight.getComplementaryReturnFlight() + "]");
-        });
-        
+
+        System.out.printf("%-20s%-20s%-20s%-20s\n", "Flight ID", "Flight Number", "Disabled", "Route ID");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+        List<Flight> printedFlights = new ArrayList<>();
+        for (Flight flight : flights) {
+            Long flightId = flight.getFlightId();
+            String flightNumber = flight.getFlightNumber();
+            boolean isDisabled = flight.isDisabled();
+            Long routeId = flight.getFlightRoute().getFlightRouteId();
+
+            if (!printedFlights.contains(flight)) {
+                System.out.printf("%-20d%-20s%-20s%-20d\n",
+                    flightId, flightNumber, (isDisabled ? "Yes" : "No"), routeId);
+                printedFlights.add(flight);
+                
+                if (flight.isHasComplementaryReturnFlight() && flight.getComplementaryReturnFlight() != null) {
+                    Flight complementaryReturnFlight = flight.getComplementaryReturnFlight();
+                    Long complementaryFlightId = complementaryReturnFlight.getFlightId();
+                    String complementaryFlightNumber = complementaryReturnFlight.getFlightNumber();
+                    isDisabled = complementaryReturnFlight.isDisabled();
+                    routeId = complementaryReturnFlight.getFlightRoute().getFlightRouteId();
+
+                    // Print complementary return flight only if it hasn't been printed before
+                    if (!complementaryReturnFlightAlreadyPrinted(complementaryFlightId, flights)) {
+                        System.out.printf("%-20d%-20s%-20s%-20s\n",
+                                complementaryFlightId, complementaryFlightNumber, isDisabled, routeId);
+                        printedFlights.add(complementaryReturnFlight);
+                    }
+                }
+            }
+        }
         System.out.println();
-        
+    }
+    
+    private static boolean complementaryReturnFlightAlreadyPrinted(Long complementaryFlightId, List<Flight> flights) {
+        for (Flight f : flights) {
+            if (f.getFlightId().equals(complementaryFlightId)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public void viewFlightDetails() {
-            try {
+        try {
+            System.out.println("*** FRSManagement :: Flight Operation Module :: View Flight Details ***\n");
             Scanner scanner = new Scanner(System.in);
             System.out.print("Enter Flight Number> ");
             String flightNumber = scanner.nextLine().trim();
+            System.out.println();
 
             Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNumber);
 
-            System.out.println(flight);
-            System.out.println(flight.getFlightRoute());
-            for (CabinClass cabinClass : flight.getAirCraftConfig().getCabinClasses()) {
-                System.out.println(cabinClass.getCabinClassType());
-                System.out.println("Available seats = " + cabinClass.getMaxSeatCapacity());
+            flightNumber = flight.getFlightNumber();
+            boolean isDisabled = flight.isDisabled();
+            String originStr = flight.getFlightRoute().getOrigin().getAirportName();
+            String destinationStr = flight.getFlightRoute().getDestination().getAirportName();
+            
+            System.out.printf("%-20s%-20s%-20s%-20s\n", "Flight Number", "Disabled", "Origin", "Destination");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+
+            System.out.printf("%-20s%-20s%-20s%-20s\n", flightNumber, (isDisabled ? "Yes" : "No"), originStr, destinationStr);
+            System.out.println();
+            
+            System.out.printf("%-20s%-20s%-20s%-20s\n", "Cabin Class Type", "Available Seats", "Reserved Seats", "Balance Seats");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+            List<CabinClass> cabinClasses = flight.getAirCraftConfig().getCabinClasses();
+
+            for (CabinClass cc : cabinClasses) {
+                CabinClassEnum cabinClassType = cc.getCabinClassType();
+                Integer availableSeats = cc.getAvailableSeats();
+                Integer reservedSeats = cc.getReservedSeats();
+                Integer balanceSeats = cc.getBalanceSeats();
+                System.out.printf("%-20s%-20s%-20s%-20s\n",
+                    cabinClassType, availableSeats, reservedSeats, balanceSeats);
+                
             }
             System.out.println();
 
+            
             // do it such that 1 is linked to update, 2 is linked ot delete and 3 is contiunue
             System.out.print("would you like to update or delete flight?    \n");
             System.out.println("1: Update Flight ");
