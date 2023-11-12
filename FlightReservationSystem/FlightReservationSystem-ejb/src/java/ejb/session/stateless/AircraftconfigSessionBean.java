@@ -66,6 +66,7 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
        
         for (AirCraftConfig acc : aircraftConfiguration) {
             acc.getFlights().size();
+            acc.getCabinClasses().size();
         }
         //lazy loading
         
