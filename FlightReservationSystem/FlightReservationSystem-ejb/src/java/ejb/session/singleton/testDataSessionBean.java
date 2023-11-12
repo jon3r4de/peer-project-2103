@@ -10,6 +10,7 @@ import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.FlightRouteSessionBeanLocal;
 import ejb.session.stateless.FlightSessionBeanLocal;
+import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanLocal;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
@@ -19,6 +20,7 @@ import entity.Employee;
 import entity.Flight;
 import entity.FlightRoute;
 import enumeration.CabinClassEnum;
+import enumeration.EmployeeEnum;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -33,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import util.exception.AircraftConfigExistExcetpion;
 import util.exception.AircraftConfigNotFoundException;
+import util.exception.AircraftTypeExistException;
 import util.exception.AirportExistException;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightExistException;
@@ -40,6 +43,7 @@ import util.exception.FlightRouteDisabledException;
 import util.exception.FlightRouteExistException;
 import util.exception.FlightRouteNotFoundException;
 import util.exception.GeneralException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -47,6 +51,7 @@ import util.exception.GeneralException;
  */
 @Singleton
 @LocalBean
+@Startup
 //@Startup should be after datainit
 public class testDataSessionBean {
 
@@ -69,11 +74,31 @@ public class testDataSessionBean {
     @EJB(name = "FlightRouteSessionBeanLocal")
     private FlightRouteSessionBeanLocal flightRouteSessionBeanLocal;
     
-
-
+    @EJB(name = "FlightSessionBeanLocal")
+    private FlightSessionBeanLocal flightSessionBeanLocal;
     
+
+    @PostConstruct
     public void postConstruct()
     {
+        if(em.find(Employee.class, 1L) == null)
+        {
+            doInitialiseEmployee();
+            System.out.println("initialised employee");
+        } 
+        
+        if(em.find(Airport.class, 1l) == null)
+        {
+            doInitialiseAirport();
+            System.out.println("initialised airport");
+        }
+        
+        if(em.find(AirCraftType.class, 1l) == null)
+        {
+            doInitialiseAircraftType();
+            System.out.println("initialised aircraft type");
+        }
+        
         if(em.find(AirCraftConfig.class, 1L) == null)
         {
             doInitialiseAirCraftConfig();
@@ -178,7 +203,7 @@ public class testDataSessionBean {
             
             Long f13 = flightRouteSessionBeanLocal.createNewFlightRoute("SYD", "NRT");
             Long f14 = flightRouteSessionBeanLocal.createNewFlightRoute("NRT", "SYD"); 
-            flightRouteSessionBeanLocal.associateComplementaryFlightRoute(f8, f9);
+            flightRouteSessionBeanLocal.associateComplementaryFlightRoute(f13, f14);
             
             System.out.println("created flight routes");
    
@@ -186,8 +211,113 @@ public class testDataSessionBean {
             System.out.println("Error: " + ex.getMessage());
         }
     }
+    
+        private void doInitialiseEmployee() {
 
+        try {
+            System.out.println("created employee");
+            employeeSessionBeanLocal.createEmployee("Fleet","Manager","fleetmanager","password", EmployeeEnum.FLEETMANAGER);
+            employeeSessionBeanLocal.createEmployee("Route","Planner","routeplanner","password", EmployeeEnum.ROUTEPLANNER);
+            employeeSessionBeanLocal.createEmployee("Schedule","Manager","schedulemanager","password", EmployeeEnum.SCHEDULEMANAGER);
+            employeeSessionBeanLocal.createEmployee("Sales","Manaer","salesmanager","password", EmployeeEnum.SALESMANAGER);
+            employeeSessionBeanLocal.createEmployee("System ","administrator","SYSTEMADMINISTRATOR","password", EmployeeEnum.SYSTEMADMINISTRATOR);
+        } catch (UnknownPersistenceException ex) {
+            System.out.println("An error has occurred.");
+        }
+        
+    }
+    
+    //String airportName, String iataAirportcode, String city, String stateOrProvince, String country
+    private void doInitialiseAirport() {
+        try {
+            System.out.println("created airport");
+            airportSessionBeanLocal.createNewAirport(new Airport("Changi", "SIN", "Singapore", "Singapore", "Singapore"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Narita", "NRT", "Narita", "Chiba", "Japan"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Hong Kong", "HKG", "Chek Lap Kok", "Hong Kong", "China"));
+            airportSessionBeanLocal.createNewAirport(new Airport("Taoyuan", "TPE", "Taoyuan", "Taipei", "Taiwan R.O.C."));
+            airportSessionBeanLocal.createNewAirport(new Airport("Sydney", "SYD", "Sydney", "New South Wales", "Australia"));
+        } catch (AirportExistException | GeneralException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+    
+    
+    private void doInitialiseAircraftType()
+    {
+        try {
+            System.out.println("created airCraft Type");
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("Boeing 737", 200));
+            aircraftTypeSessionBeanLocal.createNewAircraftType(new AirCraftType("Boeing 747", 400));
+        } catch (AircraftTypeExistException | GeneralException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
+    }
+
+    //createNewFlight(Flight newFlight, String originAirportIATACode, String destinationAirportIATACode, String aircraftConfigurationName)
     private void doInitialiseFlight() {
-      //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        try {
+            
+            Flight flight1 = new Flight("ML111");
+            Long f1Id = flightSessionBeanLocal.createNewFlight(flight1, "SIN", "HKG", "Boeing 737 Three Classes");
+            
+            Flight flight2 = new Flight("ML112");
+            Long f2Id = flightSessionBeanLocal.createNewFlight(flight2, "HKG", "SIN", "Boeing 737 Three Classes");
+            
+            flightSessionBeanLocal.associateComplementaryFlight(f1Id, f2Id);
+            
+            Flight flight3 = new Flight("ML211");
+            Long f3Id = flightSessionBeanLocal.createNewFlight(flight3, "TPE", "SIN", "Boeing 737 Three Classes");
+            
+            Flight flight4 = new Flight("ML212");
+            Long f4Id = flightSessionBeanLocal.createNewFlight(flight4, "SIN", "TPE", "Boeing 737 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f3Id, f4Id);
+            
+            Flight flight5 = new Flight("ML311");
+            Long f5Id = flightSessionBeanLocal.createNewFlight(flight5, "SIN", "NRT", "Boeing 747 Three Classes");
+            
+            Flight flight6 = new Flight("ML312");
+            Long f6Id = flightSessionBeanLocal.createNewFlight(flight6, "NRT", "SIN", "Boeing 747 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f5Id, f6Id);
+            
+            Flight flight7 = new Flight("ML411");
+            Long f7Id = flightSessionBeanLocal.createNewFlight(flight7, "HKG", "NRT", "Boeing 737 Three Classes");
+            
+            Flight flight8 = new Flight("ML412");
+            Long f8Id = flightSessionBeanLocal.createNewFlight(flight8, "NRT", "HKG", "Boeing 737 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f7Id, f8Id);
+            
+            Flight flight9 = new Flight("ML511");
+            Long f9Id = flightSessionBeanLocal.createNewFlight(flight9, "TPE", "NRT", "Boeing 737 Three Classes");
+            
+            Flight flight10 = new Flight("ML512");
+            Long f10Id = flightSessionBeanLocal.createNewFlight(flight10, "NRT", "TPE", "Boeing 737 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f9Id, f10Id);
+            
+            Flight flight11 = new Flight("ML611");
+            Long f11Id = flightSessionBeanLocal.createNewFlight(flight11, "SIN", "SYD", "Boeing 737 Three Classes");
+            
+            Flight flight12 = new Flight("ML612");
+            Long f12Id = flightSessionBeanLocal.createNewFlight(flight12, "SYD", "SIN", "Boeing 737 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f11Id, f12Id);
+            
+            Flight flight13 = new Flight("ML621");
+            Long f13Id = flightSessionBeanLocal.createNewFlight(flight13, "SIN", "SYD", "Boeing 737 Three Classes");
+            
+            Flight flight14 = new Flight("ML622");
+            Long f14Id = flightSessionBeanLocal.createNewFlight(flight14, "SYD", "SIN", "Boeing 737 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f13Id, f14Id);
+            
+            Flight flight15 = new Flight("ML711");
+            Long f15Id = flightSessionBeanLocal.createNewFlight(flight15, "SYD", "NRT", "Boeing 737 Three Classes");
+            
+            Flight flight16 = new Flight("ML712");
+            Long f16Id = flightSessionBeanLocal.createNewFlight(flight16, "NRT", "SYD", "Boeing 747 Three Classes");
+            flightSessionBeanLocal.associateComplementaryFlight(f15Id, f16Id);
+
+            
+        }  catch (FlightExistException | GeneralException | FlightRouteNotFoundException | AircraftConfigNotFoundException | FlightRouteDisabledException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        } 
+
     }
 }

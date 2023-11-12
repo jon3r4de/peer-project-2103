@@ -90,6 +90,11 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         
         flight.setComplementaryReturnFlight(complementaryFlight);
         flight.setHasComplementaryReturnFlight(true);
+        
+        /*comp flight has the creator flight stored 
+        in the complementary flight but the boolean has comp flight is set as false
+        --> allow for deletion of the comp flight wihtout affecting the creator flight
+        */
         complementaryFlight.setComplementaryReturnFlight(flight);
     }
     

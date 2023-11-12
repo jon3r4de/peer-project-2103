@@ -8,6 +8,7 @@ import enumeration.CabinClassEnum;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -86,7 +87,7 @@ public class CabinClass implements Serializable {
     @OneToMany
     private List<Fare> fares;
     
-    @OneToMany(mappedBy = "cabinClass")
+    @OneToMany(mappedBy = "cabinClass", cascade = CascadeType.PERSIST)
     private List<Seat> seats;
     
     //private List<Seats> seats;

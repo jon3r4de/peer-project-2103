@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,9 @@ public class FlightSchedulePlan implements Serializable {
     private Long flightSchedulePlanId;
         
     private FlightSchedulePlan complementaryReturnSchedulePlan;
+    
+    @Column(nullable = false, length = 64)
+    private String flightSchedulePlanName;
     
     //only for n days recurrence
     private int recurrence;
@@ -65,7 +69,17 @@ public class FlightSchedulePlan implements Serializable {
         flightSchedules = new ArrayList<>();
         fares = new ArrayList<>();
         this.disabled = false;
+        this.flightSchedulePlanName = "Flight schedule plan "+ this.nameGenerator();
     }
+
+    public String getFlightSchedulePlanName() {
+        return flightSchedulePlanName;
+    }
+
+    public void setFlightSchedulePlanName(String flightSchedulePlanName) {
+        this.flightSchedulePlanName = flightSchedulePlanName;
+    }
+    
 
     public FlightSchedulePlan(FlightScheduleEnum flightScheduleType, List<Fare> fares) {
         this.flightScheduleType = flightScheduleType;
@@ -180,6 +194,21 @@ public class FlightSchedulePlan implements Serializable {
             return false;
         }
         return true;
+    }
+    
+    public static String nameGenerator() {
+        int leftLimit = 48; // numeral '0'
+        int rightLimit = 122; // letter 'z'
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        String generatedString = random.ints(leftLimit, rightLimit + 1)
+          .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+          .limit(targetStringLength)
+          .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+          .toString();
+
+        return generatedString;
     }
 
     @Override

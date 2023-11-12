@@ -31,7 +31,7 @@ import util.exception.UnknownPersistenceException;
 
 @Singleton
 @LocalBean
-@Startup
+//@Startup
 public class dataInitialisationSessionBean {
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
@@ -47,10 +47,8 @@ public class dataInitialisationSessionBean {
     @EJB(name = "aircraftTypeSessionBeanLocal")
     private aircraftTypeSessionBeanLocal aircraftTypeSessionBeanLocal;
     
-    @EJB(name = "testDataSessionBean")
-    private testDataSessionBean singleton;
     
-    @PostConstruct
+    //@PostConstruct
     public void postConstruct()
     {
         if(em.find(Employee.class, 1L) == null)
@@ -71,7 +69,7 @@ public class dataInitialisationSessionBean {
             System.out.println("initialised aircraft type");
         }
         
-        singleton.postConstruct();
+        //singleton.postConstruct();
     }
     
 

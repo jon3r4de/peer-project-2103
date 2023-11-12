@@ -67,6 +67,13 @@ public class Flight implements Serializable {
         this();
         this.flightNumber = flightNumber;
     }
+    
+    public Flight(String flightNumber, FlightRoute flightRoute, AirCraftConfig airCraftConfig) {
+        this();
+        this.flightNumber = flightNumber;
+        this.flightRoute = flightRoute;
+        this.airCraftConfig = airCraftConfig;
+    }
 
     public FlightRoute getFlightRoute() {
         return flightRoute;

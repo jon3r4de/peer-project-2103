@@ -52,12 +52,12 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         
         for (CabinClass cabinClass : cabinClasses) {
             cabinClass.setAirCraftConfig(newAircraftConfiguration);
-            em.flush();
-            try {
+            //em.flush();
+            //try {
                 generateSeats(cabinClass);
-            } catch (UnknownPersistenceException ex) {
+            /*} catch (UnknownPersistenceException ex) {
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
-            }
+            }*/
         }
         
         newAircraftConfiguration.setCabinClasses(cabinClasses);
@@ -72,22 +72,30 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         return newAircraftConfiguration.getAirCraftConfigId();
     }
     
-    private void generateSeats(CabinClass cabinClass) throws UnknownPersistenceException {
-        try {
+    private void generateSeats(CabinClass cabinClass) { //throws UnknownPersistenceException {
+        //try {
             Integer numOfRows = cabinClass.getNumberOfRows();
             Integer numOfSeatsAbreast = cabinClass.getNumOfSeatsAbreast();
 
             for (int row = 1; row <= numOfRows; row++) {
                 for (int seatLetter = 0; seatLetter < numOfSeatsAbreast; seatLetter++) {
                     char letter = (char) ('A' + seatLetter);
-                    String seatNumber = row + String.valueOf(letter);
-                    seatSessionBeanLocal.createSeat(new Seat(seatNumber), cabinClass.getCabinClassId());
+                    String seatNumber = String.valueOf(row) + letter;
+                    Seat seat = new Seat(seatNumber);
+                    //seatSessionBeanLocal.createSeat(new Seat(seatNumber), cabinClass.getCabinClassId());
+                    
+            seat.setCabinClass(cabinClass);
+            cabinClass.getSeats().add(seat);
+            
                 }
             }
-        } catch (UnknownPersistenceException ex) {
-            throw ex;
-        }        
+       // } catch (UnknownPersistenceException ex) {
+        //    throw ex;
+       // }        
     }
+    
+
+    
     
     @Override
     public List<AirCraftConfig> retrieveAllAircraftConfigurations() {

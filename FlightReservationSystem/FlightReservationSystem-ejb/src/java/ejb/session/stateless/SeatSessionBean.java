@@ -25,8 +25,8 @@ public class SeatSessionBean implements SeatSessionBeanRemote, SeatSessionBeanLo
     public Long createSeat(Seat seat, Long cabinClassId) throws UnknownPersistenceException {
         try {
             CabinClass cabinClass = em.find(CabinClass.class, cabinClassId);
-            em.persist(seat);
-            em.flush();
+            //em.persist(seat);
+            //em.flush();
             
             seat.setCabinClass(cabinClass);
             cabinClass.getSeats().add(seat);
