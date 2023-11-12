@@ -90,12 +90,20 @@ public class FlightSchedule implements Serializable {
     }
 
 
-    public Date getArrivalDateTime() {
+  public Date getArrivalDateTime() {
+        if (this.arrivalDateTime == null) {
+            calculateArrivalTime();
+        }
         return arrivalDateTime;
     }
 
     public void setArrivalDateTime(Date arrivalDateTime) {
         this.arrivalDateTime = arrivalDateTime;
+    }
+    
+    public void calculateArrivalTime(){
+
+        this.arrivalDateTime = new Date(this.arrivalDateTime.getTime() + this.estimatedFlightDuration.getTime());
     }
 
     public String getFlightNumber() {
@@ -121,6 +129,23 @@ public class FlightSchedule implements Serializable {
     public void setFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) {
         this.flightSchedulePlan = flightSchedulePlan;
     }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
+    }
+
+    public List<CabinClass> getCabinClasses() {
+        return cabinClasses;
+    }
+
+    public void setCabinClasses(List<CabinClass> cabinClasses) {
+        this.cabinClasses = cabinClasses;
+    }
+    
     
     @Override
     public int hashCode() {
@@ -144,7 +169,12 @@ public class FlightSchedule implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedule[ id=" + flightScheduleId + " ]";
+        DateFormat departureTimeFormat = new SimpleDateFormat("hh:mm aa");
+        DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
+        SimpleDateFormat outputDurationFormat = new SimpleDateFormat("hh Hours mm Minutes");
+        String outputDepartDateString = departureDateFormat.format(this.departureDateTime);
+        String flightDurationString = outputDurationFormat.format(this.estimatedFlightDuration);
+        return "[ Departure date time = " + outputDepartDateString + ", Flight duration = " + flightDurationString + " ]";
     }
     
 }

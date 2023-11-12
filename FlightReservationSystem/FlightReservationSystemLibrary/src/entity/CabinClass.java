@@ -244,7 +244,7 @@ public class CabinClass implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.CabinClass[ id=" + cabinClassId + " ]";
+        return "Cabin Class Type : " + cabinClassType;
     }
     
 }

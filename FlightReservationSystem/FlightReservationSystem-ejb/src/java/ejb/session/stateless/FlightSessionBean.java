@@ -89,6 +89,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
         Flight complementaryFlight = em.find(Flight.class, complementaryFlightId);
         
         flight.setComplementaryReturnFlight(complementaryFlight);
+        flight.setHasComplementaryReturnFlight(true);
         complementaryFlight.setComplementaryReturnFlight(flight);
     }
     

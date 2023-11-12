@@ -233,7 +233,8 @@ public class Reservation implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Reservation[ id=" + reservationId + " ]";
+        return "FlightReservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengerList + ", creditCard=" + creditCardInfo + 
+                 ", customer=" + customer;
     }
     
 }

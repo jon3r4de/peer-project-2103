@@ -23,6 +23,7 @@ import util.exception.DeleteFlightSchedulePlanException;
 import util.exception.FlightSchedulePlanExistException;
 import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
+import util.exception.UpdateFlightSchedulePlanException;
 
 /**
  *
@@ -275,4 +276,103 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             throw ex;
         }
     }
+    
+    
+    @Override
+    public void updateSingleFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule, Date departureDate, Date departureTime, Date durationTime) throws UpdateFlightSchedulePlanException, ParseException {
+        em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
+        em.find(FlightSchedule.class, flightSchedule.getFlightScheduleId());
+
+        if (!flightSchedule.getReservations().isEmpty()) {
+            throw new UpdateFlightSchedulePlanException("Flight schedule cannot be updated because tickets have already been issued!");
+        } else {
+            flightSchedulePlan.getFlightSchedules().remove(flightSchedule);
+
+            Flight flight = flightSchedulePlan.getFlight();
+            flightSchedulePlan.setFlight(flight);
+            flight.getFlightSchedulePlans().add(flightSchedulePlan);
+
+            //Date departureDateTime, Date estimatedFlightDuration,  String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, durationTime, this.findArrivalDateTime(departureDate, departureTime),flight.getFlightNumber(),
+             flight.getAirCraftConfig().getCabinClasses(),flightSchedulePlan);
+            em.persist(newFlightSchedule);
+            newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);
+            flightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+        }
+    }
+    
+        public void updateRecurrentDayFlightSchedule(FlightSchedulePlan flightSchedulePlan, Integer recurrence, Date endDate) throws UpdateFlightSchedulePlanException {
+         em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
+
+        for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
+            if (!flightSchedule.getReservations().isEmpty()) {
+                throw new UpdateFlightSchedulePlanException("Flight schedule cannot be updated because tickets have already been issued!");
+            }
+        }
+        flightSchedulePlan.setRecurrence(recurrence);
+        flightSchedulePlan.setEndDate(endDate);
+
+        FlightSchedule firstFlightSchedule = flightSchedulePlan.getFlightSchedules().get(0);
+        Flight flight = flightSchedulePlan.getFlight();
+        flightSchedulePlan.getFlightSchedules().clear();
+
+        Date departureDate = firstFlightSchedule.getDepartureDateTime();
+        //Date departureTime = firstFlightSchedule.getDepartureTime();
+        while (departureDate.getTime() <= endDate.getTime()) {
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, firstFlightSchedule.getEstimatedFlightDuration(), firstFlightSchedule.getArrivalDateTime(), flight.getFlightNumber(),
+                    flight.getAirCraftConfig().getCabinClasses(), flightSchedulePlan);
+            em.persist(newFlightSchedule);
+            
+            newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);
+            flightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
+
+            departureDate = new Date(departureDate.getTime() + recurrence * 24 * 60 * 60 * 1000);
+            em.flush();
+        }
+
+    }
+        
+    @Override
+    public void updateRecurrentWeekFlightSchedule(FlightSchedulePlan flightSchedulePlan, Date endDate) throws UpdateFlightSchedulePlanException {
+        em.merge(flightSchedulePlan);
+
+        for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
+            if (flightSchedule.getDepartureDateTime().getTime() > endDate.getTime() && !flightSchedule.getReservations().isEmpty()) {
+                throw new UpdateFlightSchedulePlanException("Flight schedule cannot be updated because tickets have already been issued!");
+            }
+        }
+
+        flightSchedulePlan.setEndDate(endDate);
+
+        for (FlightSchedule flightSchedule : flightSchedulePlan.getFlightSchedules()) {
+            if (flightSchedule.getDepartureDateTime().getTime() > endDate.getTime()) {
+                flightSchedulePlan.getFlightSchedules().remove(flightSchedule);
+            }
+        }
+    }
+    
+    @Override
+    public List<FlightSchedulePlan> retrieveFlightSchedulePlansByFlightNumber(String flightNumber) throws FlightSchedulePlanNotFoundException {
+        Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp WHERE fsp.flight.flightNumber = :inFlightNumber");
+        query.setParameter("inFlightNumber", flightNumber);
+
+        List<FlightSchedulePlan> flightSchedulePlans = query.getResultList();
+
+        if (!flightSchedulePlans.isEmpty()) {
+            for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+                flightSchedulePlan.getComplementaryReturnSchedulePlan();
+                flightSchedulePlan.getFlight();
+                flightSchedulePlan.getFares().size();
+                flightSchedulePlan.getFlightScheduleType();
+                flightSchedulePlan.getFlightSchedules().size();
+            }
+            return flightSchedulePlans;
+        } else {
+            throw new FlightSchedulePlanNotFoundException("Flight schedule plan with flight number " + flightNumber + " is not found!");
+        }
+    }
+    
+    
+    
+    
 }
