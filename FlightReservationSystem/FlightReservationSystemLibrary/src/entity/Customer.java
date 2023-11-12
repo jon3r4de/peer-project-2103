@@ -173,7 +173,7 @@ public class Customer implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Customer[ id=" + customerId + " ]";
+        return "customer [" + firstName + " ]";
     }
     
 }

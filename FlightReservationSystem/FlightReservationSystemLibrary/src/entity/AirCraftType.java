@@ -98,7 +98,7 @@ public class AirCraftType implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.AirCraftType[ id=" + aircraftTypeId+ " ]";
+        return "air craft type name : " + aircraftTypeName + ", max seating capacity :" + maxPassengerSeatCapacity;
     }
     
 }

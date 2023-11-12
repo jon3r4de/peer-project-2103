@@ -6,9 +6,11 @@ package entity;
 
 import enumeration.FlightScheduleEnum;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -182,7 +184,17 @@ public class FlightSchedulePlan implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.FlightSchedulePlan[ id=" + flightSchedulePlanId + " ]";
+        SimpleDateFormat outputEndDateFormat = new SimpleDateFormat("dd MMM yy");
+        SimpleDateFormat outputLayoverFormat = new SimpleDateFormat("hh Hours mm Minutes");
+        String endDateString = outputEndDateFormat.format(endDate);
+        String layoverString = outputLayoverFormat.format(layoverDuration);
+        if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTWEEK)) {
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", End Date = " + endDateString + ", Layover Duration = " + layoverString +  ']';
+        } else if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTDAY)) {
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Recurrence = " + recurrence + ", End Date = " + endDateString + ", Layover Duration = " + layoverString +  ']';
+        } else {
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Layover Duration = " + layoverString +  ']';
+        }
     }
     
 }

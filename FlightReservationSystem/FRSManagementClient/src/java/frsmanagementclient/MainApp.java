@@ -133,9 +133,9 @@ public class MainApp {
                             FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, flightRouteSessionBeanRemote, cabinClassSessionBeanRemote);
                             flightPlanningModule.routePlannerFlightPlanningModule();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
-                            System.out.println("tristans magical o");
+                          
                             FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote, flightSchedulePlanSessionBeanRemote);
-                            System.out.println("tristans magical o2");
+                         
                             flightOperationModule.menuFlightOperation();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
                             /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);

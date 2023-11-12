@@ -158,7 +158,7 @@ public class Flight implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Flight[ id=" + flightId + " ]";
+        return "the flight Number is :" + flightNumber;
     }
     
 }

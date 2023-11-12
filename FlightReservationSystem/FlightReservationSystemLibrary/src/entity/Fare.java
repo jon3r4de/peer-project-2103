@@ -127,7 +127,7 @@ public class Fare implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Fare[ id=" + fareId + " ]";
+        return "Fare{" + "fareBasisCode=" + fareBasisCode + ", cabinClassType=" + cabinClassType + ", fareAmount=" + fareAmount + '}';
     }
     
 }

@@ -16,6 +16,7 @@ import enumeration.CabinClassEnum;
 import enumeration.FlightScheduleEnum;
 import java.math.BigDecimal;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,11 +25,14 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 import util.exception.AircraftConfigNotFoundException;
 import util.exception.DeleteFlightException;
+import util.exception.DeleteFlightScheduleException;
 import util.exception.DeleteFlightSchedulePlanException;
+import util.exception.FareExistException;
 import util.exception.FlightExistException;
 import util.exception.FlightNotFoundException;
 import util.exception.FlightRouteDisabledException;
 import util.exception.FlightRouteNotFoundException;
+import util.exception.FlightScheduleExistException;
 import util.exception.FlightSchedulePlanNotFoundException;
 import util.exception.GeneralException;
 import util.exception.UpdateFlightSchedulePlanException;
@@ -624,7 +628,48 @@ public class FlightOperationModule {
     }
     
     private void viewFlightSchedulePlanDetails() {
+        try {
+            Scanner scanner = new Scanner(System.in);
 
+            System.out.println("*** FRSManagement :: Flight Operation Module :: View Flight Schedule Plan Details ***\n");
+            System.out.print("Enter Flight Number of the Flight Schedule Plan> ");
+            String flightNumber = scanner.nextLine().trim();
+
+            List<FlightSchedulePlan> flightSchedulePlans = flightSchedulePlanSessionBeanRemote.retrieveFlightSchedulePlansByFlightNumber(flightNumber);
+            Integer selection = 1;
+            for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
+                System.out.println("No." + selection + " " + flightSchedulePlan);
+                selection++;
+            }
+
+            System.out.print("Enter no. to view details> ");
+            Integer userSelection = Integer.valueOf(scanner.nextLine().trim());
+            FlightSchedulePlan flightSchedulePlanSelected = flightSchedulePlans.get(userSelection - 1);
+
+            System.out.println("\nFlight O-D pair=[" + flightSchedulePlanSelected.getFlight() + "]");
+            System.out.println("Flight schedule: ");
+            for (FlightSchedule flightSchedule : flightSchedulePlanSelected.getFlightSchedules()) {
+                System.out.println("\t" + flightSchedule);
+            }
+            System.out.println("Fare: ");
+            for (Fare fare : flightSchedulePlanSelected.getFares()) {
+                System.out.println("\t" + fare);
+            }
+
+            System.out.print("Update details of this flight schedule plan? (Y/N)> ");
+            if (scanner.nextLine().trim().equals("Y")) {
+                updateFlightSchedulePlan(flightSchedulePlanSelected);
+            }
+
+            System.out.print("Delete this flight schedule plan? (Y/N)> ");
+            if (scanner.nextLine().trim().equals("Y")) {
+                flightSchedulePlanSessionBeanRemote.deleteFlightSchedulePlan(flightSchedulePlanSelected);
+                System.out.println("Flight Schedule Plan deleted Successfully!");
+            }
+        } catch (FlightSchedulePlanNotFoundException | DeleteFlightScheduleException | ParseException | FlightScheduleExistException
+                | GeneralException | FareExistException | FlightNotFoundException | DeleteFlightSchedulePlanException ex) {
+            System.out.println("Error: " + ex.getMessage());
+        }
     }
     
     public void  deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) {
@@ -638,7 +683,7 @@ public class FlightOperationModule {
         
     }
     
-     /*private void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) throws DeleteFlightScheduleException, ParseException,
+     private void updateFlightSchedulePlan(FlightSchedulePlan flightSchedulePlanSelected) throws DeleteFlightScheduleException, ParseException,
             FlightScheduleExistException, GeneralException, FareExistException, FlightNotFoundException {
         Scanner scanner = new Scanner(System.in);
 
@@ -665,7 +710,7 @@ public class FlightOperationModule {
                 System.out.print("Enter Fare Basis Code> ");
                 String fareBasisCode = scanner.nextLine().trim();
                 System.out.print("Enter Amount> $ ");
-                Double fareAmount = Double.valueOf(scanner.nextLine().trim());
+                BigDecimal fareAmount =  scanner.nextBigDecimal();
 
                 CabinClassEnum cabinClassType;
                 if (cabinClassCode.charAt(0) == 'F') {
@@ -792,6 +837,6 @@ public class FlightOperationModule {
                 }
             }
         }
-    }*/
+    }
     
 }

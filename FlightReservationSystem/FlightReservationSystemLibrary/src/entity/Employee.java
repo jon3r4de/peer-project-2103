@@ -125,7 +125,7 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Employee[ name=" + firstName + " ]";
+        return "Employee[" + firstName + "," + lastName + " ]";
     }
     
 }

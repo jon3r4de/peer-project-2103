@@ -150,7 +150,8 @@ public class AirCraftConfig implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.AirCraftConfig[ id=" + airCraftConfigId + " ]";
+        return "Aircraft Configuration Name = " + airCraftConfigName + ", Num Of Cabin Classes = " + numOfCabinClasses 
+                + ", Aircraft Type = " + airCraftType.getAircraftTypeName();
     }
     
 }

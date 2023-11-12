@@ -162,7 +162,7 @@ public class Airport implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Airport[ id=" + airportId + " ]";
+        return "airport iata code :" + iataAirportcode + " in the city :" + city;
     }
     
 }
