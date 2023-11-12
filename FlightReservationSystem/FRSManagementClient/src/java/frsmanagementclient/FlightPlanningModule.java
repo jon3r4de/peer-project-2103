@@ -124,8 +124,7 @@ public class FlightPlanningModule {
                 numOfCabinClasses = Integer.valueOf(scanner.nextLine().trim());
             }
             
-            AirCraftConfig newAircraftConfiguration = new AirCraftConfig(aircraftConfigurationName, numOfCabinClasses);
-
+            
         //Create each cabin class configuration
         List<CabinClass> cabinClasses = new ArrayList<>();
         for (int i = 0; i < numOfCabinClasses; i++) {
@@ -143,6 +142,7 @@ public class FlightPlanningModule {
             String seatingConfigurationPerColumn = scanner.nextLine().trim();
             System.out.print("Enter Capacity of the Cabin Class> ");
             Integer cabinClassCapacity = Integer.valueOf(scanner.nextLine().trim());
+
             
             if (cabinClassCode.charAt(0) == 'F') {
                 cabinClasses.add(new CabinClass(numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity, CabinClassEnum.FIRST));
@@ -156,6 +156,8 @@ public class FlightPlanningModule {
         }
             
             Long aircraftConfigurationId;
+            AirCraftConfig newAircraftConfiguration = new AirCraftConfig(aircraftConfigurationName, numOfCabinClasses, aircraftCapacity);
+
             try {
                 aircraftConfigurationId = aircraftconfigSessionBeanRemote.createNewAircraftConfiguration(newAircraftConfiguration, aircraftType, cabinClasses);
                 System.out.println("\nAircraft Confirguration With ID: " + aircraftConfigurationId + " is created successfully!\n");

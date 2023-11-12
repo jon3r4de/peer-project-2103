@@ -88,10 +88,9 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         //set return flights
         newFlightRoute.setComplementaryReturn(newComplementaryFlightRoute);
         newFlightRoute.setHasComplementaryReturnRoute(true);
+        
+        newComplementaryFlightRoute.setHasComplementaryReturnRoute(false);
           
-        //enable boolean 
-        newComplementaryFlightRoute.setComplementaryReturn(newFlightRoute);
-        newComplementaryFlightRoute.setHasComplementaryReturnRoute(true);
     }
     
     @Override

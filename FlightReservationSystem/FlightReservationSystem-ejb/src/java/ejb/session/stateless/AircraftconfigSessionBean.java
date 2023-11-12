@@ -42,7 +42,7 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
             }
         }
         
-        em.merge(aircraftType);
+        aircraftType = em.find(AirCraftType.class, aircraftType.getAircraftTypeId());
         
         for (CabinClass cabinClass : cabinClasses) {
             cabinClass.setAirCraftConfig(newAircraftConfiguration);
@@ -51,6 +51,9 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         newAircraftConfiguration.setCabinClasses(cabinClasses);
         newAircraftConfiguration.setAirCraftType(aircraftType);
         aircraftType.getConfigs().add(newAircraftConfiguration);
+        
+        //set max seat capacity
+        //newAircraftConfiguration.getMaxSeatCapacity();
 
         em.flush();
            
