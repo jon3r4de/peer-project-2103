@@ -605,7 +605,7 @@ public class FlightOperationModule {
             String estimatedFlightDurationString = scanner.nextLine().trim();
             Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
 
-            System.out.print("Enter End Date (day MONTH year))> ");
+            System.out.print("Enter End Date (day MONTH year -  eg: 12 Nov 23)> ");
             String endDateString = scanner.nextLine().trim();
             DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
             Date endDate = endDateFormat.parse(endDateString);

@@ -7,6 +7,7 @@ package entity;
 import enumeration.FlightScheduleEnum;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,22 +37,25 @@ public class FlightSchedulePlan implements Serializable {
         
     private FlightSchedulePlan complementaryReturnSchedulePlan;
     
-    @Column(nullable = false, length = 64)
+    @Column(nullable = true, length = 64)
     private String flightSchedulePlanName;
     
     //only for n days recurrence
     private int recurrence;
     
     //(Monday - Sunday) Only for reccurent by week
-    private Date reccurrentDay;
+    private String reccurrentDay;
     private Date startDate;
     private Date endDate;
-    private Date layoverDuration;
+    
+    @Column(nullable = true)
+    private Duration layoverDuration;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Flight flight;
     
+    @Column(nullable = false)
     private String flightNumber;
     
     @Column(nullable = false)
@@ -134,11 +138,11 @@ public class FlightSchedulePlan implements Serializable {
         this.disabled = disabled;
     }
 
-    public Date getLayoverDuration() {
+    public Duration getLayoverDuration() {
         return layoverDuration;
     }
 
-    public void setLayoverDuration(Date layoverDuration) {
+    public void setLayoverDuration(Duration layoverDuration) {
         this.layoverDuration = layoverDuration;
     }
 
@@ -173,6 +177,24 @@ public class FlightSchedulePlan implements Serializable {
     public void setComplementaryReturnSchedulePlan(FlightSchedulePlan complementaryReturnSchedulePlan) {
         this.complementaryReturnSchedulePlan = complementaryReturnSchedulePlan;
     }
+
+    public String getReccurrentDay() {
+        return reccurrentDay;
+    }
+
+    public void setReccurrentDay(String reccurrentDay) {
+        this.reccurrentDay = reccurrentDay;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+    
+    
 
     
     

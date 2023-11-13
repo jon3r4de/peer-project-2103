@@ -59,6 +59,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             newFlightSchedulePlan.setFlight(flight);
             flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
             
+            newFlightSchedulePlan.setFlightNumber(flight.getFlightNumber());
+            
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
@@ -109,6 +111,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             newFlightSchedulePlan.setFlight(flight);
             flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
             
+            newFlightSchedulePlan.setFlightNumber(flight.getFlightNumber());
+            
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
@@ -157,10 +161,15 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         try {
             em.persist(newFlightSchedulePlan);
             
+            newFlightSchedulePlan.setStartDate(departureDateTime);
+            newFlightSchedulePlan.setEndDate(endDate);
             // link flight and flightscheduleplan
             Flight flight = em.find(Flight.class, flightId);
             newFlightSchedulePlan.setFlight(flight);
             flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            
+            newFlightSchedulePlan.setFlightNumber(flight.getFlightNumber());
+            
             
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
@@ -205,8 +214,8 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 
             returnFlightSchedulePlan.setComplementaryReturnSchedulePlan(newFlightSchedulePlan);
             newFlightSchedulePlan.setComplementaryReturnSchedulePlan(returnFlightSchedulePlan);
-            em.merge(returnFlightSchedulePlan);
-            em.merge(newFlightSchedulePlan);
+            //em.merge(returnFlightSchedulePlan);
+            //em.merge(newFlightSchedulePlan);
             
             System.out.println("Return flight schedule plan updated to set complementary return plan.");
         } catch (Exception ex) {

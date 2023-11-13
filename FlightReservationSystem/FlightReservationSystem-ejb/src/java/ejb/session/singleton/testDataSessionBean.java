@@ -5,26 +5,31 @@
 package ejb.session.singleton;
 
 import ejb.session.stateless.AircraftconfigSessionBeanLocal;
-import ejb.session.stateless.AircraftconfigSessionBeanRemote;
 import ejb.session.stateless.AirportSessionBeanLocal;
 import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.FlightRouteSessionBeanLocal;
+import ejb.session.stateless.FlightSchedulePlanSessionBeanLocal;
 import ejb.session.stateless.FlightSessionBeanLocal;
-import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanLocal;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.Airport;
 import entity.CabinClass;
 import entity.Employee;
+import entity.Fare;
 import entity.Flight;
 import entity.FlightRoute;
+import entity.FlightSchedulePlan;
 import enumeration.CabinClassEnum;
 import enumeration.EmployeeEnum;
+import enumeration.FlightScheduleEnum;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Singleton;
@@ -77,6 +82,12 @@ public class testDataSessionBean {
     @EJB(name = "FlightSessionBeanLocal")
     private FlightSessionBeanLocal flightSessionBeanLocal;
     
+    @EJB(name = "FlightSchedulePlanSessionBeanLocal")
+    private FlightSchedulePlanSessionBeanLocal flightSchedulePlanSessionBeanLocal;
+    
+     static DateFormat DATE_TIME_FORMAT = new SimpleDateFormat("dd MMM yy hh:mm aa");
+    private static DateFormat ESTIMATED_FLIGHT_DURATION_FORMAT = new SimpleDateFormat("hh 'Hours' mm 'Minute'");
+    
 
     @PostConstruct
     public void postConstruct()
@@ -115,6 +126,11 @@ public class testDataSessionBean {
         {
             doInitialiseFlight();
             System.out.println("initialised flight");
+        }
+        
+        if(em.find(FlightSchedulePlan.class, 1l) == null){
+            doInitialiseFlightSchedulePlan();
+            System.out.println("initialised fsp");
         }
         
     }
@@ -319,5 +335,176 @@ public class testDataSessionBean {
             System.out.println("Error: " + ex.getMessage());
         } 
 
+    }
+    
+    public void doInitialiseFlightSchedulePlan() {
+        
+         //private void doCreateRecurrentByWeekFlightSchedulePlan(Scanner scanner, Flight flight) {
+        try {
+          
+            // fsp test case 1
+            int recurrence = 7;
+            
+            Date departureDateTime = DATE_TIME_FORMAT.parse("01 Dec 23 09:00 AM");
+ 
+            String dayOfWeek = "Mon";
+
+            String estimatedFlightDurationString = "14 Hours 00 Minute";
+            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+
+            String endDateString = "31 Dec 23";
+            DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
+            Date endDate = endDateFormat.parse(endDateString);
+
+            List<Fare> fares = new ArrayList<>();
+            
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares.add(new Fare("ML711_F1", CabinClassEnum.FIRST,new BigDecimal("6000")));
+            fares.add(new Fare("ML711_J1", CabinClassEnum.BUSINESS,new BigDecimal("3000")));
+            fares.add(new Fare("ML711_Y1", CabinClassEnum.ECONOMY,new BigDecimal("1000")));
+            
+            Duration duration = Duration.ofHours(2);
+            
+            
+            FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares);
+            
+            for(Fare f : fares) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan);
+            }
+            
+            newFlightSchedulePlan.setLayoverDuration(duration);
+            newFlightSchedulePlan.setReccurrentDay(dayOfWeek);
+            
+            Query query1 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query1.setParameter("inFlightNumber", "ML711");
+            Flight f1 = (Flight) query1.getSingleResult();
+
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, f1.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
+
+            // fsp test case 1
+            
+            // fsp test case 2
+            
+            Date departureDateTime1 = DATE_TIME_FORMAT.parse("01 Dec 23 12:00 PM");
+ 
+            String dayOfWeek1 = "Sun";
+
+            String estimatedFlightDurationString1 = "08 Hours 00 Minute";
+            Date estimatedFlightDuration1 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString1);
+
+            String endDateString1 = "31 Dec 23";
+            Date endDate1 = endDateFormat.parse(endDateString1);
+
+            List<Fare> fares1 = new ArrayList<>();
+            
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares1.add(new Fare("ML611_F1", CabinClassEnum.FIRST,new BigDecimal("3000")));
+            fares1.add(new Fare("ML611_J1", CabinClassEnum.BUSINESS,new BigDecimal("1500")));
+            fares1.add(new Fare("ML611_Y1", CabinClassEnum.ECONOMY,new BigDecimal("500")));
+            
+            Duration duration1 = Duration.ofHours(2);
+            
+            
+            FlightSchedulePlan newFlightSchedulePlan1 = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares1);
+            
+            for(Fare f : fares1) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan1);
+            }
+                        
+            newFlightSchedulePlan1.setLayoverDuration(duration1);
+            newFlightSchedulePlan1.setReccurrentDay(dayOfWeek1);
+            
+            Query query11 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query11.setParameter("inFlightNumber", "ML611");
+            Flight f11 = (Flight) query11.getSingleResult();
+
+            Long newFlightSchedulePlanId1 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan1, f11.getFlightId(), departureDateTime1, estimatedFlightDuration1, endDate1, recurrence);
+
+            // fsp test case 2
+            
+            // fsp test case 3
+            
+            Date departureDateTime2 = DATE_TIME_FORMAT.parse("01 Dec 23 09:00 AM");
+ 
+            String dayOfWeek2 = "Tue";
+
+            String estimatedFlightDurationString2 = "08 Hours 00 Minute";
+            Date estimatedFlightDuration2 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString2);
+
+            String endDateString2 = "31 Dec 23";
+            Date endDate2 = endDateFormat.parse(endDateString2);
+
+            List<Fare> fares2 = new ArrayList<>();
+            
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares2.add(new Fare("ML621_Y1", CabinClassEnum.ECONOMY,new BigDecimal("700")));
+            
+            Duration duration2 = Duration.ofHours(2);
+            
+            
+            FlightSchedulePlan newFlightSchedulePlan2 = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares2);
+            
+            for(Fare f : fares2) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan2);
+            }
+            newFlightSchedulePlan2.setLayoverDuration(duration);
+            newFlightSchedulePlan2.setReccurrentDay(dayOfWeek2);
+            
+            Query query12 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query12.setParameter("inFlightNumber", "ML621");
+            Flight f12 = (Flight) query12.getSingleResult();
+            
+
+            Long newFlightSchedulePlanId2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan2, f12.getFlightId(), departureDateTime2, estimatedFlightDuration2, endDate2, recurrence);
+
+            // fsp test case 3
+            
+            // fsp test case 4
+            
+            Date departureDateTime3 = DATE_TIME_FORMAT.parse("01 Dec 23 09:00 AM");
+ 
+            String dayOfWeek3 = "Mon";
+
+            String estimatedFlightDurationString3 = "06 Hours 30 Minute";
+            Date estimatedFlightDuration3 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString3);
+
+            String endDateString3 = "31 Dec 23";
+            Date endDate3 = endDateFormat.parse(endDateString3);
+
+            List<Fare> fares3 = new ArrayList<>();
+            
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares3.add(new Fare("ML312_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
+            fares3.add(new Fare("ML312_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
+            fares3.add(new Fare("ML312_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
+            
+            Duration duration3 = Duration.ofHours(3);
+            
+            
+            FlightSchedulePlan newFlightSchedulePlan3 = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTWEEK, fares3);
+            
+            for(Fare f : fares3) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan3);
+            }
+            newFlightSchedulePlan3.setLayoverDuration(duration);
+            newFlightSchedulePlan3.setReccurrentDay(dayOfWeek3);
+            
+            Query query13 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query13.setParameter("inFlightNumber", "ML312");
+            Flight f13 = (Flight) query13.getSingleResult();
+            
+
+            Long newFlightSchedulePlanId3 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan3, f13.getFlightId(), departureDateTime3, estimatedFlightDuration3, endDate3, recurrence);
+
+            // fsp test case 4
+            
+            
+            
+            
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    
+        
     }
 }

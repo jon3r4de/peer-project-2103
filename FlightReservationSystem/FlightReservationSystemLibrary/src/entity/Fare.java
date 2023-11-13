@@ -28,7 +28,7 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
     
-    @Column(nullable = false, length = 7, unique = true)
+    @Column(nullable = false, length = 32, unique = true)
     @NotNull
     private String fareBasisCode;
     
@@ -54,7 +54,15 @@ public class Fare implements Serializable {
         this.cabinClassType = cabinClassType;
         this.fareAmount = fareAmount;
     }
-
+    
+    public Fare(String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount, FlightSchedulePlan fsp) {
+        this();
+        this.fareBasisCode = fareBasisCode;
+        this.cabinClassType = cabinClassType;
+        this.fareAmount = fareAmount;
+        this.flightSchedulePlan = fsp;
+    }
+    
     public Long getFareId() {
         return fareId;
     }
