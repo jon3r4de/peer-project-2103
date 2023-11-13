@@ -8,6 +8,7 @@ import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.CabinClass;
 import entity.Seat;
+import enumeration.SeatStatusEnum;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -81,7 +82,7 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
                 for (int seatLetter = 0; seatLetter < numOfSeatsAbreast; seatLetter++) {
                     char letter = (char) ('A' + seatLetter);
                     String seatNumber = String.valueOf(row) + letter;
-                    Seat seat = new Seat(seatNumber);
+                    Seat seat = new Seat(seatNumber, SeatStatusEnum.AVAILABLE);
                     //seatSessionBeanLocal.createSeat(new Seat(seatNumber), cabinClass.getCabinClassId());
                     
             seat.setCabinClass(cabinClass);
