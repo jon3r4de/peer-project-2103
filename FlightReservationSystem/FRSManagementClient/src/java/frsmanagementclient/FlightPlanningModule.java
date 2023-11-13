@@ -173,7 +173,7 @@ public class FlightPlanningModule {
         if (aircraftConfigurations.isEmpty()) {
             System.out.println("No Available Aircraft Configurations!\n");
         } else {
-            System.out.printf("%-20s%-20s%-20s%-20s\n", "Config Name", "Num of Cabins", "Max Seat Capacity", "Cabin Class Types");
+            System.out.printf("%-30s%-20s%-20s%-20s\n", "Config Name", "Num of Cabins", "Max Seat Capacity", "Cabin Class Types");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
 
             for (AirCraftConfig aircraftConfiguration : aircraftConfigurations) {
@@ -183,13 +183,15 @@ public class FlightPlanningModule {
                 List<CabinClass> cabinClasses = aircraftConfiguration.getCabinClasses();
                 List<CabinClassEnum> cabinClassType = cabinClasses.stream().map((cc) -> cc.getCabinClassType()).collect(Collectors.toList());
 
-                System.out.printf("%-20s%-20d%-20d%-20s\n",
+                System.out.printf("%-30s%-20d%-20d%-20s\n",
                         configName, numCabinClass, maxSeatCapacity,
                         cabinClassType.toString());
             }
             System.out.println();
         }
     }
+    
+
     
     public void viewAircraftConfigDetails() throws AircraftConfigNotFoundException {
         System.out.println("*** FRSManagement :: Flight Planning Module :: View Aircraft Configuration Details ***\n");
