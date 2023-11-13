@@ -183,6 +183,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             while (tempDate.getTime() <= endDate.getTime()) {
                 Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
                 FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 em.flush();

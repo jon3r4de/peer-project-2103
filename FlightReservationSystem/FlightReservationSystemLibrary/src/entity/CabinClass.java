@@ -64,7 +64,7 @@ public class CabinClass implements Serializable {
     private CabinClassEnum cabinClassType;
      
     @ManyToOne()
-    @JoinColumn()
+    //@JoinColumn()
     private FlightSchedule flightSchedule;
     
     @ManyToOne(optional = false)

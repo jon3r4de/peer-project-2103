@@ -74,7 +74,16 @@ public class FlightSchedulePlan implements Serializable {
         fares = new ArrayList<>();
         this.disabled = false;
         this.flightSchedulePlanName = "Flight schedule plan "+ this.nameGenerator();
+        this.disabled = false; // auto set to false
     }
+    
+    public FlightSchedulePlan(FlightScheduleEnum flightScheduleType, List<Fare> fares) {
+        this();
+        this.flightScheduleType = flightScheduleType;
+        this.fares = fares;
+       
+    }
+
 
     public String getFlightSchedulePlanName() {
         return flightSchedulePlanName;
@@ -84,12 +93,6 @@ public class FlightSchedulePlan implements Serializable {
         this.flightSchedulePlanName = flightSchedulePlanName;
     }
     
-
-    public FlightSchedulePlan(FlightScheduleEnum flightScheduleType, List<Fare> fares) {
-        this.flightScheduleType = flightScheduleType;
-        this.fares = fares;
-    }
-
     public Long getFlightSchedulePlanId() {
         return flightSchedulePlanId;
     }

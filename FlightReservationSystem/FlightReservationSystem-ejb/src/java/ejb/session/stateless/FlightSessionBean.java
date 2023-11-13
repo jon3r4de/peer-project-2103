@@ -170,11 +170,15 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
 
     @Override
     public List<FlightSchedule> retrieveFlightSchedulesByFlightNumber(String flightNumber) throws FlightNotFoundException {
-        Flight flight = retrieveFlightByFlightNumber(flightNumber);
+        Flight flight = this.retrieveFlightByFlightNumber(flightNumber);
+        
         List<FlightSchedule> list = new ArrayList<>();
+        
         List<FlightSchedulePlan> flightSchedulePlans = flight.getFlightSchedulePlans();
-        //lazy loading
+        
+//lazy loading
         flightSchedulePlans.size();
+        
         
         for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
             if (flightSchedulePlan.getDisabled() == false) {
@@ -182,6 +186,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
                 flightSchedules.size();
                 for (FlightSchedule flightSchedule : flightSchedules) {
                     list.add(flightSchedule);
+                    flightSchedule.getCabinClasses().size(); //lazy loading cabin classes for every flight schedule
                 }
             }
         }
@@ -214,10 +219,13 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
                 flight.getFlightRoute();
                 flight.getComplementaryReturnFlight();
                 flight.getFlightSchedulePlans().size();
+                flight.getAirCraftConfig().getCabinClasses().size(); //lazy cabin class loading
+                
                 for (CabinClass cabinClass: flight.getAirCraftConfig().getCabinClasses()) {
                     cabinClass.getCabinClassType();
                     cabinClass.getMaxSeatCapacity();
                 }
+                
                 return flight;
             } else {
                 throw new FlightNotFoundException("Flight number " + flightNumber + " is not found!");

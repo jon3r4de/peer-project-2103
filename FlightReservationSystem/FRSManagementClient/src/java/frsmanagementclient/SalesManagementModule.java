@@ -85,6 +85,7 @@ public class SalesManagementModule {
             System.out.println("--------------------------------------------------------------------------------------------");
 
             int choice;
+            
             while (true) {
                 int index = 1;
                 for (FlightSchedule fs : flightSchedules) {
@@ -101,26 +102,35 @@ public class SalesManagementModule {
                 if (choice - 1 > flightSchedules.size()) {
                     System.out.println("Invalid flight schedule chosen. Try again.");
                 } else {
+                    //System.out.println("SM debug 1");
                     break;
                 }
             }
             
-            scanner.next();
+            //System.out.println("SM debug 2");
+            
+            //scanner.next();
             FlightSchedule chosenFs = flightSchedules.get(choice - 1);
+            //System.out.println("SM debug 3");
             List<CabinClass> ccInFs = chosenFs.getCabinClasses();
+            //System.out.println("SM debug 4");
             
             Integer totalAvailSeats = 0;
             Integer totalResSeats = 0;
             Integer totalBalSeats = 0;
             
             for (CabinClass cc : ccInFs) {
+                //System.out.println("SM debug 5");
                 System.out.println("Seats Balance for Cabin Class: " + cc.getCabinClassType());
                 System.out.printf("%-20s%-20s%-20s\n", "Available Seats", "Reserved Seats", "Balance Seats");
                 System.out.println("--------------------------------------------------------------------------------------------");
                 
                 Integer availSeats = cc.getAvailableSeats();
+                //System.out.println("SM debug 6");
                 Integer resSeats = cc.getReservedSeats();
+               // System.out.println("SM debug 7");
                 Integer balSeats = cc.getBalanceSeats();
+                //System.out.println("SM debug 8");
                 System.out.printf("%-20s%-20s%-20s\n", availSeats, resSeats, balSeats);
                 System.out.println();
                 totalAvailSeats += availSeats;

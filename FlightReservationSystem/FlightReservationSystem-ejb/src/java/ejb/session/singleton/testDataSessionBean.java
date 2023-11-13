@@ -498,7 +498,94 @@ public class testDataSessionBean {
 
             // fsp test case 4
             
+            // fsp test case 5
+        int reccurence = 2;
+        Date departureDateTime4 = DATE_TIME_FORMAT.parse("1 Dec 23 01:00 PM");
+        Date estimatedFlightDuration4 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("04 Hours 00 Minute");
+    
+
+            String endDateString4 = "31 Dec 23";
+            Date endDate4 = endDateFormat.parse(endDateString4);
+
+            List<Fare> fares4 = new ArrayList<>();
             
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares4.add(new Fare("ML412_F1", CabinClassEnum.FIRST,new BigDecimal("2900")));
+            fares4.add(new Fare("ML412_J1", CabinClassEnum.BUSINESS,new BigDecimal("1400")));
+            fares4.add(new Fare("ML412_Y1", CabinClassEnum.ECONOMY,new BigDecimal("400")));
+            
+            Duration duration4 = Duration.ofHours(4);
+            
+            FlightSchedulePlan newFlightSchedulePlan4 = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTDAY, fares4); 
+           
+            for(Fare f : fares4) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan4);
+            }
+            
+            Query query14 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query14.setParameter("inFlightNumber", "ML412");
+            Flight f14 = (Flight) query14.getSingleResult();
+            
+            newFlightSchedulePlan4.setLayoverDuration(duration4);
+            
+            Long newFlightSchedulePlanId4 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan4, f14.getFlightId(), departureDateTime4, estimatedFlightDuration4, endDate4, reccurence);
+           
+        // fsp test case 5
+        
+        //fsp test case 6
+        
+            List<Date> departureDateTimes = new ArrayList<>();
+            List<Date> estimatedFlightDurations = new ArrayList<>();
+
+
+                String departureDateTimeString = "7 Dec 23 05:00 PM";
+                Date departureDate = DATE_TIME_FORMAT.parse(departureDateTimeString);
+
+                departureDateTimes.add(departureDate);
+                
+                String departureDateTimeString2 = "8 Dec 23 05:00 PM";
+                Date departureDate2 = DATE_TIME_FORMAT.parse(departureDateTimeString2);
+
+                departureDateTimes.add(departureDate2);
+                
+                String departureDateTimeString3 = "9 Dec 23 05:00 PM";
+                Date departureDate3 = DATE_TIME_FORMAT.parse(departureDateTimeString3);
+
+                departureDateTimes.add(departureDate3);
+                
+
+                Date estimatedFlightDuration5 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                Date estimatedFlightDuration6 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                Date estimatedFlightDuration7 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                estimatedFlightDurations.add(estimatedFlightDuration5);
+                estimatedFlightDurations.add(estimatedFlightDuration6);
+                estimatedFlightDurations.add(estimatedFlightDuration7);
+                
+            List<Fare> fares5 = new ArrayList<>();
+            
+            //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
+            fares5.add(new Fare("ML512_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
+            fares5.add(new Fare("ML512_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
+            fares5.add(new Fare("ML512_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
+            
+            Duration duration5 = Duration.ofHours(2);
+            
+
+            FlightSchedulePlan newFlightSchedulePlan5 = new FlightSchedulePlan(FlightScheduleEnum.MULTIPLE, fares5);
+            
+            for(Fare f : fares5) {
+                f.setFlightSchedulePlan(newFlightSchedulePlan5);
+            }
+            
+            newFlightSchedulePlan5.setLayoverDuration(duration5);
+            
+            Query query15 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
+            query15.setParameter("inFlightNumber", "ML512");
+            Flight f15 = (Flight) query15.getSingleResult();
+
+            Long newFlightSchedulePlanId5 = flightSchedulePlanSessionBeanLocal.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan5, f15.getFlightId(), departureDateTimes, estimatedFlightDurations);
+           
+        //fsp test case 6
             
             
         } catch (Exception ex) {
@@ -507,4 +594,6 @@ public class testDataSessionBean {
     
         
     }
+
+
 }
