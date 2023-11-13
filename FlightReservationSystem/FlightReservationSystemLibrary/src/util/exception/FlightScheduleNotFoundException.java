@@ -8,13 +8,13 @@ package util.exception;
  *
  * @author jonang
  */
-public class FlightScheduleNotFountException extends Exception {
+public class FlightScheduleNotFoundException extends Exception {
 
     /**
      * Creates a new instance of <code>FlightScheduleNotFountException</code>
      * without detail message.
      */
-    public FlightScheduleNotFountException() {
+    public FlightScheduleNotFoundException() {
     }
 
     /**
@@ -23,7 +23,7 @@ public class FlightScheduleNotFountException extends Exception {
      *
      * @param msg the detail message.
      */
-    public FlightScheduleNotFountException(String msg) {
+    public FlightScheduleNotFoundException(String msg) {
         super(msg);
     }
 }

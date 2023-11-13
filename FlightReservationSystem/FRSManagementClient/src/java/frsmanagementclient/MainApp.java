@@ -9,6 +9,7 @@ import ejb.session.stateless.CabinClassSessionBeanRemote;
 import ejb.session.stateless.EmployeeSessionBeanRemote;
 import ejb.session.stateless.FlightRouteSessionBeanRemote;
 import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
+import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.aircraftTypeSessionBeanRemote;
 import entity.Employee;
@@ -34,13 +35,16 @@ public class MainApp {
     
     private FlightSessionBeanRemote flightSessionBeanRemote;
     
+    private FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
+    
     private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
     
     private CabinClassSessionBeanRemote cabinClassSessionBeanRemote;
     
     public MainApp(EmployeeSessionBeanRemote employeeSessionBeanRemote, aircraftTypeSessionBeanRemote aircraftTypeSessionBeanRemote, AircraftconfigSessionBeanRemote aircraftconfigSessionBeanRemote,
             FlightRouteSessionBeanRemote flightRouteSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, 
-            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, CabinClassSessionBeanRemote cabinClassSessionBeanRemote) {
+            FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, CabinClassSessionBeanRemote cabinClassSessionBeanRemote,
+            FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote) {
         this.employeeSessionBeanRemote = employeeSessionBeanRemote;
         this.aircraftTypeSessionBeanRemote = aircraftTypeSessionBeanRemote;
         this.aircraftconfigSessionBeanRemote = aircraftconfigSessionBeanRemote;
@@ -48,6 +52,7 @@ public class MainApp {
         this.flightSessionBeanRemote = flightSessionBeanRemote;
         this.flightSchedulePlanSessionBeanRemote = flightSchedulePlanSessionBeanRemote;
         this.cabinClassSessionBeanRemote = cabinClassSessionBeanRemote;
+        this.flightScheduleSessionBeanRemote = flightScheduleSessionBeanRemote;
     }
     
     public void runApp() {
@@ -55,7 +60,7 @@ public class MainApp {
         int response;
         
         while (true) {
-            System.out.println("*** Welcome to frs management client system ***\n");
+            System.out.println("*** Welcome to FRS Management Client System ***\n");
             System.out.println("1: Login");
             System.out.println("2: Exit\n");
 
@@ -70,15 +75,13 @@ public class MainApp {
                     if (response == 1) {
                         
                         System.out.println("*** FRS Management :: Employee Login ***\n");
-                        System.out.print("Enter username> ");
+                        System.out.print("Enter Username> ");
                         scanner.nextLine(); // Consume the newline character
                         String username = scanner.nextLine().trim();
-                        System.out.print("Enter password> ");
+                        System.out.print("Enter Password> ");
                         String password = scanner.nextLine().trim();
                            
                         try {
-                            System.out.println("debug 1");
-                            System.out.println("this is the " + username + " this is the password" + password);
                             this.employee = this.employeeSessionBeanRemote.doLogin(username, password);
                         } catch (InvalidLoginCredentialException ex) {
                             System.out.println(ex.getMessage() + "\n");
@@ -108,11 +111,11 @@ public class MainApp {
 
 
     public void logInView() {
-                Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         int response;
         
         while (true) {
-            System.out.println("*** Welcome to frs management client system " + this.employee.getUsername() + ", what would you like to do today? ***\n");
+            System.out.println("*** Welcome to FRS Management Client System, " + this.employee.getUsername() + ", what would you like to do today? ***\n");
             System.out.println("1: Hop into module");
             System.out.println("2: Logout\n");
 
@@ -133,13 +136,11 @@ public class MainApp {
                             FlightPlanningModule flightPlanningModule = new FlightPlanningModule (aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, flightRouteSessionBeanRemote, cabinClassSessionBeanRemote);
                             flightPlanningModule.routePlannerFlightPlanningModule();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SCHEDULEMANAGER)) {
-                          
                             FlightOperationModule flightOperationModule = new FlightOperationModule(flightSessionBeanRemote, flightRouteSessionBeanRemote, flightSchedulePlanSessionBeanRemote);
-                         
                             flightOperationModule.menuFlightOperation();
                         } else if (employee.getUserRole().equals(EmployeeEnum.SALESMANAGER)) {
-                            /*SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote, employee);
-                            salesManagementModule.menuSalesManagement();*/
+                            SalesManagementModule salesManagementModule = new SalesManagementModule(flightSessionBeanRemote, flightScheduleSessionBeanRemote);
+                            salesManagementModule.menuSalesManagement();
                         }
                     } else if (response == 2) {
                         System.out.println("You are logging out.");

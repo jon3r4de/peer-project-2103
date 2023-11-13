@@ -4,6 +4,7 @@
  */
 package entity;
 
+import enumeration.SeatStatusEnum;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -28,11 +30,14 @@ public class Seat implements Serializable {
     @Column(nullable = false, length = 3)
     private String seatNumber;
     
+    @Column(nullable = false)
+    private SeatStatusEnum seatStatus;
+    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private CabinClass cabinClass;
     
-    @ManyToOne(optional = true)
+    @OneToOne(optional = true)
     @JoinColumn(nullable = true)
     private Passenger passenger;
 

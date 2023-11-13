@@ -14,7 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -46,8 +46,8 @@ public class Passenger implements Serializable {
     @JoinColumn(nullable = false)
     private Reservation reservation;
     
-    @OneToMany(mappedBy = "passenger")
-    private List<Seat> seats;
+    @OneToOne(mappedBy = "passenger")
+    private Seat seat;
     
     public Passenger(String firstName, String lastName, String passportNum) {
         this.firstName = firstName;
@@ -56,7 +56,6 @@ public class Passenger implements Serializable {
     }
     
     public Passenger() {
-        this.seats = new ArrayList<>();
     }
     
     public Long getPassengerId() {
@@ -95,14 +94,13 @@ public class Passenger implements Serializable {
         this.reservation = reservation;
     }
 
-    public List<Seat> getSeats() {
-        return seats;
+    public Seat getSeat() {
+        return seat;
     }
 
-    public void setSeats(List<Seat> seats) {
-        this.seats = seats;
+    public void setSeat(Seat seat) {
+        this.seat = seat;
     }
-
 
     @Override
     public int hashCode() {

@@ -20,7 +20,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import util.exception.AirportNotFoundException;
-import util.exception.FlightScheduleNotFountException;
+import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.UnknownPersistenceException;
 
@@ -433,20 +433,20 @@ public class MainApp {
             }
         } catch (ParseException ex) {
             System.out.println("Invalid date input!\n");
-        } catch (AirportNotFoundException | FlightScheduleNotFountException ex) {
+        } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
             System.out.println("Error: " + ex.getMessage());
             System.out.println();
         }
     }
        
      public void searchConnectingFlights(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, 
-             Date returnDate, Integer numOfPassengers, Integer tripType, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFountException {
+             Date returnDate, Integer numOfPassengers, Integer tripType, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException {
          
      }
  
        
     public void searchDirectFlight(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, Date returnDate, Integer numOfPassengers,
-            Integer tripType, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFountException {
+            Integer tripType, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException {
    
        
     }   

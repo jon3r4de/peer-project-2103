@@ -64,7 +64,6 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private List<String> creditCardInfo;
     
-    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private FlightSchedule flightSchedule;
