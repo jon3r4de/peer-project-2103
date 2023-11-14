@@ -100,7 +100,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         
         em.flush();
         
-        return flightReservation.getFlightReservationId();
+        return flightReservation.getReservationId();
     }
 
     public void persist(Object object) {
