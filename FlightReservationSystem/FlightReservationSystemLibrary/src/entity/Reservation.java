@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Min;
@@ -34,7 +36,7 @@ public class Reservation implements Serializable {
     //passenger: firstName, lastName, passportNumber
     
     @OneToMany(mappedBy = "reservation")
-    private List<Passenger> passengerList;
+    private List<Passenger> passengers;
     
     @Column(nullable = false)
     @Min(1)
@@ -45,10 +47,10 @@ public class Reservation implements Serializable {
     private String status;
     private String departureAirport;
     private String destinationAirport;
-    private LocalDate departureDate;
+    private Date departureDate;
     
     @Column(nullable = true)
-    private LocalDate returnDate;
+    private Date returnDate;
     
     @ManyToOne(optional = true)
     @JoinColumn(nullable = false)
@@ -64,12 +66,13 @@ public class Reservation implements Serializable {
     @Column(nullable = false)
     private List<String> creditCardInfo;
     
-    @ManyToOne(optional = false)
+    @ManyToMany
     @JoinColumn(nullable = false)
-    private FlightSchedule flightSchedule;
+    private List<FlightSchedule> flightSchedules;
     
     public Reservation() {
-       passengerList = new ArrayList<>();
+       this.passengers = new ArrayList<>();
+       this.flightSchedules = new ArrayList<>();
     }
     
     public Reservation(BigDecimal totalAmount, Integer numOfPassengers, List<String> creditCardInfo) {
@@ -78,13 +81,25 @@ public class Reservation implements Serializable {
         this.totalAmount = totalAmount;
         this.creditCardInfo = creditCardInfo;
     }
+    
+    public Reservation(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, String departureAirport, String destinationAirport, Date departureDate, Date returnDate, Customer customer) {
+        this.numOfPassengers = numOfPassengers;
+        this.passengers = passengers;
+        this.creditCardInfo = creditCard;
+        this.departureAirport = departureAirport;
+        this.destinationAirport = destinationAirport;
+        this.departureDate = departureDate;
+        this.returnDate = returnDate;
+        this.customer = customer;
+    }
+
 
     public List<Passenger> getPassengers() {
-        return passengerList;
+        return passengers;
     }
 
     public void setPassengerDetails(List<Passenger> passengerList) {
-        this.passengerList = passengerList;
+        this.passengers = passengerList;
     }
 
 
@@ -128,19 +143,19 @@ public class Reservation implements Serializable {
         this.destinationAirport = destinationAirport;
     }
 
-    public LocalDate getDepartureDate() {
+    public Date getDepartureDate() {
         return departureDate;
     }
 
-    public void setDepartureDate(LocalDate departureDate) {
+    public void setDepartureDate(Date departureDate) {
         this.departureDate = departureDate;
     }
 
-    public LocalDate getReturnDate() {
+    public Date getReturnDate() {
         return returnDate;
     }
 
-    public void setReturnDate(LocalDate returnDate) {
+    public void setReturnDate(Date returnDate) {
         this.returnDate = returnDate;
     }
 
@@ -169,11 +184,11 @@ public class Reservation implements Serializable {
     }
 
     public List<Passenger> getPassengerList() {
-        return passengerList;
+        return passengers;
     }
 
     public void setPassengerList(List<Passenger> passengerList) {
-        this.passengerList = passengerList;
+        this.passengers = passengerList;
     }
 
     public Integer getNumOfPassengers() {
@@ -200,12 +215,12 @@ public class Reservation implements Serializable {
         this.creditCardInfo = creditCardInfo;
     }
 
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
+    public List<FlightSchedule> getFlightSchedules() {
+        return flightSchedules;
     }
 
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
+    public void setFlightSchedules(List<FlightSchedule> flightSchedules) {
+        this.flightSchedules = flightSchedules;
     }
 
     
@@ -232,7 +247,7 @@ public class Reservation implements Serializable {
 
     @Override
     public String toString() {
-        return "FlightReservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengerList + ", creditCard=" + creditCardInfo + 
+        return "FlightReservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengers + ", creditCard=" + creditCardInfo + 
                  ", customer=" + customer;
     }
     
