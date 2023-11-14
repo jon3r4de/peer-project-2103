@@ -16,6 +16,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import util.exception.NoAvailableSeatsException;
+import util.exception.ReservationNotFoundException;
 
 /**
  *
@@ -106,6 +107,16 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         em.flush();
         
         return flightReservation.getReservationId();
+    }
+    
+    public Reservation retrieveReservationByID(Long reservationId) throws ReservationNotFoundException {
+        Reservation flightReservation = em.find(Reservation.class, reservationId);
+
+        if (flightReservation == null) {
+            throw new ReservationNotFoundException("Flight Reservation with ID: " + reservationId + " does not exist!");
+        }
+
+        return flightReservation;
     }
 
     public void persist(Object object) {

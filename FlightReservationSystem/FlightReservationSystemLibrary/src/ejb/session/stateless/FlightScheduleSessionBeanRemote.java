@@ -6,8 +6,12 @@ package ejb.session.stateless;
 
 import entity.FlightSchedule;
 import entity.Reservation;
+import enumeration.CabinClassEnum;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.Remote;
+import util.exception.AirportNotFoundException;
+import util.exception.FlightScheduleNotFoundException;
 
 /**
  *
@@ -16,4 +20,8 @@ import javax.ejb.Remote;
 @Remote
 public interface FlightScheduleSessionBeanRemote {
     public List<Reservation> viewReservations(FlightSchedule flightSchedule);
+
+    public List<FlightSchedule> searchDirectFlightSchedules(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException;
+
+    public List<List<FlightSchedule>> searchConnectingFlightScehdules(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException;
 }
