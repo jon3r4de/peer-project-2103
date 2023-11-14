@@ -27,6 +27,11 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
+    public Reservation retrieveReservationById(Long reservationId) {
+        Reservation res = em.find(Reservation.class, reservationId);
+        
+        return res;
+    }
     
     //@Override
     public Long reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, 

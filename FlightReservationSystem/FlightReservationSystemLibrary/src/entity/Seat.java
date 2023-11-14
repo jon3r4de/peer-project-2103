@@ -37,7 +37,7 @@ public class Seat implements Serializable {
     @JoinColumn(nullable = false)
     private CabinClass cabinClass;
     
-    @OneToOne(optional = true)
+    @ManyToOne(optional = true)
     @JoinColumn(nullable = true)
     private Passenger passenger;
 

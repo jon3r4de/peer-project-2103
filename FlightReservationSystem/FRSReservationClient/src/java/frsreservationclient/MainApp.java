@@ -5,10 +5,16 @@
 package frsreservationclient;
 
 import ejb.session.stateless.CustomerSessionBeanRemote;
+import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.ReservationSessionBeanRemote;
+import entity.CabinClass;
 import entity.Customer;
+import entity.Flight;
+import entity.FlightRoute;
+import entity.FlightSchedule;
 import entity.Passenger;
 import entity.Reservation;
+import entity.Seat;
 import enumeration.CabinClassEnum;
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -20,6 +26,7 @@ import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
@@ -34,15 +41,17 @@ public class MainApp {
     private Customer customer;
     private CustomerSessionBeanRemote customerSessionBeanRemote;
     private ReservationSessionBeanRemote reservationSessionBeanRemote;
+    private FlightSessionBeanRemote flightSessionBeanRemote;
     
     public MainApp() {
        
     }
     
-    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote) {
+    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote) {
        this();
        this.customerSessionBeanRemote = customerSessionBeanRemote;
        this.reservationSessionBeanRemote = reservationSessionBeanRemote;
+       this.flightSessionBeanRemote = flightSessionBeanRemote;
     }
     
     public void runApp() {
@@ -131,10 +140,10 @@ public class MainApp {
                     searchFlight();
                     break;
                 case 2:
-                    viewFlightReservation();
+                    viewAllFlightReservations();
                     break;
                 case 3:
-                    viewFlightReservationDetail();
+                    viewFlightReservationDetails();
                     break;
                 case 4:
                     System.out.println("Exiting the application.");
@@ -148,8 +157,24 @@ public class MainApp {
     }
     
     
-    public void viewFlightReservation() {
+    public void viewAllFlightReservations() {        
+        System.out.println("*** FRS Reservation :: View All Flight Reservations ***\n");
+        List<Reservation> flightReservations = customer.getReservations();
         
+        if (flightReservations.isEmpty()) {
+            System.out.println("No available reservations!");
+            return;
+        }
+        System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "Index", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport", "Return Date");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+        Integer num = 0;
+
+        for (Reservation res : flightReservations) {
+            num++;
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", num, res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport(), res.getReturnDate());
+        }
+
+        System.out.println();
     }
     
         public void reserveFlight(Integer tripType, Integer numOfPassengers) {
@@ -277,8 +302,57 @@ public class MainApp {
 
     
     
-    public void viewFlightReservationDetail() {
-        
+    public void viewFlightReservationDetails() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("*** FRS Reservation :: View Flight Reservation Details ***\n");
+            System.out.print("Enter Reservation ID> ");
+            Long reservationId = scanner.nextLong();
+            Reservation res = reservationSessionBeanRemote.retrieveReservationById(reservationId);
+
+            List<Passenger> passengers = res.getPassengers();
+
+            System.out.println("Overall Reservation Details: ");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s%-20s\n", "Index", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport", "Return Date");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport(), res.getReturnDate());
+
+            System.out.println("Flights in Reservations:");
+            System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", "Flight Number", "Departure Date", "Arrival Date", "Origin", "Destination Airport");
+            System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+            
+            List<FlightSchedule> flightSchedules = res.getFlightSchedules();
+            for (FlightSchedule fs : flightSchedules) {
+                String flightNum = fs.getFlightNumber();
+                Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNum); 
+                Date departure = fs.getDepartureDateTime();
+                Date arrival = fs.getArrivalDateTime();
+                FlightRoute fr = flight.getFlightRoute();
+                String origin = fr.getOrigin().getAirportName();
+                String destination = fr.getDestination().getAirportName();
+                System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", flightNum, departure, arrival, origin, destination);
+            }
+
+            System.out.print("Reservation Details for Passenger: ");
+            for (Passenger p : passengers) {
+                System.out.print(p.getFirstName() + " " + p.getLastName());
+                System.out.println();
+                List<Seat> seats = p.getSeats();
+
+                for (Seat s : seats) {
+                    System.out.printf("%-20s%-20s%-20s\n", "Seat Number", "Cabin Class Type", "Flight Number");
+                    System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
+                    String seatNum = s.getSeatNumber();
+                    CabinClassEnum ccType= s.getCabinClass().getCabinClassType();
+                    FlightSchedule fs = s.getCabinClass().getFlightSchedule();
+                    String flightNumber = fs.getFlightNumber();
+                    System.out.printf("%-20s%-20s%-20s\n", seatNum, ccType, flightNumber);
+                }
+                System.out.println();
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
     }
     
     public Customer doLogin(Scanner sc) throws InvalidLoginCredentialException { //should return custiomer imo --> atm void just to have no errors
