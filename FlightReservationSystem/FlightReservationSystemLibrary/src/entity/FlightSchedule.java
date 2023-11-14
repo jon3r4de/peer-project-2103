@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
@@ -53,8 +54,9 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false, length = 6, unique = false)
     private String flightNumber;
 
-    @OneToMany(mappedBy = "flightSchedule")
+    @ManyToMany(mappedBy = "flightSchedules")
     private List<Reservation> reservations;
+
     
     @OneToMany(mappedBy = "flightSchedule")
     private List<CabinClass> cabinClasses;
