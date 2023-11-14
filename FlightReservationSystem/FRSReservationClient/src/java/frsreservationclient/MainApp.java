@@ -5,6 +5,7 @@
 package frsreservationclient;
 
 import ejb.session.stateless.CustomerSessionBeanRemote;
+import ejb.session.stateless.ReservationSessionBeanRemote;
 import entity.Customer;
 import entity.Passenger;
 import entity.Reservation;
@@ -22,6 +23,7 @@ import java.util.logging.Logger;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.NoAvailableSeatsException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -31,14 +33,16 @@ import util.exception.UnknownPersistenceException;
 public class MainApp {
     private Customer customer;
     private CustomerSessionBeanRemote customerSessionBeanRemote;
+    private ReservationSessionBeanRemote reservationSessionBeanRemote;
     
     public MainApp() {
        
     }
     
-    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote) {
+    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote) {
        this();
        this.customerSessionBeanRemote = customerSessionBeanRemote;
+       this.reservationSessionBeanRemote = reservationSessionBeanRemote;
     }
     
     public void runApp() {
@@ -164,8 +168,9 @@ public class MainApp {
             String destinationAirportiATACode = scanner.nextLine().trim();
             System.out.print("Enter Departure Date (dd/mm/yyyy)> ");
            
+             Date departureDate = null;
             try {
-                Date departureDate = inputDateFormat.parse(scanner.nextLine().trim());
+                departureDate = inputDateFormat.parse(scanner.nextLine().trim());
             } catch (ParseException ex) {
                 Logger.getLogger(MainApp.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -220,20 +225,6 @@ public class MainApp {
             creditCard.add(scanner.nextLine().trim());
             
             BigDecimal temp = new BigDecimal(1.00);
-           
-            Reservation reservation = new Reservation(temp, numOfPassengers, creditCard);
-            /*try {
-                Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers, creditCard,
-                        flightScheduleIds, returnFlightScheduleIds, departureAirportiATACode, destinationAirportiATACode, departureDate, returnDate, customer);
-                System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
-
-            } catch (NoAvailableSeatsException ex) {
-                System.out.println("Error: " + ex.getMessage());
-                System.out.println();
-            }
-        } catch (ParseException ex) {
-            System.out.println("Invalid date input!\n");
-        }*/
             
             List<Passenger> passengers = new ArrayList<>();
            
@@ -255,9 +246,24 @@ public class MainApp {
                 
                 passengers.add(passenger);
                 
-                } catch(Exception e) { // for compile
-                    
+                } catch(Exception ex) { // for compile
+                    System.out.println("Error: " + ex.getMessage());
                 }
+           
+            Reservation reservation = new Reservation(temp, numOfPassengers, creditCard);
+            try {
+                Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers, creditCard,
+                        flightScheduleIds, returnFlightScheduleIds, departureAirportiATACode, destinationAirportiATACode, departureDate, returnDate, customer);
+                System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
+
+            } catch (NoAvailableSeatsException ex) {
+                System.out.println("Error: " + ex.getMessage());
+            }
+            } catch (ParseException ex) {
+                System.out.println("Invalid date input!\n");
+            }
+
+
                 
                 reservation.setPassengerList(passengers);
                 
@@ -381,10 +387,12 @@ public class MainApp {
             destinationAirportiATACode = scanner.nextLine().trim();
             System.out.print("Enter Departure Date (dd MMM)> ");
             departureDate = inputDateFormat.parse(scanner.nextLine().trim());
+            
             if (tripType == 2) {
                 System.out.println("Enter Return Date (dd MMM)> ");
                 returnDate = inputDateFormat.parse(scanner.nextLine().trim());
             }
+            
             System.out.print("Enter Number Of Passengers> ");
             numOfPassengers = scanner.nextInt();
             System.out.print("Enter Flight Type Preference:  1: Direct Flight, 2: Connecting Flight, 3: No Preference > ");

@@ -42,6 +42,8 @@ public class Passenger implements Serializable {
     @Size(max = 9)
     private String passportNum;
     
+    private String cabinClass;
+    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private Reservation reservation;
@@ -49,14 +51,25 @@ public class Passenger implements Serializable {
     @OneToOne(mappedBy = "passenger")
     private Seat seat;
     
-    public Passenger(String firstName, String lastName, String passportNum) {
+    public Passenger(String firstName, String lastName, String passportNum, String cabinClass) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.passportNum = passportNum;
+        this.cabinClass = cabinClass;
     }
     
     public Passenger() {
     }
+
+    public String getCabinClass() {
+        return cabinClass;
+    }
+
+    public void setCabinClass(String cabinClass) {
+        this.cabinClass = cabinClass;
+    }
+    
+    
     
     public Long getPassengerId() {
         return passengerId;
