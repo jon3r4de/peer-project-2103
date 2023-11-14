@@ -8,14 +8,11 @@ import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.CabinClass;
 import entity.FlightSchedule;
-import entity.Passenger;
-import entity.Reservation;
-import enumeration.CabinClassEnum;
+import entity.SeatInventory;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -117,7 +114,7 @@ public class SalesManagementModule {
             //scanner.next();
             FlightSchedule chosenFs = flightSchedules.get(choice - 1);
             //System.out.println("SM debug 3");
-            List<CabinClass> ccInFs = chosenFs.getCabinClasses();
+            List<SeatInventory> ccInFs = chosenFs.getSeatInventories();
             
             Integer totalAvailSeats = 0;
             Integer totalResSeats = 0;
@@ -125,17 +122,17 @@ public class SalesManagementModule {
             
             
             
-            for (CabinClass cc : ccInFs) {
+            for (SeatInventory cc : ccInFs) {
                 //System.out.println("SM debug 5");
                 System.out.println("Seats Balance for Cabin Class: " + cc.getCabinClassType());
                 System.out.printf("%-20s%-20s%-20s\n", "Available Seats", "Reserved Seats", "Balance Seats");
                 System.out.println("--------------------------------------------------------------------------------------------");
                 
-                Integer availSeats = cc.getAvailableSeats();
+                Integer availSeats = cc.getNumberOfAvailableSeats();
                 //System.out.println("SM debug 6");
-                Integer resSeats = cc.getReservedSeats();
+                Integer resSeats = cc.getNumberOfReservedSeats();
                // System.out.println("SM debug 7");
-                Integer balSeats = cc.getBalanceSeats();
+                Integer balSeats = cc.getNumberOfBalanceSeats();
                 //System.out.println("SM debug 8");
                 System.out.printf("%-20s%-20s%-20s\n", availSeats, resSeats, balSeats);
                 System.out.println();

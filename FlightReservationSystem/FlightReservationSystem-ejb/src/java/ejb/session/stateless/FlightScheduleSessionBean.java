@@ -92,7 +92,7 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
 
         for (FlightSchedule flightSchedule : flightSchedules) {
-            flightSchedule.getCabinClasses().size();
+            flightSchedule.getSeatInventories().size();
             flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
             flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
         }

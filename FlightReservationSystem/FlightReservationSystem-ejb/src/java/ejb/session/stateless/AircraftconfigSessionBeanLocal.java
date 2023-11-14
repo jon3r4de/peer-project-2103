@@ -7,11 +7,13 @@ package ejb.session.stateless;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.CabinClass;
+import entity.SeatInventory;
 import java.util.List;
 import javax.ejb.Local;
 import util.exception.AircraftConfigExistExcetpion;
 import util.exception.AircraftConfigNotFoundException;
 import util.exception.GeneralException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -27,4 +29,6 @@ public interface AircraftconfigSessionBeanLocal {
      public AirCraftConfig retrieveAircraftConfigurationByName(String name) throws AircraftConfigNotFoundException;
      
      public AirCraftConfig retrieveAircraftConfigurationById(Long aircraftConfigurationId) throws AircraftConfigNotFoundException;
+
+    public void generateSeats(CabinClass cabinClass, SeatInventory seatInventory);
 }

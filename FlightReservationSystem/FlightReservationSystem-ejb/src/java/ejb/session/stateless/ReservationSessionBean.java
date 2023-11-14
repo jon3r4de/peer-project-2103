@@ -9,6 +9,7 @@ import entity.Customer;
 import entity.FlightSchedule;
 import entity.Passenger;
 import entity.Reservation;
+import entity.SeatInventory;
 import enumeration.CabinClassEnum;
 import java.util.Date;
 import java.util.List;
@@ -57,15 +58,25 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                     cabinClassType = CabinClassEnum.ECONOMY;
                 }
 
-                for (CabinClass cabinClass : flightSchedule.getCabinClasses()) {
+                for (SeatInventory si : flightSchedule.getSeatInventories()) {
+                    if (si.getCabinClass().equals(cabinClassType)) {
+                        if (si.getNumberOfAvailableSeats() == 0) {
+                            throw new NoAvailableSeatsException("The chosen class does not have enough seats for the reservation, please choose another one!");
+                        } else {
+                            si.setNumberOfReservedSeats(si.getNumberOfReservedSeats() + 1);
+                        }
+                    }
+                }
+                
+                /*for (CabinClass cabinClass : flightSchedule.getSeatInventories()) {
                     if (cabinClass.equals(cabinClassType)) {
                         if (cabinClass.getAvailableSeats() == 0) {
-                            throw new NoAvailableSeatsException("The chosen cabin class does not have enough seats for the reservation, please choose another one!");
+                            throw new NoAvailableSeatsException("The chosen class does not have enough seats for the reservation, please choose another one!");
                         } else {
                             cabinClass.setReservedSeats(cabinClass.getReservedSeats() + 1);
                         }
                     }
-                }
+                }*/
             }
             
             flightSchedule.getReservations().add(flightReservation);
@@ -88,8 +99,18 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                         } else {
                             cabinClassType = CabinClassEnum.ECONOMY;
                         }
+                        
+                        for (SeatInventory si : returnFlightSchedule.getSeatInventories()) {
+                    if (si.getCabinClass().equals(cabinClassType)) {
+                        if (si.getNumberOfAvailableSeats() == 0) {
+                            throw new NoAvailableSeatsException("The chosen class does not have enough seats for the reservation, please choose another one!");
+                        } else {
+                            si.setNumberOfReservedSeats(si.getNumberOfReservedSeats() + 1);
+                        }
+                    }
+                }
 
-                    for (CabinClass cabinClass : returnFlightSchedule.getCabinClasses()) {
+                    /*for (CabinClass cabinClass : returnFlightSchedule.getCabinClasses()) {
                         if (cabinClass.equals(cabinClassType)) {
                             if (cabinClass.getBalanceSeats() == 0) {
                                 throw new NoAvailableSeatsException("The chosen cabin class does not have enough seats for the reservation, please choose another one!");
@@ -97,7 +118,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                                 cabinClass.setReservedSeats(cabinClass.getReservedSeats() + 1);
                             }
                         }
-                    }
+                    }*/
                 }
                 returnFlightSchedule.getReservations().add(flightReservation);
                 flightReservation.getReturnFlightSchedules().add(returnFlightSchedule);
