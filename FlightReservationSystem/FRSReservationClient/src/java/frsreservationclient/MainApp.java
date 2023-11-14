@@ -451,8 +451,9 @@ public class MainApp {
 
         try {
             Scanner scanner = new Scanner(System.in);
-            SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd MMM", Locale.US);
+            //SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd MMM", Locale.US);
             SimpleDateFormat outputDateFormat = new SimpleDateFormat("dd MMM", Locale.US);
+            SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd MMM yyyy");
             Integer tripType;
             String departureAirportiATACode = "";
             String destinationAirportiATACode = "";
@@ -470,11 +471,11 @@ public class MainApp {
             departureAirportiATACode = scanner.nextLine().trim();
             System.out.print("Enter Destination Airport IATA Code> ");
             destinationAirportiATACode = scanner.nextLine().trim();
-            System.out.print("Enter Departure Date (dd MMM   '01 JAN')> ");
+            System.out.print("Enter Departure Date (dd MMM yyyy  '01 JAN 2023')> ");
             departureDate = inputDateFormat.parse(scanner.nextLine().trim());
             
             if (tripType == 2) {
-                System.out.println("Enter Return Date (dd MMM    '01 JAN')> ");
+                System.out.println("Enter Return Date (dd MMM yyyy '01 JAN 2023')> ");
                 returnDate = inputDateFormat.parse(scanner.nextLine().trim());
             }
             
@@ -538,8 +539,17 @@ public class MainApp {
         try {
             System.out.println("Departure Flight Information :: Direct Flight\n");
             //on required departure date
-            List<FlightSchedule> flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, departureDate, cabinClassType);
-
+            //System.out.println("sdf debug1  : "  + departureDate);
+            
+            List<FlightSchedule> flightSchedules =new ArrayList<>();
+           
+            try {
+                flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, departureDate, cabinClassType);
+            } catch(FlightScheduleNotFoundException ex) {
+                flightSchedules = new ArrayList<>();
+            }
+            
+            //System.out.println("sdf debug2");
             if (flightSchedules.isEmpty()) {
                 System.out.println("No available flights departing on " + departureDate + " !\n");
             } else {
@@ -547,10 +557,17 @@ public class MainApp {
                 printDirectFlightSchedulesTable(flightSchedules, cabinClassType, numOfPassengers);
             }
 
+            //System.out.println("sdf debug3");
             //3 days before
             for (int i = 3; i > 0; --i) {
                 Date newDepartureDate = new Date(departureDate.getTime() - i * 24 * 60 * 60 * 1000);
+                System.out.println("sdf debug2 :" + newDepartureDate);
+            try {
                 flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newDepartureDate, cabinClassType);
+            } catch(FlightScheduleNotFoundException ex) {
+                flightSchedules = new ArrayList<>();
+            }
+            
                 if (flightSchedules.isEmpty()) {
                     System.out.println("No available flights departing on " + newDepartureDate + " !\n");
                 } else {
@@ -562,7 +579,13 @@ public class MainApp {
             //3 days after
             for (int i = 1; i < 4; ++i) {
                 Date newDepartureDate = new Date(departureDate.getTime() + i * 24 * 60 * 60 * 1000);
-                flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, departureDate, cabinClassType);
+                System.out.println("sdf debug3 :" + newDepartureDate);
+                try {
+                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newDepartureDate, cabinClassType);
+                } catch(FlightScheduleNotFoundException ex) {
+                    flightSchedules = new ArrayList<>();
+                }
+            
                 if (flightSchedules.isEmpty()) {
                     System.out.println("No available flights departing on " + newDepartureDate + " !\n");
                 } else {
@@ -574,7 +597,13 @@ public class MainApp {
             if (tripType == 2) {
                 System.out.println("\nReturn Flight Information :: Direct Flights\n");
                 //on required departure date
-                flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, returnDate, cabinClassType);
+                
+                try {
+                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, departureDate, cabinClassType);
+                } catch(FlightScheduleNotFoundException ex) {
+                    flightSchedules = new ArrayList<>();
+                }
+                
                 if (flightSchedules.isEmpty()) {
                     System.out.println("No available flights departing on " + returnDate + " !\n");
                 } else {
@@ -584,8 +613,15 @@ public class MainApp {
 
                 //3 days before
                 for (int i = 3; i > 0; --i) {
+                    ;
                     Date newReturnDate = new Date(returnDate.getTime() - i * 24 * 60 * 60 * 1000);
-                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, newReturnDate, cabinClassType);
+                    
+                    try {
+                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newReturnDate, cabinClassType);
+                    } catch(FlightScheduleNotFoundException ex) {
+                        flightSchedules = new ArrayList<>();
+                    }
+                    
                     if (flightSchedules.isEmpty()) {
                         System.out.println("No available flights departing on " + newReturnDate + " !\n");
                     } else {
@@ -596,8 +632,15 @@ public class MainApp {
 
                 //3 days after
                 for (int i = 1; i < 4; ++i) {
+                    
                     Date newReturnDate = new Date(departureDate.getTime() + i * 24 * 60 * 60 * 1000);
-                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, newReturnDate, cabinClassType);
+                   
+                    try {
+                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newReturnDate, cabinClassType);
+                    } catch(FlightScheduleNotFoundException ex) {
+                        flightSchedules = new ArrayList<>();
+                    }
+
                     if (flightSchedules.isEmpty()) {
                         System.out.println("No available flights departing on " + newReturnDate + " !\n");
                     } else {
@@ -607,15 +650,15 @@ public class MainApp {
                     }
                 }
             }
-        } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
+        } catch (AirportNotFoundException /*| FlightScheduleNotFoundException*/ ex) {
             throw ex;
         }
     }
     
        public void printDirectFlightSchedulesTable(List<FlightSchedule> flightSchedules, CabinClassEnum cabinClassType, Integer numOfPassengers) {
 
-        System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", "   ", "Flight Schdule ID", "Flight Number", "Departure Airport", "Departure Time (Local Time)",
-                "Flight Duration", "Destination Airport", "Arrival Time (Local Time)", "First Class Available Seats", "First Class Price", "Business Class Available Seats",
+        System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%30s%37s%37s%37s%37s%8s\n", "   ", "Flight Schdule ID", "Flight Number", "Departure Airport", "Departure Time (Local Time)",
+                "Flight Duration Hours","Flight Duration minutes" , "Destination Airport", "Arrival Time (Local Time)", "First Class Available Seats", "First Class Price", "Business Class Available Seats",
                 "Business Class Price", "Premium Economy Class Available Seats", "Premium Economy Class Price", "Economy Class Available Seats", "Economy Class Price");
 
         String firstClassAvailableSeats = "/";
@@ -683,8 +726,8 @@ public class MainApp {
                 economyClassFare = lowestFareEconomyClass.toString();
             }
 
-            System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", num, flightSchedule.getFlightScheduleId(), flightSchedule.getFlightNumber(), flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getIataAirportcode(), flightSchedule.getDepartureDateTime(), flightSchedule.getDepartureDateTime().getTime(), flightSchedule.getEstimatedFlightDuration(),
-        flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), flightSchedule.getArrivalDateTime(), firstClassAvailableSeats,firstClassFare, businessClassAvailableSeats, businessClassFare, premiumEcoClassAvailableSeats, premiumEconomyClassFare, economyClassAvailableSeats, economyClassFare);
+            System.out.printf("%5s%15s%15s%35s%30s%18s%35s%30s%30s%37s%37s%37s%37s%8s\n", num.toString() + ": " , flightSchedule.getFlightScheduleId(), flightSchedule.getFlightNumber(), flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getIataAirportcode(), flightSchedule.getDepartureDateTime(), flightSchedule.getEstimatedFlightDurationHours(), flightSchedule.getEstimatedFlightDurationMinutes(),
+        flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), flightSchedule.getArrivalDateTime(), firstClassAvailableSeats, firstClassFare, businessClassAvailableSeats, businessClassFare, premiumEcoClassAvailableSeats, premiumEconomyClassFare, economyClassAvailableSeats, economyClassFare);
 
             num++;
         }
@@ -748,8 +791,8 @@ public class MainApp {
     
        public void printConnectingFlightSchedulesTable(List<List<FlightSchedule>> flightSchedules, CabinClassEnum cabinClassType, Integer numOfPassengers) {
 
-        System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", "   ", "Flight Schdule ID", "Flight Number", "Departure Airport", "Departure Time (Local Time)",
-                "Flight Duration", "Destination Airport", "Arrival Time (Local Time)", "First Class Available Seats", "First Class Price", "Business Class Available Seats",
+        System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%30s%37s%37s%37s%37s%8s\n", "   ", "Flight Schdule ID", "Flight Number", "Departure Airport", "Departure Time (Local Time)",
+                "Flight Duration Hours", "Flight Duration minutes", "Destination Airport", "Arrival Time (Local Time)", "First Class Available Seats", "First Class Price", "Business Class Available Seats",
                 "Business Class Price", "Premium Economy Class Available Seats", "Premium Economy Class Price", "Economy Class Available Seats", "Economy Class Price");
 
         String firstClassAvailableSeats1 = "/";
@@ -880,10 +923,10 @@ public class MainApp {
                     economyClassFare2 = lowestFareEconomyClass2.toString();
                 }
 
-                System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", num, firstFlightSchedule.getFlightScheduleId(), firstFlightSchedule.getFlightNumber(), firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), firstFlightSchedule.getDepartureDateTime(), firstFlightSchedule.getDepartureDateTime().getTime(), firstFlightSchedule.getEstimatedFlightDuration(),
+                System.out.printf("%3s%15s%15s%35s%30s%%30s18s%35s%30s%37s%37s%37s%37s%8s\n", num, firstFlightSchedule.getFlightScheduleId(), firstFlightSchedule.getFlightNumber(), firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), firstFlightSchedule.getDepartureDateTime(), firstFlightSchedule.getDepartureDateTime().getTime(), firstFlightSchedule.getEstimatedFlightDurationHours(), firstFlightSchedule.getEstimatedFlightDurationMinutes(),
                         firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), firstFlightSchedule.getArrivalDateTime(), firstClassAvailableSeats1, firstClassFare1, businessClassAvailableSeats1, businessClassFare1, premiumEcoClassAvailableSeats1, premiumEconomyClassFare1, economyClassAvailableSeats1, economyClassFare1);
 
-                System.out.printf("%3s%15s%15s%35s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", num, secondFlightSchedule.getFlightScheduleId(), secondFlightSchedule.getFlightNumber(), secondFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), secondFlightSchedule.getDepartureDateTime(), secondFlightSchedule.getDepartureDateTime().getTime(), secondFlightSchedule.getEstimatedFlightDuration(),
+                System.out.printf("%3s%15s%15s%35s%30s%30s%18s%35s%30s%37s%37s%37s%37s%8s\n", num, secondFlightSchedule.getFlightScheduleId(), secondFlightSchedule.getFlightNumber(), secondFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), secondFlightSchedule.getDepartureDateTime(), secondFlightSchedule.getDepartureDateTime().getTime(), secondFlightSchedule.getEstimatedFlightDurationHours(), secondFlightSchedule.getEstimatedFlightDurationMinutes(),
                         secondFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode(), secondFlightSchedule.getArrivalDateTime(), firstClassAvailableSeats2, firstClassFare2, businessClassAvailableSeats2, businessClassFare2, premiumEcoClassAvailableSeats2, premiumEconomyClassFare2, economyClassAvailableSeats2, economyClassFare2);
 
                 num++;

@@ -349,8 +349,8 @@ public class testDataSessionBean {
  
             String dayOfWeek = "Mon";
 
-            String estimatedFlightDurationString = "14 Hours 00 Minute";
-            Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
+            //String estimatedFlightDurationString = "14 Hours 00 Minute";
+            //Date estimatedFlightDuration = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString);
 
             String endDateString = "31 Dec 23";
             DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
@@ -378,9 +378,10 @@ public class testDataSessionBean {
             Query query1 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
             query1.setParameter("inFlightNumber", "ML711");
             Flight f1 = (Flight) query1.getSingleResult();
-
-            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, f1.getFlightId(), departureDateTime, estimatedFlightDuration, endDate, recurrence);
-
+            
+            
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, f1.getFlightId(), departureDateTime, 14, 0, endDate, recurrence);
+            
             // fsp test case 1
             
             // fsp test case 2
@@ -389,8 +390,8 @@ public class testDataSessionBean {
  
             String dayOfWeek1 = "Sun";
 
-            String estimatedFlightDurationString1 = "08 Hours 00 Minute";
-            Date estimatedFlightDuration1 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString1);
+            //String estimatedFlightDurationString1 = "08 Hours 00 Minute";
+            //Date estimatedFlightDuration1 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString1);
 
             String endDateString1 = "31 Dec 23";
             Date endDate1 = endDateFormat.parse(endDateString1);
@@ -418,7 +419,7 @@ public class testDataSessionBean {
             query11.setParameter("inFlightNumber", "ML611");
             Flight f11 = (Flight) query11.getSingleResult();
 
-            Long newFlightSchedulePlanId1 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan1, f11.getFlightId(), departureDateTime1, estimatedFlightDuration1, endDate1, recurrence);
+            Long newFlightSchedulePlanId1 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan1, f11.getFlightId(), departureDateTime1, 8, 0, endDate1, recurrence);
 
             // fsp test case 2
             
@@ -428,8 +429,8 @@ public class testDataSessionBean {
  
             String dayOfWeek2 = "Tue";
 
-            String estimatedFlightDurationString2 = "08 Hours 00 Minute";
-            Date estimatedFlightDuration2 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString2);
+            //String estimatedFlightDurationString2 = "08 Hours 00 Minute";
+            //Date estimatedFlightDuration2 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString2);
 
             String endDateString2 = "31 Dec 23";
             Date endDate2 = endDateFormat.parse(endDateString2);
@@ -455,7 +456,7 @@ public class testDataSessionBean {
             Flight f12 = (Flight) query12.getSingleResult();
             
 
-            Long newFlightSchedulePlanId2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan2, f12.getFlightId(), departureDateTime2, estimatedFlightDuration2, endDate2, recurrence);
+            Long newFlightSchedulePlanId2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan2, f12.getFlightId(), departureDateTime2, 8, 0, endDate2, recurrence);
 
             // fsp test case 3
             
@@ -465,8 +466,8 @@ public class testDataSessionBean {
  
             String dayOfWeek3 = "Mon";
 
-            String estimatedFlightDurationString3 = "06 Hours 30 Minute";
-            Date estimatedFlightDuration3 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString3);
+            //String estimatedFlightDurationString3 = "06 Hours 30 Minute";
+            //Date estimatedFlightDuration3 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse(estimatedFlightDurationString3);
 
             String endDateString3 = "31 Dec 23";
             Date endDate3 = endDateFormat.parse(endDateString3);
@@ -494,14 +495,14 @@ public class testDataSessionBean {
             Flight f13 = (Flight) query13.getSingleResult();
             
 
-            Long newFlightSchedulePlanId3 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan3, f13.getFlightId(), departureDateTime3, estimatedFlightDuration3, endDate3, recurrence);
+            Long newFlightSchedulePlanId3 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan3, f13.getFlightId(), departureDateTime3, 6, 30, endDate3, recurrence);
 
             // fsp test case 4
             
             // fsp test case 5
         int reccurence = 2;
         Date departureDateTime4 = DATE_TIME_FORMAT.parse("1 Dec 23 01:00 PM");
-        Date estimatedFlightDuration4 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("04 Hours 00 Minute");
+        //Date estimatedFlightDuration4 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("04 Hours 00 Minute");
     
 
             String endDateString4 = "31 Dec 23";
@@ -528,14 +529,15 @@ public class testDataSessionBean {
             
             newFlightSchedulePlan4.setLayoverDuration(duration4);
             
-            Long newFlightSchedulePlanId4 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan4, f14.getFlightId(), departureDateTime4, estimatedFlightDuration4, endDate4, reccurence);
+            Long newFlightSchedulePlanId4 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan4, f14.getFlightId(), departureDateTime4, 4, 0, endDate4, reccurence);
            
         // fsp test case 5
         
         //fsp test case 6
         
             List<Date> departureDateTimes = new ArrayList<>();
-            List<Date> estimatedFlightDurations = new ArrayList<>();
+            List<Integer> estimatedFlightDurationsHours = new ArrayList<>();
+            List<Integer> estimatedFlightDurationsMinutes = new ArrayList<>();
 
 
                 String departureDateTimeString = "7 Dec 23 05:00 PM";
@@ -554,12 +556,16 @@ public class testDataSessionBean {
                 departureDateTimes.add(departureDate3);
                 
 
-                Date estimatedFlightDuration5 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
-                Date estimatedFlightDuration6 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
-                Date estimatedFlightDuration7 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
-                estimatedFlightDurations.add(estimatedFlightDuration5);
-                estimatedFlightDurations.add(estimatedFlightDuration6);
-                estimatedFlightDurations.add(estimatedFlightDuration7);
+                //Date estimatedFlightDuration5 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                //Date estimatedFlightDuration6 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                //Date estimatedFlightDuration7 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("03 Hours 00 Minute");
+                estimatedFlightDurationsHours.add(3);
+                estimatedFlightDurationsHours.add(3);
+                estimatedFlightDurationsHours.add(3);
+                
+                estimatedFlightDurationsMinutes.add(0);
+                estimatedFlightDurationsMinutes.add(0);
+                estimatedFlightDurationsMinutes.add(0);
                 
             List<Fare> fares5 = new ArrayList<>();
             
@@ -583,7 +589,7 @@ public class testDataSessionBean {
             query15.setParameter("inFlightNumber", "ML512");
             Flight f15 = (Flight) query15.getSingleResult();
 
-            Long newFlightSchedulePlanId5 = flightSchedulePlanSessionBeanLocal.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan5, f15.getFlightId(), departureDateTimes, estimatedFlightDurations);
+            Long newFlightSchedulePlanId5 = flightSchedulePlanSessionBeanLocal.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan5, f15.getFlightId(), departureDateTimes, estimatedFlightDurationsHours, estimatedFlightDurationsMinutes);
            
         //fsp test case 6
             

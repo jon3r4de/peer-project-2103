@@ -50,7 +50,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
      * @throws GeneralException
      */
     @Override
-    public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration) throws FlightSchedulePlanExistException, GeneralException {
+    public Long createNewSingleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, int estimatedFlightDurationHours, int estimatedFlightDurationMinutes) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
 
@@ -68,9 +68,10 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 //System.out.println("Fare saved, ID: " + fareSavedId);
             }
 
-            Date arrivalDateTime = this.findArrivalDateTime(departureDateTime, estimatedFlightDuration);
+           // Date arrivalDateTime = this.findArrivalDateTime(departureDateTime, estimatedFlightDuration);
 
-            FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTime, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+            newFlightSchedule.calculateArrivalTime();
             em.persist(newFlightSchedule);
             newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
             em.flush();
@@ -78,7 +79,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 
             em.flush();
             return newFlightSchedulePlan.getFlightSchedulePlanId();
-        } catch (PersistenceException | ParseException ex) {
+        } catch (PersistenceException ex) {
             if(ex.getCause() != null && 
                     ex.getCause().getCause() != null &&
                     ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
@@ -102,7 +103,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
      * @throws GeneralException
      */
     @Override
-    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Date> estimatedFlightDurations) throws FlightSchedulePlanExistException, GeneralException {
+    public Long createNewMultipleFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, List<Date> departureDateTimes, List<Integer> listEstimatedFlightDurationHours, List<Integer> listEstimatedFlightDurationMinutes) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
             
@@ -121,8 +122,9 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             }
             
             for (int i = 0; i < departureDateTimes.size(); i++) {
-                Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
-                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), estimatedFlightDurations.get(i), arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                //Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
+                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), listEstimatedFlightDurationHours.get(i), listEstimatedFlightDurationMinutes.get(i),flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                newFlightSchedule.calculateArrivalTime();
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 em.flush();
@@ -131,7 +133,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             
             em.flush();
             return newFlightSchedulePlan.getFlightSchedulePlanId();
-        } catch (PersistenceException | ParseException ex) {
+        } catch (PersistenceException ex) {
             if(ex.getCause() != null && 
                     ex.getCause().getCause() != null &&
                     ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
@@ -157,45 +159,57 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
      * @throws GeneralException
      */
     @Override
-    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, Date estimatedFlightDuration, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
+    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, int estimatedFlightDurationHours, int estimatedFlightDurationMinutes, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
             
+            //System.out.println("cnrfsp debug1");
             newFlightSchedulePlan.setStartDate(departureDateTime);
             newFlightSchedulePlan.setEndDate(endDate);
             // link flight and flightscheduleplan
+            //System.out.println("cnrfsp debug2");
             Flight flight = em.find(Flight.class, flightId);
+            //System.out.println("cnrfsp debug3");
             newFlightSchedulePlan.setFlight(flight);
+            //System.out.println("cnrfsp debug4");
+            
             flight.getFlightSchedulePlans().add(newFlightSchedulePlan);
+            //System.out.println("cnrfsp debug5");
             
             newFlightSchedulePlan.setFlightNumber(flight.getFlightNumber());
             
-            
+           // System.out.println("cnrfsp debug6");
             // link fare and flightscheduleplan
             for (Fare fare : newFlightSchedulePlan.getFares()) {
                 fare.setFlightSchedulePlan(newFlightSchedulePlan);
 //                Long fareSavedId = fareSessionBeanLocal.createNewFare(fare);
 //                System.out.println("Fare saved, ID: " + fareSavedId);
             }
+           // System.out.println("cnrfsp debug7");
             
             Date tempDate = new Date(departureDateTime.getTime());
             
             while (tempDate.getTime() <= endDate.getTime()) {
-                Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
-                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDuration, arrivalDateTime, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
-
+                //Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
+                //System.out.println("cnrfsp debug8");
+                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                //System.out.println("cnrfsp debug9");
+                newFlightSchedule.calculateArrivalTime();
+                //System.out.println("cnrfsp debug10");
                 em.persist(newFlightSchedule);
+                //System.out.println("cnrfsp debug11");
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+                //System.out.println("cnrfsp debug12");
                 em.flush();
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
-                
+                //System.out.println("cnrfsp debug13");
                 // move departuredatetime of new flight to date after recurrence
                 tempDate = new Date(tempDate.getTime() + (recurrence * 24 * 60 * 60 * 1000));
             }
             
             em.flush();
             return newFlightSchedulePlan.getFlightSchedulePlanId();
-        } catch (PersistenceException | ParseException ex) {
+        } catch (PersistenceException ex) {
             if(ex.getCause() != null && 
                     ex.getCause().getCause() != null &&
                     ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException"))
@@ -208,6 +222,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
     
+    @Override
     public void setReturnFlightSchedulePlan(Long newFlightSchedulePlanId, Long returnFlightSchedulePlanId) throws GeneralException {
         try {
             FlightSchedulePlan newFlightSchedulePlan = em.find(FlightSchedulePlan.class, newFlightSchedulePlanId);
@@ -225,6 +240,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     }
 
     
+    @Override
     public List<FlightSchedulePlan> retrieveAllFlightSchedulePlans() {
         //Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp ORDER BY fsp.flight.flightNumber ASC, fsp.firstDepartureTimeLong DESC");
        Query query = em.createQuery("SELECT fsp FROM FlightSchedulePlan fsp " +
@@ -244,7 +260,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         return flightSchedulePlans;
     }
     
-    //@Override
+    @Override
     public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException {
         if (flightSchedulePlan.getFlightSchedules().isEmpty()) {
             flightSchedulePlan.getFlight().getFlightSchedulePlans().remove(flightSchedulePlan); //remove flightSchedulePlan from the flights list of flightSchedulePlan 
@@ -289,7 +305,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     
     
     @Override
-    public void updateSingleFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule, Date departureDate, Date departureTime, Date durationTime) throws UpdateFlightSchedulePlanException, ParseException {
+    public void updateSingleFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule, Date departureDate, Date departureTime, int estimatedDurationTimeHours, int estimatedDurationTimeMinutes) throws UpdateFlightSchedulePlanException, ParseException {
         em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
         em.find(FlightSchedule.class, flightSchedule.getFlightScheduleId());
 
@@ -303,7 +319,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             flight.getFlightSchedulePlans().add(flightSchedulePlan);
 
             //Date departureDateTime, Date estimatedFlightDuration,  String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan
-            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, durationTime, this.findArrivalDateTime(departureDate, departureTime),flight.getFlightNumber(),
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, estimatedDurationTimeHours, estimatedDurationTimeMinutes,flight.getFlightNumber(),
              flight.getAirCraftConfig().getCabinClasses(),flightSchedulePlan);
             em.persist(newFlightSchedule);
             newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);
@@ -311,6 +327,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         }
     }
     
+        @Override
         public void updateRecurrentDayFlightSchedule(FlightSchedulePlan flightSchedulePlan, Integer recurrence, Date endDate) throws UpdateFlightSchedulePlanException {
          em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
 
@@ -329,8 +346,9 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         Date departureDate = firstFlightSchedule.getDepartureDateTime();
         //Date departureTime = firstFlightSchedule.getDepartureTime();
         while (departureDate.getTime() <= endDate.getTime()) {
-            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, firstFlightSchedule.getEstimatedFlightDuration(), firstFlightSchedule.getArrivalDateTime(), flight.getFlightNumber(),
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, firstFlightSchedule.getEstimatedFlightDurationHours(), firstFlightSchedule.getEstimatedFlightDurationMinutes(),flight.getFlightNumber(),
                     flight.getAirCraftConfig().getCabinClasses(), flightSchedulePlan);
+            newFlightSchedule.calculateArrivalTime();
             em.persist(newFlightSchedule);
             
             newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);

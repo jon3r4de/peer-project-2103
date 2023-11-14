@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,6 +27,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 /**
  *
@@ -43,8 +46,14 @@ public class FlightSchedule implements Serializable {
     @Column(nullable = false)
     private Date departureDateTime;
   
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date estimatedFlightDuration;
+    @Column(nullable = false)
+    @Min(0)
+    private Integer estimatedFlightDurationHours;
+   
+    @Column(nullable = false)
+    @Max(60)
+    @Min(0)
+    private Integer estimatedFlightDurationMinutes;
     //actual flight duration can be calculated from manipulation of arrival and departure time
    
     @Temporal(TemporalType.TIMESTAMP)
@@ -70,10 +79,10 @@ public class FlightSchedule implements Serializable {
         this.cabinClasses = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDateTime, Date estimatedFlightDuration, Date arrivalDateTime, String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
+    public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHours, Integer estimatedFlightDurationMinutes,String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
         this.departureDateTime = departureDateTime;
-        this.estimatedFlightDuration = estimatedFlightDuration;
-        this.arrivalDateTime = arrivalDateTime;
+        this.estimatedFlightDurationHours = estimatedFlightDurationHours;
+        this.estimatedFlightDurationMinutes = estimatedFlightDurationMinutes;
         this.flightNumber = flightNumber;
         this.cabinClasses = cabinClasses;
         this.flightSchedulePlan = flightSchedulePlan;
@@ -86,10 +95,23 @@ public class FlightSchedule implements Serializable {
     public void setDepartureDateTime(Date departureDateTime) {
         this.departureDateTime = departureDateTime;
     }
-    
-    public Date getEstimatedFlightDuration() {
-        return estimatedFlightDuration;
+
+    public Integer getEstimatedFlightDurationHours() {
+        return estimatedFlightDurationHours;
     }
+
+    public void setEstimatedFlightDurationHours(Integer estimatedFlightDurationHours) {
+        this.estimatedFlightDurationHours = estimatedFlightDurationHours;
+    }
+
+    public Integer getEstimatedFlightDurationMinutes() {
+        return estimatedFlightDurationMinutes;
+    }
+
+    public void setEstimatedFlightDurationMinutes(Integer estimatedFlightDurationMinutes) {
+        this.estimatedFlightDurationMinutes = estimatedFlightDurationMinutes;
+    }
+    
 
 
   public Date getArrivalDateTime() {
@@ -103,9 +125,8 @@ public class FlightSchedule implements Serializable {
         this.arrivalDateTime = arrivalDateTime;
     }
     
-    public void calculateArrivalTime(){
-
-        this.arrivalDateTime = new Date(this.arrivalDateTime.getTime() + this.estimatedFlightDuration.getTime());
+    public void calculateArrivalTime() {
+        this.arrivalDateTime = Date.from(this.departureDateTime.toInstant().plus(this.estimatedFlightDurationHours, ChronoUnit.HOURS).plus(this.estimatedFlightDurationMinutes, ChronoUnit.MINUTES));
     }
 
     public String getFlightNumber() {
@@ -175,7 +196,7 @@ public class FlightSchedule implements Serializable {
         DateFormat departureDateFormat = new SimpleDateFormat("dd MMM yy");
         SimpleDateFormat outputDurationFormat = new SimpleDateFormat("hh Hours mm Minutes");
         String outputDepartDateString = departureDateFormat.format(this.departureDateTime);
-        String flightDurationString = outputDurationFormat.format(this.estimatedFlightDuration);
+        String flightDurationString = "hours : " + this.estimatedFlightDurationHours + " , Minutes : " + this.estimatedFlightDurationMinutes;
         return "[ Departure date time = " + outputDepartDateString + ", Flight duration = " + flightDurationString + " ]";
     }
     

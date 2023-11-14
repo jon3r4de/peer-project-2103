@@ -10,6 +10,7 @@ import entity.Reservation;
 import enumeration.CabinClassEnum;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -53,13 +54,37 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         Airport destinationAirport = airportSessionBeanLocal.retrieveAirportByIataCode(destinationAirportiATACode);
 
         //flightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin();
-        Query query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureDateTime = :departureDate AND f.flightSchedulePlan.flight.flightRoute.origin = :departureAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport");
+        /*Query query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureDateTime = :departureDate AND f.flightSchedulePlan.flight.flightRoute.origin = :departureAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport");
         query.setParameter("departureDate", departureDate);
         query.setParameter("departureAirport", departureAirport);
-        query.setParameter("destinationAirport", destinationAirport);
+        query.setParameter("destinationAirport", destinationAirport);*/
+        //cookery
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(departureDate);
 
+            // Set the time to the beginning of the day (00:00:00)
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            Date startOfDay = calendar.getTime();
+
+            // Set the time to the end of the day (23:59:59)
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+
+            Date endOfDay = calendar.getTime();
+
+            Query query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureDateTime BETWEEN :startOfDay AND :endOfDay AND f.flightSchedulePlan.flight.flightRoute.origin = :departureAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport");
+            query.setParameter("startOfDay", startOfDay);
+            query.setParameter("endOfDay", endOfDay);
+            query.setParameter("departureAirport", departureAirport);
+            query.setParameter("destinationAirport", destinationAirport);
+            
+            //cookery
         List<FlightSchedule> flightSchedules = query.getResultList();
-
+        
         if (flightSchedules.isEmpty()) {
             SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd MMM", Locale.US);
             String departureDateString = inputDateFormat.format(departureDate);
