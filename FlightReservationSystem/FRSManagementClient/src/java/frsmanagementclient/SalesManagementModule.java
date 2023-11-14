@@ -80,6 +80,11 @@ public class SalesManagementModule {
             String flightNumber = scanner.nextLine().trim();
             List<FlightSchedule> flightSchedules = flightSessionBeanRemote.retrieveFlightSchedulesByFlightNumber(flightNumber);
             
+            if (flightSchedules.isEmpty()) {
+                System.out.println("There are no flight schedules for this flight. Try another flight.");
+                return;
+            }
+            
             System.out.println("Flight schedules for flight: " + flightNumber);
             System.out.printf("%-20s%-20s%-20s\n", "Index", "Departure Date Time", "Arrival Date Time");
             System.out.println("--------------------------------------------------------------------------------------------");
@@ -113,11 +118,12 @@ public class SalesManagementModule {
             FlightSchedule chosenFs = flightSchedules.get(choice - 1);
             //System.out.println("SM debug 3");
             List<CabinClass> ccInFs = chosenFs.getCabinClasses();
-            //System.out.println("SM debug 4");
             
             Integer totalAvailSeats = 0;
             Integer totalResSeats = 0;
             Integer totalBalSeats = 0;
+            
+            
             
             for (CabinClass cc : ccInFs) {
                 //System.out.println("SM debug 5");
