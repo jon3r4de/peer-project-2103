@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
 import entity.FlightSchedule;
@@ -125,6 +126,12 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 //Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
                 FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), listEstimatedFlightDurationHours.get(i), listEstimatedFlightDurationMinutes.get(i),flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
                 newFlightSchedule.calculateArrivalTime();
+                
+                for (CabinClass c : flight.getAirCraftConfig().getCabinClasses()) {
+                    CabinClass temp = em.find(CabinClass.class, c.getCabinClassId());
+                    temp.setFlightSchedule(newFlightSchedule);
+                }
+                        
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 em.flush();
@@ -197,6 +204,12 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 newFlightSchedule.calculateArrivalTime();
                 //System.out.println("cnrfsp debug10");
                 em.persist(newFlightSchedule);
+               
+                for (CabinClass c : flight.getAirCraftConfig().getCabinClasses()) {
+                    CabinClass temp = em.find(CabinClass.class, c.getCabinClassId());
+                    temp.setFlightSchedule(newFlightSchedule);
+                }
+                
                 //System.out.println("cnrfsp debug11");
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 //System.out.println("cnrfsp debug12");

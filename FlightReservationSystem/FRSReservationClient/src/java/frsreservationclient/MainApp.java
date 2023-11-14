@@ -672,27 +672,38 @@ public class MainApp {
         Double lowestFareEconomyClass = Double.MAX_VALUE;
 
         Integer num = 1;
+
+        System.out.println(cabinClassType.toString().equals("FIRST"));
+        
         for (FlightSchedule flightSchedule : flightSchedules) {
+            
+            System.out.println(flightSchedule.getCabinClasses().size());
+ 
+            
             for (CabinClass cabinClass : flightSchedule.getCabinClasses()) {
-                if (cabinClassType.equals(CabinClassEnum.FIRST)) {
-                    firstClassAvailableSeats = cabinClass.getBalanceSeats().toString();
+                
+                 System.out.println("dawwen wins 1" );
+                if (cabinClassType.toString().equals("FIRST")) {
+                    System.out.println("dawwen wins 10" );
+                    firstClassAvailableSeats = cabinClass.getAvailableSeats().toString();
+                    System.out.println("dawwen wins 10" + cabinClass.getFares().size());
                     for (Fare fare : cabinClass.getFares()) {
                         lowestFareFirstClass = Math.min(lowestFareFirstClass, fare.getFareAmount().doubleValue());
                     }
                 }
-                if (cabinClassType.equals(CabinClassEnum.BUSINESS)) {
+                if (cabinClassType.toString().equals("BUSINESS")) {
                     businessClassAvailableSeats = cabinClass.getBalanceSeats().toString();
                     for (Fare fare : cabinClass.getFares()) {
                         lowestFareBusinessClass = Math.min(lowestFareBusinessClass, fare.getFareAmount().doubleValue());
                     }
                 }
-                if (cabinClassType.equals(CabinClassEnum.PREMIUMECONOMY)) {
+                if (cabinClassType.toString().equals("PREMIUMECONOMY")) {
                     premiumEcoClassAvailableSeats = cabinClass.getBalanceSeats().toString();
                     for (Fare fare : cabinClass.getFares()) {
                         lowestFarePremiumEconomyClass = Math.min(lowestFarePremiumEconomyClass, fare.getFareAmount().doubleValue());
                     }
                 }
-                if (cabinClassType.equals(CabinClassEnum.ECONOMY)) {
+                if (cabinClassType.toString().equals("ECONOMY")) {
                     economyClassAvailableSeats = cabinClass.getBalanceSeats().toString();
                     for (Fare fare : cabinClass.getFares()) {
                         lowestFareEconomyClass = Math.min(lowestFareEconomyClass, fare.getFareAmount().doubleValue());
