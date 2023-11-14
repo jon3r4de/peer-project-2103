@@ -231,18 +231,20 @@ public class MainApp {
             for (int i = 1; i <= numOfPassengers; ++i) {
                 
                 try {
-                System.out.print("Enter First Name of Passenger " + i + "> ");
+                System.out.println("Enter First Name of Passenger " + i + "> ");
                 String firstName  = scanner.nextLine().trim();
                 
-                System.out.print("Enter Last Name of Passenger " + i + "> ");
+                System.out.println("Enter Last Name of Passenger " + i + "> ");
                 String lastName = scanner.nextLine().trim();
                 
-                System.out.print("Enter Passport Number of Passenger " + i + "> ");
+                System.out.println("Enter Passport Number of Passenger " + i + "> ");
                 String passportNumber = scanner.nextLine().trim();
                 
+                System.out.println("Select Cabin Class For Passenger " + i + ": 1: First Class, 2: Business Class, 3: Premium Economy Class, 4: Economy Class> ");
+                String cabinClass = scanner.nextLine().trim();
                 /*passenger must have reseration tagged to it --> handle during session bean --> pass in reservation id as well
                 for the creation of the passenger*/
-                Passenger passenger = new Passenger(firstName, lastName, passportNumber); //need sessionbean for this
+                Passenger passenger = new Passenger(firstName, lastName, passportNumber, cabinClass); //need sessionbean for this
                 
                 passengers.add(passenger);
                 
@@ -252,15 +254,12 @@ public class MainApp {
            
             Reservation reservation = new Reservation(temp, numOfPassengers, creditCard);
             try {
-                Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers, creditCard,
+                Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
                         flightScheduleIds, returnFlightScheduleIds, departureAirportiATACode, destinationAirportiATACode, departureDate, returnDate, customer);
                 System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
 
             } catch (NoAvailableSeatsException ex) {
                 System.out.println("Error: " + ex.getMessage());
-            }
-            } catch (ParseException ex) {
-                System.out.println("Invalid date input!\n");
             }
 
 
@@ -272,10 +271,11 @@ public class MainApp {
                 
                 
             }
+        }
 
 
 
-    }
+    
     
     public void viewFlightReservationDetail() {
         
