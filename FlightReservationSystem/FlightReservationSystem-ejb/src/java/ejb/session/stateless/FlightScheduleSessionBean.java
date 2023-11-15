@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import javax.ejb.EJB;
@@ -153,20 +154,12 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             flightSchedules.add(flightSchedule);
         }
         
-        List<List<FlightSchedule>> temp = flightSchedules;
+       /* List<List<FlightSchedule>> temp = flightSchedules;
             
-        int index = 0;
+
         for (List<FlightSchedule> flightSchedule: flightSchedules) {
             FlightSchedule firstFlightSchedule = flightSchedule.get(0);
-            /*
-            Airport transferAirport = firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
-            query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureAirport = :transferAirport AND f.destinationAirport = :destinationAiport AND f.departureDateTime BETWEEN :firstArrivalTime AND :secondDepartureTime");
-            query.setParameter("transferAirport", transferAirport);
-            query.setParameter("destinationAirport", destinationAirport);
-            query.setParameter("firstArrivalTime", firstFlightSchedule.getArrivalDateTime());
-            query.setParameter("secondDepartureTime", new Date(firstFlightSchedule.getArrivalDateTime().getTime() + 24 * 60 * 60 * 1000));
-            */
-            
+
             Airport transferAirport = firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
             query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :transferAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport AND f.departureDateTime BETWEEN :firstArrivalTime AND :secondDepartureTime");
             query.setParameter("transferAirport", transferAirport);
@@ -177,13 +170,35 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             List<FlightSchedule> secondFlightSchedules = query.getResultList();
             
             if (secondFlightSchedules.isEmpty()) {
-                temp.remove(flightSchedule);
+               flightSchedules.remove(flightSchedule);
             } else {
-                //temp.get(0);//ule).addAll(secondFlightSchedules);
-                temp.get(index).addAll(secondFlightSchedules);
-                index++;
+                flightSchedule.addAll(secondFlightSchedules);
+            }
+        }*/
+       
+       Iterator<List<FlightSchedule>> iterator = flightSchedules.iterator();
+
+        while (iterator.hasNext()) {
+            List<FlightSchedule> flightSchedule = iterator.next();
+            FlightSchedule firstFlightSchedule = flightSchedule.get(0);
+
+            Airport transferAirport = firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
+            query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :transferAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport AND f.departureDateTime BETWEEN :firstArrivalTime AND :secondDepartureTime");
+            query.setParameter("transferAirport", transferAirport);
+            query.setParameter("destinationAirport", destinationAirport);
+            query.setParameter("firstArrivalTime", firstFlightSchedule.getArrivalDateTime());
+            query.setParameter("secondDepartureTime", new Date(firstFlightSchedule.getArrivalDateTime().getTime() + 24 * 60 * 60 * 1000));
+
+            List<FlightSchedule> secondFlightSchedules = query.getResultList();
+
+            if (secondFlightSchedules.isEmpty()) {
+                iterator.remove(); // Use the iterator to remove the current element
+            } else {
+                // Modify the existing flightSchedule instead of adding a new one
+                flightSchedule.addAll(secondFlightSchedules);
             }
         }
+
         
         if (flightSchedules.isEmpty()) {
             SimpleDateFormat inputDateFormat = new SimpleDateFormat("dd MMM", Locale.US);
@@ -193,8 +208,11 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         }
         
         return flightSchedules;
+        //return flightSchedules;
         
     }
+    
+    
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")

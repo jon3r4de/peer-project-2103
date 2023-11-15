@@ -816,7 +816,8 @@ public class MainApp {
         Integer num = 1;
         for (List<FlightSchedule> firstFlightSchedules : flightSchedules) {
             FlightSchedule firstFlightSchedule = firstFlightSchedules.remove(0);
-                        for (SeatInventory ss : firstFlightSchedule.getSeatInventories()) {
+            
+            for (SeatInventory ss : firstFlightSchedule.getSeatInventories()) {
                 
                 if (cabinClassType.equals(CabinClassEnum.FIRST) && ss.getCabinClass().equals(CabinClassEnum.FIRST)) {;
                     firstClassAvailableSeats1 = ss.getNumberOfBalanceSeats().toString();
