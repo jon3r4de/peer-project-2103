@@ -33,4 +33,5 @@ public interface FlightSchedulePlanSessionBeanLocal {
     public void updateRecurrentWeekFlightSchedule(FlightSchedulePlan flightSchedulePlan, Date endDate) throws UpdateFlightSchedulePlanException;
 
     public List<FlightSchedulePlan> retrieveFlightSchedulePlansByFlightNumber(String flightNumber) throws FlightSchedulePlanNotFoundException;
-    }
+    public void updateFlightSchedulePlanName(String name, FlightSchedulePlan fsp);
+}

@@ -42,5 +42,5 @@ public interface FlightSchedulePlanSessionBeanRemote {
     public void updateRecurrentDayFlightSchedule(FlightSchedulePlan flightSchedulePlan, Integer recurrence, Date endDate) throws UpdateFlightSchedulePlanException;
 
     public void setReturnFlightSchedulePlan(Long newFlightSchedulePlanId, Long returnFlightSchedulePlanId) throws GeneralException;
-    
+    public void updateFlightSchedulePlanName(String name, FlightSchedulePlan fsp);
 }
