@@ -105,10 +105,38 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         
         Airport departureAirport = airportSessionBeanLocal.retrieveAirportByIataCode(departureAirportiATACode);
         Airport destinationAirport = airportSessionBeanLocal.retrieveAirportByIataCode(destinationAirportiATACode);
+            
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(departureDate);
 
-        Query query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureDateTime = :departureDate AND f.departureAirport= :departureAirport");
+            // Set the time to the beginning of the day (00:00:00)
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+
+            Date startOfDay = calendar.getTime();
+
+            // Set the time to the end of the day (23:59:59)
+            calendar.set(Calendar.HOUR_OF_DAY, 23);
+            calendar.set(Calendar.MINUTE, 59);
+            calendar.set(Calendar.SECOND, 59);
+
+            Date endOfDay = calendar.getTime();
+
+            Query query = em.createQuery("SELECT f FROM FlightSchedule f " +
+            "WHERE FUNCTION('DATE', f.departureDateTime) >= :startOfDay " +
+            "AND FUNCTION('DATE', f.departureDateTime) <= :endOfDay " +
+            "AND f.flightSchedulePlan.flight.flightRoute.origin = :departureAirport " +
+            "AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport");
+            query.setParameter("startOfDay", startOfDay);
+            query.setParameter("endOfDay", endOfDay);
+            query.setParameter("departureAirport", departureAirport);
+            query.setParameter("destinationAirport", destinationAirport);
+
+            
+        /*Query query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureDateTime = :departureDate AND f.departureAirport= :departureAirport");
         query.setParameter("departureDate", departureDate);
-        query.setParameter("departureAirport", departureAirport);
+        query.setParameter("departureAirport", departureAirport);*/
         
         List<FlightSchedule> firstFlightSchedules = query.getResultList();
         if (firstFlightSchedules.isEmpty()) {
@@ -125,21 +153,35 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
             flightSchedules.add(flightSchedule);
         }
         
+        List<List<FlightSchedule>> temp = flightSchedules;
+            
+        int index = 0;
         for (List<FlightSchedule> flightSchedule: flightSchedules) {
             FlightSchedule firstFlightSchedule = flightSchedule.get(0);
+            /*
             Airport transferAirport = firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
             query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.departureAirport = :transferAirport AND f.destinationAirport = :destinationAiport AND f.departureDateTime BETWEEN :firstArrivalTime AND :secondDepartureTime");
             query.setParameter("transferAirport", transferAirport);
             query.setParameter("destinationAirport", destinationAirport);
             query.setParameter("firstArrivalTime", firstFlightSchedule.getArrivalDateTime());
             query.setParameter("secondDepartureTime", new Date(firstFlightSchedule.getArrivalDateTime().getTime() + 24 * 60 * 60 * 1000));
+            */
             
+            Airport transferAirport = firstFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination();
+            query = em.createQuery("SELECT f FROM FlightSchedule f WHERE f.flightSchedulePlan.flight.flightRoute.origin = :transferAirport AND f.flightSchedulePlan.flight.flightRoute.destination = :destinationAirport AND f.departureDateTime BETWEEN :firstArrivalTime AND :secondDepartureTime");
+            query.setParameter("transferAirport", transferAirport);
+            query.setParameter("destinationAirport", destinationAirport);
+            query.setParameter("firstArrivalTime", firstFlightSchedule.getArrivalDateTime());
+            query.setParameter("secondDepartureTime", new Date(firstFlightSchedule.getArrivalDateTime().getTime() + 24 * 60 * 60 * 1000));
+
             List<FlightSchedule> secondFlightSchedules = query.getResultList();
             
             if (secondFlightSchedules.isEmpty()) {
-                flightSchedules.remove(flightSchedule);
+                temp.remove(flightSchedule);
             } else {
-                flightSchedule.addAll(secondFlightSchedules);
+                //temp.get(0);//ule).addAll(secondFlightSchedules);
+                temp.get(index).addAll(secondFlightSchedules);
+                index++;
             }
         }
         

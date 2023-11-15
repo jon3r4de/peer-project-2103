@@ -132,7 +132,7 @@ public class MainApp {
             System.out.println("*** Welcome to the FRS reservation client system ***\n");
             System.out.println("You are login as " + customer.getFirstName() + " " + customer.getLastName() + "\n");
             System.out.println("1: Search Flight");
-            System.out.println("2: View Flight");
+            System.out.println("2: View all Flight Reservation");
             System.out.println("3: View Flight Reservation Detail");
             System.out.println("4: logout\n"); 
 
@@ -197,7 +197,7 @@ public class MainApp {
             String departureAirportiATACode = scanner.nextLine().trim();
             System.out.print("Enter Destination Airport IATA Code> ");
             String destinationAirportiATACode = scanner.nextLine().trim();
-            System.out.print("Enter Departure Date (dd Mmm yyyy ie  '31 Dec 23') > ");
+            System.out.print("Enter Departure Date (dd MMM yy ie  '31 DEC 23') > ");
             String departureDateString = scanner.nextLine().trim();
                     
              Date departureDate = null;
@@ -209,7 +209,7 @@ public class MainApp {
             
             Date returnDate = null;
             if (tripType == 2) {
-                System.out.print("Enter Return Date (dd Mmm yyyy ie  '31 Dec 23') > ");
+                System.out.print("Enter Return Date (dd Mmm yy ie  '31 Dec 23') > ");
                 try {
                     returnDate = inputDateFormat.parse(scanner.nextLine().trim());
                 } catch (ParseException ex) {
@@ -293,14 +293,11 @@ public class MainApp {
             } catch (NoAvailableSeatsException ex) {
                 System.out.println("Error: " + ex.getMessage());
             }
-
-
                 
                 reservation.setPassengerList(passengers);
                 //set thelist of passenger into reservation
                 //reservation.set(passengers)
-                
-                
+
             }
         }
 
