@@ -43,4 +43,6 @@ public interface FlightSchedulePlanSessionBeanRemote {
 
     public void setReturnFlightSchedulePlan(Long newFlightSchedulePlanId, Long returnFlightSchedulePlanId) throws GeneralException;
     public void updateFlightSchedulePlanName(String name, FlightSchedulePlan fsp);
+
+    public FlightSchedulePlan retrieveById(Long id);
 }

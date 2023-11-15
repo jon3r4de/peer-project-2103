@@ -196,7 +196,7 @@ public class FlightSchedule implements Serializable {
         SimpleDateFormat outputDurationFormat = new SimpleDateFormat("hh 'Hours' mm 'Minutes'");
         String outputDepartDateString = departureDateFormat.format(this.departureDateTime);
         String flightDurationString = "hours : " + this.estimatedFlightDurationHours + " , Minutes : " + this.estimatedFlightDurationMinutes;
-        return "[ Departure date time = " + outputDepartDateString + ", Flight duration = " + flightDurationString + " ]";
+        return "[ Departure date time = " + outputDepartDateString + ", Flight duration = " + flightDurationString + " ] for flight number : " + flightNumber ;
     }
     
 }

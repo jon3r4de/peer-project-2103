@@ -76,4 +76,12 @@ public class CustomerSessionBean implements CustomerSessionBeanRemote, CustomerS
             throw noCustomerException;
         }
     }
+    
+    @Override
+    public Customer retrieveCustomerById(Long custId) {
+        Customer managedCustomer = em.find(Customer.class, custId);
+        
+        managedCustomer.getReservations().size();
+        return managedCustomer;
+    }
 }

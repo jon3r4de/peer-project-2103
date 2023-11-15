@@ -4,7 +4,9 @@
  */
 package frsreservationclient;
 
+import ejb.session.stateless.CabinClassSessionBeanRemote;
 import ejb.session.stateless.CustomerSessionBeanRemote;
+import ejb.session.stateless.FlightSchedulePlanSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
 import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.ReservationSessionBeanRemote;
@@ -31,11 +33,17 @@ public class Main {
     @EJB
     private static FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote;
     
+    @EJB
+    private static CabinClassSessionBeanRemote cabinClassSessionBeanRemote;
+    
+    @EJB 
+    private static FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
+    
 
     
     public static void main(String[] args) {
         // TODO code application logic here
-         MainApp mainApp = new MainApp(customerSessionBeanRemote, reservationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSessionBeanRemote);
+         MainApp mainApp = new MainApp(customerSessionBeanRemote, reservationSessionBeanRemote, flightScheduleSessionBeanRemote, flightSessionBeanRemote, cabinClassSessionBeanRemote, flightSchedulePlanSessionBeanRemote);
 
         
         System.out.println("deployed2");
