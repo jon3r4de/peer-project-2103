@@ -128,6 +128,7 @@ public class testDataSessionBean {
             System.out.println("initialised flight");
         }
         
+        //errata now
         if(em.find(FlightSchedulePlan.class, 1l) == null){
             doInitialiseFlightSchedulePlan();
             System.out.println("initialised fsp");

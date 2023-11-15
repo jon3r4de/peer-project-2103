@@ -8,6 +8,8 @@ import entity.AirCraftConfig;
 import entity.AirCraftType;
 import entity.CabinClass;
 import entity.Seat;
+import entity.SeatInventory;
+import enumeration.CabinClassEnum;
 import enumeration.SeatStatusEnum;
 import java.util.List;
 import javax.ejb.EJB;
@@ -31,49 +33,86 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
 
     @EJB
     private SeatSessionBeanLocal seatSessionBeanLocal;
+    
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
-    
-    @Override
+        @Override
     public Long createNewAircraftConfiguration(AirCraftConfig newAircraftConfiguration, AirCraftType aircraftType, List<CabinClass> cabinClasses) throws AircraftConfigExistExcetpion, GeneralException
     {
-        try {
-        em.persist(newAircraftConfiguration);
-        } catch(PersistenceException ex) {
-            if(ex.getCause() != null && ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
-                throw new AircraftConfigExistExcetpion("Aircraft Configuration with the name: " + newAircraftConfiguration.getAirCraftConfigName() + " already exists!"); 
-            } else {
-                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
-            }
-        }
         
         aircraftType = em.find(AirCraftType.class, aircraftType.getAircraftTypeId());
         
-        for (CabinClass cabinClass : cabinClasses) {
-            cabinClass.setAirCraftConfig(newAircraftConfiguration);
+                        
+                newAircraftConfiguration.setAirCraftType(aircraftType); 
+                aircraftType.getConfigs().add(newAircraftConfiguration);
+                //newAircraftConfiguration.setCabinClasses(cabinClasses);
+
+                System.out.println("dawwen debug 1");
+                for (CabinClass cabinClass: cabinClasses)
+                {
+                    //cabinClass.setCabinClassType(CabinClassEnum.BUSINESS);
+                    //System.out.println("dawwen debug 2");
+                    em.persist(cabinClass);
+                   // System.out.println("persisting the cabin class");
+                    cabinClass.setAirCraftConfig(newAircraftConfiguration); 
+                    newAircraftConfiguration.getCabinClasses().add(cabinClass);
+                    //em.flush();
+                }
+
+                //newAircraftConfiguration.setCabinClasses(cabinClasses);
+                em.persist(newAircraftConfiguration);
+                em.flush();
+                return newAircraftConfiguration.getAirCraftConfigId();
+        
+        //for (CabinClass cabinClass : cabinClasses) {
+          //  cabinClass.setAirCraftConfig(newAircraftConfiguration);
             //em.flush();
             //try {
-                generateSeats(cabinClass);
+                //generateSeats(cabinClass);
             /*} catch (UnknownPersistenceException ex) {
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
             }*/
         }
+    
+    //@Override
+    //public Long createNewAircraftConfiguration(AirCraftConfig newAircraftConfiguration, AirCraftType aircraftType, List<CabinClass> cabinClasses) throws AircraftConfigExistExcetpion, GeneralException
+    //{
+        //try {
+        //em.persist(newAircraftConfiguration);
+        //} catch(PersistenceException ex) {
+            //if(ex.getCause() != null && ex.getCause().getCause() != null && ex.getCause().getCause().getClass().getSimpleName().equals("SQLIntegrityConstraintViolationException")) {
+              //  throw new AircraftConfigExistExcetpion("Aircraft Configuration with the name: " + newAircraftConfiguration.getAirCraftConfigName() + " already exists!"); 
+            //} else {
+            //    throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+          //  }
+        //}
         
-        newAircraftConfiguration.setCabinClasses(cabinClasses);
-        newAircraftConfiguration.setAirCraftType(aircraftType);
-        aircraftType.getConfigs().add(newAircraftConfiguration);
+        //aircraftType = em.find(AirCraftType.class, aircraftType.getAircraftTypeId());
+        
+        //for (CabinClass cabinClass : cabinClasses) {
+           // cabinClass.setAirCraftConfig(newAircraftConfiguration);
+            //em.flush();
+            //try {
+         //       generateSeats(cabinClass);
+            /*} catch (UnknownPersistenceException ex) {
+                throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
+            }*/
+       // }
+        
+        //newAircraftConfiguration.setCabinClasses(cabinClasses);
+       // newAircraftConfiguration.setAirCraftType(aircraftType);
+        //aircraftType.getConfigs().add(newAircraftConfiguration);
         
         //set max seat capacity
         //newAircraftConfiguration.getMaxSeatCapacity();
 
-        em.flush();
+       // em.flush();
            
-        return newAircraftConfiguration.getAirCraftConfigId();
-    }
-    
-    private void generateSeats(CabinClass cabinClass) { //throws UnknownPersistenceException {
+     //   return newAircraftConfiguration.getAirCraftConfigId();
+   // }
+   /* private void generateSeats(CabinClass cabinClass) { //throws UnknownPersistenceException {
         //try {
             Integer numOfRows = cabinClass.getNumberOfRows();
             Integer numOfSeatsAbreast = cabinClass.getNumOfSeatsAbreast();
@@ -85,15 +124,40 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
                     Seat seat = new Seat(seatNumber, SeatStatusEnum.AVAILABLE);
                     //seatSessionBeanLocal.createSeat(new Seat(seatNumber), cabinClass.getCabinClassId());
                     
-            seat.setCabinClass(cabinClass);
-            cabinClass.getSeats().add(seat);
+           // seat.setCabinClass(cabinClass);
+            //cabinClass.getSeats().add(seat);
             
                 }
             }
        // } catch (UnknownPersistenceException ex) {
         //    throw ex;
        // }        
-    }
+    }*/
+    @Override
+    public void generateSeats(CabinClass cabinClass, SeatInventory seatInventory) {
+        //try {
+            Integer numOfRows = cabinClass.getNumberOfRows();
+            Integer numOfSeatsAbreast = cabinClass.getNumOfSeatsAbreast();
+
+
+            for (int row = 1; row <= numOfRows; row++) {
+                for (int seatLetter = 0; seatLetter < numOfSeatsAbreast; seatLetter++) {
+                    char letter = (char) ('A' + seatLetter);
+                    String seatNumber = String.valueOf(row) + letter;
+                    Seat seat = new Seat(seatNumber, SeatStatusEnum.AVAILABLE);
+                    seatSessionBeanLocal.createSeat(seat, seatInventory);
+                    
+               seat.setSeatInventory(seatInventory);
+               seatInventory.getSeats().add(seat);
+            
+                }
+            }
+            
+        } 
+    
+    
+    
+    
     
 
     

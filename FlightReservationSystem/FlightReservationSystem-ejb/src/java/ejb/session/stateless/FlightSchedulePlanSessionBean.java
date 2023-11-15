@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -39,6 +40,10 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     // "Insert Code > Add Business Method")
     
     private FareSessionBeanLocal fareSessionBeanLocal;
+    
+    @EJB
+    private SeatInventorySessionBeanLocal seatInventorySessionBeanLocal;
+
     
     /**
      *
@@ -71,10 +76,12 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 
            // Date arrivalDateTime = this.findArrivalDateTime(departureDateTime, estimatedFlightDuration);
 
-            FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+            FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), newFlightSchedulePlan);
             newFlightSchedule.calculateArrivalTime();
             em.persist(newFlightSchedule);
             newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
+            seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
+
             em.flush();
             newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
 
@@ -124,17 +131,15 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             
             for (int i = 0; i < departureDateTimes.size(); i++) {
                 //Date arrivalDateTime = this.findArrivalDateTime(departureDateTimes.get(i), estimatedFlightDurations.get(i));
-                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), listEstimatedFlightDurationHours.get(i), listEstimatedFlightDurationMinutes.get(i),flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                FlightSchedule newFlightSchedule = new FlightSchedule(departureDateTimes.get(i), listEstimatedFlightDurationHours.get(i), listEstimatedFlightDurationMinutes.get(i),flight.getFlightNumber(), newFlightSchedulePlan);
+                
                 newFlightSchedule.calculateArrivalTime();
                 
-                for (CabinClass c : flight.getAirCraftConfig().getCabinClasses()) {
-                    CabinClass temp = em.find(CabinClass.class, c.getCabinClassId());
-                    temp.setFlightSchedule(newFlightSchedule);
-                }
-                        
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 em.flush();
+                seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
+                
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
             }
             
@@ -199,21 +204,18 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             while (tempDate.getTime() <= endDate.getTime()) {
                 //Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
                 //System.out.println("cnrfsp debug8");
-                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), flight.getAirCraftConfig().getCabinClasses(), newFlightSchedulePlan);
+                FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), newFlightSchedulePlan);
                 //System.out.println("cnrfsp debug9");
                 newFlightSchedule.calculateArrivalTime();
                 //System.out.println("cnrfsp debug10");
                 em.persist(newFlightSchedule);
-               
-                for (CabinClass c : flight.getAirCraftConfig().getCabinClasses()) {
-                    CabinClass temp = em.find(CabinClass.class, c.getCabinClassId());
-                    temp.setFlightSchedule(newFlightSchedule);
-                }
-                
+                em.flush();
+                seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
+
                 //System.out.println("cnrfsp debug11");
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 //System.out.println("cnrfsp debug12");
-                em.flush();
+                
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
                 //System.out.println("cnrfsp debug13");
                 // move departuredatetime of new flight to date after recurrence
@@ -333,8 +335,12 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
 
             //Date departureDateTime, Date estimatedFlightDuration,  String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan
             FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, estimatedDurationTimeHours, estimatedDurationTimeMinutes,flight.getFlightNumber(),
-             flight.getAirCraftConfig().getCabinClasses(),flightSchedulePlan);
+             flightSchedulePlan);
+           
             em.persist(newFlightSchedule);
+            
+            seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
+            
             newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);
             flightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
         }
@@ -360,9 +366,11 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         //Date departureTime = firstFlightSchedule.getDepartureTime();
         while (departureDate.getTime() <= endDate.getTime()) {
             FlightSchedule newFlightSchedule = new FlightSchedule(departureDate, firstFlightSchedule.getEstimatedFlightDurationHours(), firstFlightSchedule.getEstimatedFlightDurationMinutes(),flight.getFlightNumber(),
-                    flight.getAirCraftConfig().getCabinClasses(), flightSchedulePlan);
+                    flightSchedulePlan);
             newFlightSchedule.calculateArrivalTime();
             em.persist(newFlightSchedule);
+            
+            seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
             
             newFlightSchedule.setFlightSchedulePlan(flightSchedulePlan);
             flightSchedulePlan.getFlightSchedules().add(newFlightSchedule);

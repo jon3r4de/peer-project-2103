@@ -66,9 +66,8 @@ public class FlightSchedule implements Serializable {
     @ManyToMany(mappedBy = "flightSchedules")
     private List<Reservation> reservations;
 
-    
     @OneToMany(mappedBy = "flightSchedule")
-    private List<CabinClass> cabinClasses;
+    private List<SeatInventory> seatInventories;
    
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
@@ -76,21 +75,29 @@ public class FlightSchedule implements Serializable {
 
     public FlightSchedule() {
         this.reservations = new ArrayList<>();
-        this.cabinClasses = new ArrayList<>();
     }
 
-    public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHours, Integer estimatedFlightDurationMinutes,String flightNumber, List<CabinClass> cabinClasses, FlightSchedulePlan flightSchedulePlan) {
+    public FlightSchedule(Date departureDateTime, Integer estimatedFlightDurationHours, Integer estimatedFlightDurationMinutes,String flightNumber, FlightSchedulePlan flightSchedulePlan) {
         this.departureDateTime = departureDateTime;
         this.estimatedFlightDurationHours = estimatedFlightDurationHours;
         this.estimatedFlightDurationMinutes = estimatedFlightDurationMinutes;
         this.flightNumber = flightNumber;
-        this.cabinClasses = cabinClasses;
         this.flightSchedulePlan = flightSchedulePlan;
     }
 
     public Date getDepartureDateTime() {
         return departureDateTime;
     }
+
+    public List<SeatInventory> getSeatInventories() {
+        return seatInventories;
+    }
+
+    public void setSeatInventories(List<SeatInventory> seatInventories) {
+        this.seatInventories = seatInventories;
+    }
+    
+    
 
     public void setDepartureDateTime(Date departureDateTime) {
         this.departureDateTime = departureDateTime;
@@ -161,14 +168,6 @@ public class FlightSchedule implements Serializable {
         this.reservations = reservations;
     }
 
-    public List<CabinClass> getCabinClasses() {
-        return cabinClasses;
-    }
-
-    public void setCabinClasses(List<CabinClass> cabinClasses) {
-        this.cabinClasses = cabinClasses;
-    }
-    
     
     @Override
     public int hashCode() {

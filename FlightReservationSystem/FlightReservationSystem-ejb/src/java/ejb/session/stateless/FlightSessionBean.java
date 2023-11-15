@@ -186,7 +186,7 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
                 flightSchedules.size();
                 for (FlightSchedule flightSchedule : flightSchedules) {
                     list.add(flightSchedule);
-                    flightSchedule.getCabinClasses().size(); //lazy loading cabin classes for every flight schedule
+                    flightSchedule.getSeatInventories().size(); //lazy loading cabin classes for every flight schedule
                 }
             }
         }

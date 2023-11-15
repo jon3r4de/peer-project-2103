@@ -46,6 +46,8 @@ public class AirCraftType implements Serializable {
     public Long getAircraftTypeId() {
         return aircraftTypeId;
     }
+    
+    
 
     public void setAircraftTypeId(Long aircraftTypeId) {
         this.aircraftTypeId = aircraftTypeId;

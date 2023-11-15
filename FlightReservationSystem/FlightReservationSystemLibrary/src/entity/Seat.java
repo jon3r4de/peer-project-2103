@@ -35,11 +35,13 @@ public class Seat implements Serializable {
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
-    private CabinClass cabinClass;
+    private SeatInventory seatInventory;
     
     @ManyToOne(optional = true)
     @JoinColumn(nullable = true)
     private Passenger passenger;
+    
+    
 
     public Seat() {
     }
@@ -57,20 +59,21 @@ public class Seat implements Serializable {
         this.seatStatus = seatStatus;
     }
 
+    public SeatInventory getSeatInventory() {
+        return seatInventory;
+    }
+
+    public void setSeatInventory(SeatInventory seatInventory) {
+        this.seatInventory = seatInventory;
+    }
+
+    
     public String getSeatNumber() {
         return seatNumber;
     }
 
     public void setSeatNumber(String seatNumber) {
         this.seatNumber = seatNumber;
-    }
-
-    public CabinClass getCabinClass() {
-        return cabinClass;
-    }
-
-    public void setCabinClass(CabinClass cabinClass) {
-        this.cabinClass = cabinClass;
     }
 
     public Passenger getPassenger() {
@@ -88,6 +91,8 @@ public class Seat implements Serializable {
     public void setSeatId(Long seatId) {
         this.seatId = seatId;
     }
+    
+    
 
     @Override
     public int hashCode() {

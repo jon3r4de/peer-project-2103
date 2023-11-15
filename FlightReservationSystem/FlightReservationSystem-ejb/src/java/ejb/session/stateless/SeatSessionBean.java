@@ -6,6 +6,7 @@ package ejb.session.stateless;
 
 import entity.CabinClass;
 import entity.Seat;
+import entity.SeatInventory;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,21 +23,19 @@ public class SeatSessionBean implements SeatSessionBeanRemote, SeatSessionBeanLo
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
 
-    public Long createSeat(Seat seat, Long cabinClassId) throws UnknownPersistenceException {
-        try {
-            CabinClass cabinClass = em.find(CabinClass.class, cabinClassId);
-            //em.persist(seat);
-            //em.flush();
+    public Long createSeat(Seat seat, SeatInventory seatInventory) {
+            SeatInventory temp = em.find(SeatInventory.class, seatInventory.getSeatInventoryId());
             
-            seat.setCabinClass(cabinClass);
-            cabinClass.getSeats().add(seat);
-        
+            
+            
+            seat.setSeatInventory(seatInventory);
+            //cabinClass.getSeats().add(seat);
+            em.persist(seat);
+            em.flush();
             return seat.getSeatId();
-        } catch (PersistenceException ex) {
-            throw new UnknownPersistenceException(ex.getMessage());
         }
         
-    }
+    
 
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")

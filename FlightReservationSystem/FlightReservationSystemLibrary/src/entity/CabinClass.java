@@ -60,43 +60,37 @@ public class CabinClass implements Serializable {
     @NotNull
     private String actualSeatingConfig;
     
+    //@Column(nullable = true)
     @Column(nullable = false)
     private CabinClassEnum cabinClassType;
      
-    @ManyToOne()
-    @JoinColumn()
-    private FlightSchedule flightSchedule;
     
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false)
     private AirCraftConfig airCraftConfig;
     
-    List<String> listOfSeatNumber;
+    //@ManyToOne(optional = false)
+    //List<String> listOfSeatNumber;
     
-    @Min(0)
-    private Integer availableSeats;
-    
-    @Min(0)
-    private Integer reservedSeats;
-    
-    @Min(0)
-    private Integer balanceSeats;
+    @OneToMany(mappedBy = "cabinClass")
+    @JoinColumn(nullable = false)
+    List<SeatInventory> seatInventories;
     
     private boolean availableForBooking;
     
     @OneToMany
     private List<Fare> fares;
     
-    @OneToMany(mappedBy = "cabinClass", cascade = CascadeType.PERSIST)
-    private List<Seat> seats;
+    /*@OneToMany(mappedBy = "cabinClass", cascade = CascadeType.PERSIST)
+    private List<Seat> seats;*/
     
     //private List<Seats> seats;
     public CabinClass() {
         //numOfAisles, numOfRows, numOfSeatsAbreast, seatingConfigurationPerColumn, cabinClassCapacity
-        this.reservedSeats = 0;
-        this.listOfSeatNumber = new ArrayList<>(); // Initialize the list of seat numbers
+       // this.listOfSeatNumber = new ArrayList<>(); // Initialize the list of seat numbers
         this.fares = new ArrayList<>(); // Initialize the list of fares
-        this.seats = new ArrayList<>();
+        //this.seats = new ArrayList<>();
+        this.seatInventories = new ArrayList<>();
     }
     
     public CabinClass(Integer numOfAisles, Integer numOfRows, Integer numOfSeatsAbreast, String seatingConfiguration, Integer maxCapacity, CabinClassEnum cabinClassType) {
@@ -106,18 +100,17 @@ public class CabinClass implements Serializable {
         this.numOfSeatsAbreast = numOfSeatsAbreast;
         this.actualSeatingConfig = seatingConfiguration;
         this.maxSeatCapacity = maxCapacity;
-        this.availableSeats = maxCapacity; 
         this.cabinClassType = cabinClassType;
-        this.balanceSeats = this.availableSeats - this.reservedSeats;
+
     } 
 
-    public List<Seat> getSeats() {
+    /*public List<Seat> getSeats() {
         return seats;
     }
 
     public void setSeats(List<Seat> seats) {
         this.seats = seats;
-    }
+    }*/
 
     public boolean isAvailableForBooking() {
         return availableForBooking;
@@ -127,9 +120,6 @@ public class CabinClass implements Serializable {
         this.availableForBooking = availableForBooking;
     }
 
-    private void updateAvailableForBooking() {
-        this.availableForBooking = (this.availableSeats > 0);
-    }
      
     public Long getCabinClassId() {
         return cabinClassId;
@@ -187,14 +177,6 @@ public class CabinClass implements Serializable {
         this.cabinClassType = cabinClassType;
     }
 
-    public FlightSchedule getFlightSchedule() {
-        return flightSchedule;
-    }
-
-    public void setFlightSchedule(FlightSchedule flightSchedule) {
-        this.flightSchedule = flightSchedule;
-    }
-
     public AirCraftConfig getAirCraftConfig() {
         return airCraftConfig;
     }
@@ -203,37 +185,13 @@ public class CabinClass implements Serializable {
         this.airCraftConfig = airCraftConfig;
     }
 
-    public List<String> getListOfSeatNumber() {
+   /* public List<String> getListOfSeatNumber() {
         return listOfSeatNumber;
     }
 
     public void setListOfSeatNumber(List<String> listOfSeatNumber) {
         this.listOfSeatNumber = listOfSeatNumber;
-    }
-
-    public Integer getAvailableSeats() {
-        return availableSeats;
-    }
-
-    public void setAvailableSeats(Integer availableSeats) {
-        this.availableSeats = availableSeats;
-    }
-
-    public Integer getReservedSeats() {
-        return reservedSeats;
-    }
-
-    public void setReservedSeats(Integer reservedSeats) {
-        this.reservedSeats = reservedSeats;
-    }
-
-    public Integer getBalanceSeats() {
-        return balanceSeats;
-    }
-
-    public void setBalanceSeats(Integer balanceSeats) {
-        this.balanceSeats = balanceSeats;
-    }
+    }*/
 
     public List<Fare> getFares() {
         return fares;

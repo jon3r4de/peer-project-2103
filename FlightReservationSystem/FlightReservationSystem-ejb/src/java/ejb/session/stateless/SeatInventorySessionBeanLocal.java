@@ -4,16 +4,16 @@
  */
 package ejb.session.stateless;
 
-import entity.Seat;
-import entity.SeatInventory;
+import entity.FlightSchedule;
 import javax.ejb.Local;
-import util.exception.UnknownPersistenceException;
 
 /**
  *
- * @author tristan
+ * @author jonang
  */
 @Local
-public interface SeatSessionBeanLocal {
-    public Long createSeat(Seat seat, SeatInventory seatInventory);
+public interface SeatInventorySessionBeanLocal {
+
+    public void createSeatInventory(FlightSchedule flightSchedule);
+    
 }

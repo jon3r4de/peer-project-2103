@@ -54,7 +54,7 @@ public class AirCraftConfig implements Serializable {
     @OneToMany(mappedBy = "airCraftConfig") // fetch = FetchType.EAGER)
     private List<Flight> flights;
     
-    @OneToMany(mappedBy = "airCraftConfig", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "airCraftConfig")//, cascade = CascadeType.PERSIST)
     private List<CabinClass> cabinClasses;
     
     public AirCraftConfig() {
@@ -91,6 +91,8 @@ public class AirCraftConfig implements Serializable {
     public Integer getNumOfCabinClasses() {
         return numOfCabinClasses;
     }
+    
+    
 
     public void setNumOfCabinClasses(Integer numOfCabinClasses) {
         this.numOfCabinClasses = numOfCabinClasses;
