@@ -239,9 +239,10 @@ public class FlightSchedulePlan implements Serializable {
     @Override
     public String toString() {
         SimpleDateFormat outputEndDateFormat = new SimpleDateFormat("dd MMM yy");
-        SimpleDateFormat outputLayoverFormat = new SimpleDateFormat("hh Hours mm Minutes");
-        String endDateString = outputEndDateFormat.format(endDate);
-        String layoverString = outputLayoverFormat.format(layoverDuration);
+        SimpleDateFormat outputLayoverFormat = new SimpleDateFormat("hh 'Hours' mm 'Minutes'");
+        //String endDateString = outputEndDateFormat.format(endDate);
+        String endDateString = (endDate != null) ? outputEndDateFormat.format(endDate) : "N/A";
+        String layoverString = (layoverDuration != null) ? String.format("%d Hours", layoverDuration.toHours()) : "N/A";
         if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTWEEK)) {
             return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", End Date = " + endDateString + ", Layover Duration = " + layoverString +  ']';
         } else if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTDAY)) {
@@ -250,5 +251,16 @@ public class FlightSchedulePlan implements Serializable {
             return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Layover Duration = " + layoverString +  ']';
         }
     }
+    
+    /*
+        Duration layoverDuration = Duration.ofHours(2);
+
+        // Extracting hours and minutes
+        long hours = layoverDuration.toHours();
+        long minutes = layoverDuration.minusHours(hours).toMinutes();
+
+        // Constructing the formatted string
+        String layoverString = String.format("%d Hours %d Minutes", hours, minutes);
+    */
     
 }

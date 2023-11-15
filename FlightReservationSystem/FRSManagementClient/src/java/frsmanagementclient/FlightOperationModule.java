@@ -702,7 +702,7 @@ public class FlightOperationModule {
         if (flightSchedulePlans.isEmpty()) {
             System.out.println("No Available Flight Schedule Plans!\n");
         } else {
-
+                System.out.println("dawwen and co debug 1" + flightSchedulePlans.size());
             for (FlightSchedulePlan flightSchedulePlan : flightSchedulePlans) {
                 System.out.println(flightSchedulePlan);
                 if (flightSchedulePlan.getComplementaryReturnSchedulePlan() != null) {

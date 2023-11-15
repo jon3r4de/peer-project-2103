@@ -277,15 +277,18 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     
     @Override
     public void deleteFlightSchedulePlan(FlightSchedulePlan flightSchedulePlan) throws FlightSchedulePlanNotFoundException, DeleteFlightSchedulePlanException {
+       
+         FlightSchedulePlan flightSchedulePlanManaged = em.find(FlightSchedulePlan.class, flightSchedulePlan.getFlightSchedulePlanId());
+        
         if (flightSchedulePlan.getFlightSchedules().isEmpty()) {
-            flightSchedulePlan.getFlight().getFlightSchedulePlans().remove(flightSchedulePlan); //remove flightSchedulePlan from the flights list of flightSchedulePlan 
-            FlightSchedulePlan complementaryFlightSchedulePlan = flightSchedulePlan.getComplementaryReturnSchedulePlan();
+            flightSchedulePlanManaged.getFlight().getFlightSchedulePlans().remove(flightSchedulePlan); //remove flightSchedulePlan from the flights list of flightSchedulePlan 
+            FlightSchedulePlan complementaryFlightSchedulePlan = flightSchedulePlanManaged.getComplementaryReturnSchedulePlan();
             complementaryFlightSchedulePlan.getFlight().getFlightSchedulePlans().remove(complementaryFlightSchedulePlan);
-            em.remove(flightSchedulePlan);
+            em.remove(flightSchedulePlanManaged);
             em.remove(complementaryFlightSchedulePlan);
         } else {
-            flightSchedulePlan.setDisabled(true);
-            throw new DeleteFlightSchedulePlanException("Flight Schedule Plan with Flight no. " + flightSchedulePlan.getFlight().getFlightNumber()
+            flightSchedulePlanManaged.setDisabled(true);
+            throw new DeleteFlightSchedulePlanException("Flight Schedule Plan with Flight no. " + flightSchedulePlanManaged.getFlight().getFlightNumber()
                     + " is in use and cannot be deleted! Instead, it is set as disabled. ");
         }
     }
