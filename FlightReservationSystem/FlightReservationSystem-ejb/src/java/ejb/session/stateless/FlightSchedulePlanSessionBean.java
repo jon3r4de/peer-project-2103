@@ -137,8 +137,9 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 
                 em.persist(newFlightSchedule);
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
-                seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
                 em.flush();
+                seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
+                
                 newFlightSchedulePlan.getFlightSchedules().add(newFlightSchedule);
             }
             

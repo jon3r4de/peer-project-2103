@@ -72,7 +72,7 @@ public class CabinClass implements Serializable {
     //@ManyToOne(optional = false)
     //List<String> listOfSeatNumber;
     
-    @OneToMany
+    @OneToMany(mappedBy = "cabinClass")
     @JoinColumn(nullable = false)
     List<SeatInventory> seatInventories;
     
