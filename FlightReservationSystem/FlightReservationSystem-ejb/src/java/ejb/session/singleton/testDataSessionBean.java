@@ -20,6 +20,7 @@ import entity.Fare;
 import entity.Flight;
 import entity.FlightRoute;
 import entity.FlightSchedulePlan;
+import entity.Partner;
 import enumeration.CabinClassEnum;
 import enumeration.EmployeeEnum;
 import enumeration.FlightScheduleEnum;
@@ -128,6 +129,12 @@ public class testDataSessionBean {
             System.out.println("initialised flight");
         }
         
+        if(em.find(Partner.class, 1l) == null)
+        {
+            doInitialisePartner();
+            System.out.println("initialised partner");
+        }
+        
         //errata now
         if(em.find(FlightSchedulePlan.class, 1l) == null){
             doInitialiseFlightSchedulePlan();
@@ -138,6 +145,10 @@ public class testDataSessionBean {
     
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
+    private void doInitialisePartner(){
+        Partner partner = new Partner("partner", "password");
+        //session bean create line
+    }
 
     private void doInitialiseAirCraftConfig() {
         try {

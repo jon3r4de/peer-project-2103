@@ -430,4 +430,13 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
         
         managedFsp.setFlightSchedulePlanName(name);
     }
+    
+    @Override
+    public FlightSchedulePlan retrieveById(Long id) {
+        FlightSchedulePlan fsp = em.find(FlightSchedulePlan.class, id);
+        fsp.getFares().size();
+        fsp.getFlightSchedules().size();
+        
+        return fsp;
+    }
 }

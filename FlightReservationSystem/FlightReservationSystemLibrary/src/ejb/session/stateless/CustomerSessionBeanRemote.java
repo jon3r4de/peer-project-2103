@@ -17,4 +17,6 @@ import util.exception.UnknownPersistenceException;
 public interface CustomerSessionBeanRemote {
     public Long registerCustomer(Customer c) throws UnknownPersistenceException;
     public Customer login(String username, String password) throws InvalidLoginCredentialException;
+
+    public Customer retrieveCustomerById(Long custId);
 }

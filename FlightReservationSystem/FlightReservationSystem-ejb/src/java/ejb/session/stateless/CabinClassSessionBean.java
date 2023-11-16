@@ -32,5 +32,12 @@ public class CabinClassSessionBean implements CabinClassSessionBeanRemote, Cabin
         return newCabinClass;
     }
     
+    @Override
+    public CabinClass retrieveCabinClassBYId(Long cabinClassId) {
+        CabinClass cc = em.find(CabinClass.class, cabinClassId);
+        cc.getFares().size();
+        return cc;
+    }
+    
 
 }
