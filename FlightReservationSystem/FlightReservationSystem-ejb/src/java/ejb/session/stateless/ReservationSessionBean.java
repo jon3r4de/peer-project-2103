@@ -130,6 +130,19 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         return flightReservation.getReservationId();
     }
     
+    //Reservation reservation = new Reservation(temp, numOfPassengers, creditCard); what reservation has 
+    //what reservation lacking :and customer, passenger list
+    @Override
+    public Long reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, FlightSchedule flightSchedule, Customer customer, Reservation reservation) {
+        FlightSchedule managedFlightSchedule = em.find(FlightSchedule.class, flightSchedule.getFlightScheduleId());
+        //managedFlightSchedule.getFlightSchedulePlan().getFares().
+        reservation.setPassengerList(passengers);
+        reservation.setCustomer(customer);
+        em.persist(reservation);
+        
+        return reservation.getReservationId();
+    }
+    
     public Reservation retrieveReservationByID(Long reservationId) throws ReservationNotFoundException {
         Reservation flightReservation = em.find(Reservation.class, reservationId);
 

@@ -11,8 +11,9 @@ import ejb.session.stateless.FlightSessionBeanRemote;
 import entity.Flight;
 import entity.FlightRoute;
 import ejb.session.stateless.FlightScheduleSessionBeanRemote;
+import ejb.session.stateless.PassengerSessionBeanRemote;
 import ejb.session.stateless.ReservationSessionBeanRemote;
-import entity.CabinClass;
+import ejb.session.stateless.SeatSessionBeanRemote;
 import entity.Customer;
 import entity.Fare;
 import entity.FlightSchedule;
@@ -22,12 +23,14 @@ import entity.Reservation;
 import entity.Seat;
 import entity.SeatInventory;
 import enumeration.CabinClassEnum;
+import enumeration.SeatStatusEnum;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
@@ -54,18 +57,28 @@ public class MainApp {
     
     private FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote;
     
+    private PassengerSessionBeanRemote passengerSessionBeanRemote;
+    
+    private SeatSessionBeanRemote seatSessionBeanRemote;
+    
     public MainApp() {
        
     }
     
-    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, CabinClassSessionBeanRemote cabinClassSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote) {
-       this();
+    public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote, 
+            FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, 
+            CabinClassSessionBeanRemote cabinClassSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, 
+            PassengerSessionBeanRemote passengerSessionBeanRemote, SeatSessionBeanRemote seatSessionBeanRemote) {
+      
+        this();
        this.customerSessionBeanRemote = customerSessionBeanRemote;
        this.reservationSessionBeanRemote = reservationSessionBeanRemote;
        this.flightScheduleSessionBeanRemote = flightScheduleSessionBeanRemote;
        this.flightSessionBeanRemote = flightSessionBeanRemote;
        this.cabinClassSessionBeanRemote = cabinClassSessionBeanRemote;
        this.flightSchedulePlanSessionBeanRemote = flightSchedulePlanSessionBeanRemote;
+       this.passengerSessionBeanRemote = passengerSessionBeanRemote;
+       this.seatSessionBeanRemote = seatSessionBeanRemote;
     }
     
     public void runApp() {
@@ -213,17 +226,6 @@ public class MainApp {
                 System.out.println((i + 1) + ": " + flightSchedules.get(i));
             }
                     
-            System.out.println("Which flight schedule would you like to reserve ? :");
-            int input = scanner.nextInt();
-            
-            if(input > flightSchedules.size() | 0 >= input) {
-                System.out.println("That was not part of the selection !");
-                return;
-            }
-            
-            FlightSchedule desiredFlightSchedule = flightSchedules.get(input - 1);
-            
-            
             Date returnDate = null;
             if (tripType == 2) {
                 System.out.print("Enter Return Date (dd Mmm yy ie  '31 Dec 23') > ");
@@ -250,21 +252,19 @@ public class MainApp {
             }
             
             
-            next = true;
-            while (next) {
-                System.out.print("Enter Flight Schedule ID to Reserve> ");
-                flightScheduleIds.add(scanner.nextLong());
-
-                System.out.print("More Flights to Reserve? Y/N> ");
-                String option = scanner.nextLine().trim();
-
-                if (option.charAt(0) == 'N') {
-                    next = false;
-                }
-
-            }
-
+           
+        next = true;
+        while (next) {
+                
+            System.out.println("Which flight schedule would you like to reserve ? :");
+            int input = scanner.nextInt();
             
+            if(input > flightSchedules.size() | 0 >= input) {
+                System.out.println("That was not part of the selection !");
+                return;
+            }
+            
+            FlightSchedule desiredFlightSchedule = flightSchedules.get(input - 1);
 
             List<String> creditCard = new ArrayList<>();
             System.out.print("Enter Credit Card Number> ");
@@ -276,27 +276,71 @@ public class MainApp {
             System.out.print("Enter CVV Number> ");
             creditCard.add(scanner.nextLine().trim());
             
-            BigDecimal temp = new BigDecimal(1.00);
+            BigDecimal tempFare = new BigDecimal(1.00);
             
             List<Passenger> passengers = new ArrayList<>();
            
-            for (int i = 1; i <= numOfPassengers; ++i) {
+            for (int i = 1; i <= numOfPassengers; i++) {
                 
                 try {
-                System.out.println("Enter First Name of Passenger " + i + "> ");
+                System.out.println("Enter First Name of Passenger " + i + ": > ");
                 String firstName  = scanner.nextLine().trim();
                 
-                System.out.println("Enter Last Name of Passenger " + i + "> ");
+                System.out.println("Enter Last Name of Passenger " + i + ": > ");
                 String lastName = scanner.nextLine().trim();
                 
-                System.out.println("Enter Passport Number of Passenger " + i + "> ");
+                System.out.println("Enter Passport Number of Passenger " + i + ": > ");
                 String passportNumber = scanner.nextLine().trim();
                 
+
                 System.out.println("Select Cabin Class For Passenger " + i + ": 1: First Class, 2: Business Class, 3: Premium Economy Class, 4: Economy Class> ");
-                String cabinClass = scanner.nextLine().trim();
+                int cabinClass = scanner.nextInt();
                 /*passenger must have reseration tagged to it --> handle during session bean --> pass in reservation id as well
                 for the creation of the passenger*/
-                Passenger passenger = new Passenger(firstName, lastName, passportNumber, cabinClass); //need sessionbean for this
+                List<SeatInventory> seatInventories = desiredFlightSchedule.getSeatInventories();
+                
+                //assign to a random cabin class seat inveneotry to compile -->does not account for  
+                //customers who dk which cabin class there is 
+                
+                SeatInventory desiredSeatInventory = seatInventories.get(0);
+                
+                for (SeatInventory si : seatInventories) {
+                    if (cabinClass == 1 && si.getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                        desiredSeatInventory = si;
+                    } else if (cabinClass == 2 && si.getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                        desiredSeatInventory = si;
+                    } else if (cabinClass == 3 && si.getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                        desiredSeatInventory = si;
+                    } else if (cabinClass == 4 && si.getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                        desiredSeatInventory = si;
+                    } 
+                }
+                
+                for (int j = 0; j < desiredSeatInventory.getSeats().size() ; j++) {
+                    //only print out available seats, why in the world did we use an enum when it couldve been a boolean...
+                    if(desiredSeatInventory.getSeats().get(j).getSeatStatus().equals(SeatStatusEnum.AVAILABLE)) {
+                        System.out.println(j +  ": seat number: " + desiredSeatInventory.getSeats().get(j).getSeatNumber());
+                    }
+                    
+                }
+                
+                System.out.println("please select the seat you want eg(5) :");
+                int seatWant = scanner.nextInt();
+                
+                if(seatWant >= desiredSeatInventory.getSeats().size() | seatWant < 0) {
+                    System.out.println("invalid input, learn to choose my guy");
+                    return;
+                }
+                
+                Seat desiredSeat = desiredSeatInventory.getSeats().get(seatWant);
+               
+                
+                Passenger passenger = new Passenger(firstName, lastName, passportNumber, desiredSeatInventory.getCabinClassType().toString()); //need sessionbean for this
+                passenger.getSeats().add(desiredSeat);
+                   
+                seatSessionBeanRemote.bookSeat(desiredSeat, passenger);
+                
+                passengerSessionBeanRemote.createPassenger(passenger);
                 
                 passengers.add(passenger);
                 
@@ -304,21 +348,35 @@ public class MainApp {
                     System.out.println("Error: " + ex.getMessage());
                 }
            
-            Reservation reservation = new Reservation(temp, numOfPassengers, creditCard);
-           /* try {
+            Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
+            //desiredFlightSchedule
+            //try {
                 Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
-                        flightScheduleIds, returnFlightScheduleIds, departureAirportiATACode, destinationAirportiATACode, departureDate, returnDate, customer);
+                        desiredFlightSchedule, customer, reservation);
                 System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
 
-            } catch (NoAvailableSeatsException ex) {
-                System.out.println("Error: " + ex.getMessage());
-            }*/
+//            } catch (NoAvailableSeatsException ex) {
+//                System.out.println("Error: " + ex.getMessage());
+//            }
                 
                 reservation.setPassengerList(passengers);
                 //set thelist of passenger into reservation
                 //reservation.set(passengers)
 
             }
+                
+                
+                System.out.print("More Flights to Reserve? Y/N> ");
+                String option = scanner.nextLine().trim();
+
+                if (option.charAt(0) == 'N') {
+                    next = false;
+                }
+
+            }
+
+            
+
         }
 
 
@@ -547,12 +605,15 @@ public class MainApp {
                     System.out.println("log in first !");
                 }
             }
-        } catch (ParseException ex) {
-            System.out.println("Invalid date input!\n");
-        } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
-            System.out.println("Error: " + ex.getMessage());
-            System.out.println();
-        }
+                } catch (ParseException ex) {
+                    System.out.println("Invalid date input!\n");
+                } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
+                    System.out.println("Error: " + ex.getMessage());
+                    System.out.println();
+                } catch (InputMismatchException ex) {
+                    System.out.println("Input mismatch: " + ex.getMessage());
+                    System.out.println();
+                }
     }
        
  
