@@ -13,6 +13,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -32,21 +33,25 @@ public class Partner implements Serializable {
     private String username;
     @Column(nullable = false, length = 32)
     private String password;
-
-    private List <String> partnerCustomerList;
-    
-    @Column(nullable = false, length = 18)
-    private partnerEnum partnerRole;
     
     @Column(nullable = false, length = 64)
     @NotNull
     @Size(min = 1, max = 64)
     private String partnerName;
     
-    public Partner() {
-        partnerCustomerList = new ArrayList<>();
-    }
+    @OneToMany(mappedBy = "partner")
+    private List<Reservation> reservations;
     
+    public Partner() {
+        this.reservations = new ArrayList<>();
+    }
+
+    public Partner(String username, String password, String partnerName) {
+        this();
+        this.username = username;
+        this.password = password;
+        this.partnerName = partnerName;
+    }
 
     public Long getPartnerId() {
         return partnerId;
@@ -64,28 +69,28 @@ public class Partner implements Serializable {
         this.username = username;
     }
 
-    /*public String getPassword() {
+    public String getPassword() {
         return password;
-    }*/
+    }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public List<String> getPartnerCustomerList() {
-        return partnerCustomerList;
+    public String getPartnerName() {
+        return partnerName;
     }
 
-    public void setPartnerCustomerList(List<String> partnerCustomerList) {
-        this.partnerCustomerList = partnerCustomerList;
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
     }
 
-    public partnerEnum getPartnerRole() {
-        return partnerRole;
+    public List<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setPartnerRole(partnerEnum partnerRole) {
-        this.partnerRole = partnerRole;
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 
     @Override
