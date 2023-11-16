@@ -212,6 +212,19 @@ public class FlightScheduleSessionBean implements FlightScheduleSessionBeanRemot
         
     }
     
+    @Override
+    public FlightSchedule searchGeneralFlightSchedule(FlightSchedule fs) {
+        
+        
+        FlightSchedule managedFlightSchedule = em.find(FlightSchedule.class, fs.getFlightScheduleId());
+        
+        //lazy loading
+        managedFlightSchedule.getReservations().size();
+        managedFlightSchedule.getSeatInventories().size();
+        
+        return managedFlightSchedule;
+    }
+    
     
 
     // Add business logic below. (Right-click in editor and choose

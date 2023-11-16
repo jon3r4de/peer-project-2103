@@ -51,4 +51,14 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
         }
         
     }
+    
+    @Override
+    public SeatInventory searchForSeatInvenotry(SeatInventory seatInventory) {
+        SeatInventory managedSeatInventory = em.find(SeatInventory.class, seatInventory.getSeatInventoryId());
+       
+        //lazy loading
+        managedSeatInventory.getSeats().size();
+        
+        return managedSeatInventory;
+    }
 }

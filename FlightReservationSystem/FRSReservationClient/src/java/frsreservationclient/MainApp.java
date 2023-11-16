@@ -13,6 +13,7 @@ import entity.FlightRoute;
 import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.PassengerSessionBeanRemote;
 import ejb.session.stateless.ReservationSessionBeanRemote;
+import ejb.session.stateless.SeatInventorySessionBeanRemote;
 import ejb.session.stateless.SeatSessionBeanRemote;
 import entity.Customer;
 import entity.Fare;
@@ -61,6 +62,8 @@ public class MainApp {
     
     private SeatSessionBeanRemote seatSessionBeanRemote;
     
+    private SeatInventorySessionBeanRemote seatInventorySessionBeanRemote;
+    
     public MainApp() {
        
     }
@@ -68,7 +71,8 @@ public class MainApp {
     public MainApp(CustomerSessionBeanRemote customerSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote, 
             FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, FlightSessionBeanRemote flightSessionBeanRemote, 
             CabinClassSessionBeanRemote cabinClassSessionBeanRemote, FlightSchedulePlanSessionBeanRemote flightSchedulePlanSessionBeanRemote, 
-            PassengerSessionBeanRemote passengerSessionBeanRemote, SeatSessionBeanRemote seatSessionBeanRemote) {
+            PassengerSessionBeanRemote passengerSessionBeanRemote, SeatSessionBeanRemote seatSessionBeanRemote
+            ,SeatInventorySessionBeanRemote seatInventorySessionBeanRemote) {
       
         this();
        this.customerSessionBeanRemote = customerSessionBeanRemote;
@@ -79,6 +83,7 @@ public class MainApp {
        this.flightSchedulePlanSessionBeanRemote = flightSchedulePlanSessionBeanRemote;
        this.passengerSessionBeanRemote = passengerSessionBeanRemote;
        this.seatSessionBeanRemote = seatSessionBeanRemote;
+       this.seatInventorySessionBeanRemote = seatInventorySessionBeanRemote;
     }
     
     public void runApp() {
@@ -258,6 +263,7 @@ public class MainApp {
                 
             System.out.println("Which flight schedule would you like to reserve ? :");
             int input = scanner.nextInt();
+            scanner.nextLine();
             
             if(input > flightSchedules.size() | 0 >= input) {
                 System.out.println("That was not part of the selection !");
@@ -282,6 +288,8 @@ public class MainApp {
            
             for (int i = 1; i <= numOfPassengers; i++) {
                 
+                passengers = new ArrayList<>();
+                
                 try {
                 System.out.println("Enter First Name of Passenger " + i + ": > ");
                 String firstName  = scanner.nextLine().trim();
@@ -297,7 +305,13 @@ public class MainApp {
                 int cabinClass = scanner.nextInt();
                 /*passenger must have reseration tagged to it --> handle during session bean --> pass in reservation id as well
                 for the creation of the passenger*/
+                
+                
+                // need to em .find lazy fucker 
+                desiredFlightSchedule = flightScheduleSessionBeanRemote.searchGeneralFlightSchedule(desiredFlightSchedule);
+                
                 List<SeatInventory> seatInventories = desiredFlightSchedule.getSeatInventories();
+                
                 
                 //assign to a random cabin class seat inveneotry to compile -->does not account for  
                 //customers who dk which cabin class there is 
@@ -316,6 +330,8 @@ public class MainApp {
                     } 
                 }
                 
+                desiredSeatInventory = seatInventorySessionBeanRemote.searchForSeatInvenotry(desiredSeatInventory);
+                
                 for (int j = 0; j < desiredSeatInventory.getSeats().size() ; j++) {
                     //only print out available seats, why in the world did we use an enum when it couldve been a boolean...
                     if(desiredSeatInventory.getSeats().get(j).getSeatStatus().equals(SeatStatusEnum.AVAILABLE)) {
@@ -326,6 +342,7 @@ public class MainApp {
                 
                 System.out.println("please select the seat you want eg(5) :");
                 int seatWant = scanner.nextInt();
+                scanner.nextLine();
                 
                 if(seatWant >= desiredSeatInventory.getSeats().size() | seatWant < 0) {
                     System.out.println("invalid input, learn to choose my guy");
@@ -333,37 +350,47 @@ public class MainApp {
                 }
                 
                 Seat desiredSeat = desiredSeatInventory.getSeats().get(seatWant);
+                
+                //debug statetement
+                System.out.println(desiredSeat + "   :  debug 1 reservation");
                
                 
                 Passenger passenger = new Passenger(firstName, lastName, passportNumber, desiredSeatInventory.getCabinClassType().toString()); //need sessionbean for this
                 passenger.getSeats().add(desiredSeat);
+                
+                System.out.println(passenger + "   :  debug 2 reservation");
                    
-                seatSessionBeanRemote.bookSeat(desiredSeat, passenger);
+                Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
+                passenger.setReservation(reservation);
                 
-                passengerSessionBeanRemote.createPassenger(passenger);
+                Passenger newPassenger = passengerSessionBeanRemote.createPassenger(passenger);
                 
-                passengers.add(passenger);
+                seatSessionBeanRemote.bookSeat(desiredSeat, newPassenger );
                 
-                } catch(Exception ex) { // for compile
-                    System.out.println("Error: " + ex.getMessage());
-                }
-           
-            Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
+                System.out.println(newPassenger + "   :  debug 3 reservation");
+                
+                passengers.add(newPassenger);
+                
+                
             //desiredFlightSchedule
-            //try {
                 Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
                         desiredFlightSchedule, customer, reservation);
                 System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
 
-//            } catch (NoAvailableSeatsException ex) {
-//                System.out.println("Error: " + ex.getMessage());
-//            }
+
                 
                 reservation.setPassengerList(passengers);
-                //set thelist of passenger into reservation
-                //reservation.set(passengers)
+                
+                } catch(Exception ex) { // for compile
+                    System.out.println("Error: " + ex.getMessage());
+                }
 
             }
+            
+                       
+
+                //set thelist of passenger into reservation
+                //reservation.set(passengers)
                 
                 
                 System.out.print("More Flights to Reserve? Y/N> ");
@@ -457,7 +484,7 @@ public class MainApp {
             return customer;
         } catch (InvalidLoginCredentialException ex) {
             throw ex;
-        }
+        } 
     }
     
     public void doRegister(Scanner sc) { //can decide whether auto login after register or not 

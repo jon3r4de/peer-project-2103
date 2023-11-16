@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.SeatInventory;
 import javax.ejb.Remote;
 
 /**
@@ -12,5 +13,7 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface SeatInventorySessionBeanRemote {
+
+    public SeatInventory searchForSeatInvenotry(SeatInventory seatInventory);
     
 }

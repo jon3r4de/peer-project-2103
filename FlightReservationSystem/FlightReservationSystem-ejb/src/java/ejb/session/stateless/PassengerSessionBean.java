@@ -28,6 +28,7 @@ public class PassengerSessionBean implements PassengerSessionBeanRemote, Passeng
     
     @Override
     public Passenger createPassenger(Passenger passenger) {
+        System.out.println(passenger);
         em.persist(passenger);
         
         em.flush();

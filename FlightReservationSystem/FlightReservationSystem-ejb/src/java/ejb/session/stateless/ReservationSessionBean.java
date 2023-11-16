@@ -135,9 +135,11 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     @Override
     public Long reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, FlightSchedule flightSchedule, Customer customer, Reservation reservation) {
         FlightSchedule managedFlightSchedule = em.find(FlightSchedule.class, flightSchedule.getFlightScheduleId());
+        Customer managedCustomer = em.find(Customer.class, customer.getCustomerId());
         //managedFlightSchedule.getFlightSchedulePlan().getFares().
         reservation.setPassengerList(passengers);
-        reservation.setCustomer(customer);
+        reservation.setCustomer(managedCustomer);
+        reservation.getFlightSchedules().add(managedFlightSchedule);
         em.persist(reservation);
         
         return reservation.getReservationId();

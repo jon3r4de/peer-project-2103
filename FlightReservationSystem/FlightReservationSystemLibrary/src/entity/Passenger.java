@@ -27,7 +27,7 @@ public class Passenger implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long passengerId;
     @Column(nullable = false, length = 32)
     @NotNull
