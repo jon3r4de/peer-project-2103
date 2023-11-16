@@ -15,5 +15,7 @@ import javax.ejb.Remote;
 public interface PassengerSessionBeanRemote {
 
     public Passenger createPassenger(Passenger passenger);
+
+    public Passenger findPassenger(Passenger passenger);
     
 }

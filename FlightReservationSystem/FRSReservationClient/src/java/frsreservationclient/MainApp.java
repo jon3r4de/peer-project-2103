@@ -484,6 +484,8 @@ public class MainApp {
             for (Passenger p : passengers) {
                 System.out.print(p.getFirstName() + " " + p.getLastName());
                 System.out.println();
+                //lazt load
+                passengerSessionBeanRemote.findPassenger(p);
                 List<Seat> seats = p.getSeats();
 
                 for (Seat s : seats) {

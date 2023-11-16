@@ -36,4 +36,12 @@ public class PassengerSessionBean implements PassengerSessionBeanRemote, Passeng
         return passenger;
     }
     
+    @Override
+    public Passenger findPassenger(Passenger passenger) {
+       Passenger managedP = em.find(Passenger.class, passenger.getPassengerId());
+       managedP.getSeats().size();
+        return managedP;
+    }
+    
+    
 }

@@ -82,7 +82,7 @@ public class Reservation implements Serializable {
         this.creditCardInfo = creditCardInfo;
     }
     
-    public Reservation(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, String departureAirport, String destinationAirport, Date departureDate, Date returnDate, Customer customer) {
+     Reservation(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, String departureAirport, String destinationAirport, Date departureDate, Date returnDate, Customer customer) {
         this.numOfPassengers = numOfPassengers;
         this.passengers = passengers;
         this.creditCardInfo = creditCard;
