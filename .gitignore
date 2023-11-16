@@ -8,3 +8,7 @@
 /FlightReservationSystem/FRSReservationClient/build/
 /FlightReservationSystem/FRSManagementClient/build/
 /FlightReservationSystem/FRSManagementClient/dist/
+/FlightReservationSystem/FlightReservationSystemLibrary/build
+/HolidayReservationSystem/nbproject/private/
+/HolidayReservationSystem/build/
+/HolidayReservationSystem/dist/
