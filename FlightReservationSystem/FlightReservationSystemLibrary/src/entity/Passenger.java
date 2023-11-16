@@ -44,8 +44,8 @@ public class Passenger implements Serializable {
     
     private String cabinClass;
     
-    @ManyToOne(optional = false)
-    @JoinColumn(nullable = false)
+    @ManyToOne(optional = true)
+    @JoinColumn(nullable = true)
     private Reservation reservation;
     
     @OneToMany(mappedBy = "passenger")

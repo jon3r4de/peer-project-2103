@@ -70,14 +70,9 @@ public class Reservation implements Serializable {
     @JoinColumn(nullable = false)
     private List<FlightSchedule> flightSchedules;
     
-    @ManyToMany
-    @JoinColumn(nullable = false)
-    private List<FlightSchedule> returnFlightSchedules;
-    
     public Reservation() {
        this.passengers = new ArrayList<>();
        this.flightSchedules = new ArrayList<>();
-       this.returnFlightSchedules = new ArrayList<>();
     }
     
     public Reservation(BigDecimal totalAmount, Integer numOfPassengers, List<String> creditCardInfo) {
@@ -105,14 +100,6 @@ public class Reservation implements Serializable {
 
     public void setPassengerDetails(List<Passenger> passengerList) {
         this.passengers = passengerList;
-    }
-
-    public List<FlightSchedule> getReturnFlightSchedules() {
-        return returnFlightSchedules;
-    }
-
-    public void setReturnFlightSchedules(List<FlightSchedule> returnFlightSchedules) {
-        this.returnFlightSchedules = returnFlightSchedules;
     }
 
     public Long getFlightId() {
@@ -259,7 +246,7 @@ public class Reservation implements Serializable {
 
     @Override
     public String toString() {
-        return "FlightReservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengers + ", creditCard=" + creditCardInfo + 
+        return "Reservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengers + ", creditCard=" + creditCardInfo + 
                  ", customer=" + customer;
     }
     

@@ -351,38 +351,45 @@ public class MainApp {
                 
                 Seat desiredSeat = desiredSeatInventory.getSeats().get(seatWant);
                 
-                //debug statetement
-                System.out.println(desiredSeat + "   :  debug 1 reservation");
-               
-                
                 Passenger passenger = new Passenger(firstName, lastName, passportNumber, desiredSeatInventory.getCabinClassType().toString()); //need sessionbean for this
                 passenger.getSeats().add(desiredSeat);
                 
-                System.out.println(passenger + "   :  debug 2 reservation");
                    
                 Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
-                passenger.setReservation(reservation);
                 
-                Passenger newPassenger = passengerSessionBeanRemote.createPassenger(passenger);
+                reservation.setCustomer(customer);
                 
+            //desiredFlightSchedule
+                reservation = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
+                desiredFlightSchedule, this.customer, reservation);
+                
+                System.out.println("Reserved Successfully! Flight Reservation ID: " + reservation.getReservationId() + "\n");
+
+                 Passenger newPassenger = passengerSessionBeanRemote.createPassenger(passenger);
+                 
+                 newPassenger.setReservation(reservation);
+                 
+                 System.out.println(newPassenger);
+
                 seatSessionBeanRemote.bookSeat(desiredSeat, newPassenger );
                 
+                int tempReserved = desiredSeatInventory.getNumberOfReservedSeats() + 1;
+                desiredSeatInventory.setNumberOfReservedSeats(tempReserved);
+                
+                int tempAvailable = desiredSeatInventory.getNumberOfAvailableSeats() - 1;
+                desiredSeatInventory.setNumberOfAvailableSeats(tempAvailable);
+                
+                int tempBalance = desiredSeatInventory.getNumberOfBalanceSeats() - 1;
+                desiredSeatInventory.setNumberOfBalanceSeats(tempBalance);
+                    
                 System.out.println(newPassenger + "   :  debug 3 reservation");
                 
                 passengers.add(newPassenger);
-                
-                
-            //desiredFlightSchedule
-                Long newFlightReservationId = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
-                        desiredFlightSchedule, customer, reservation);
-                System.out.println("Reserved Successfully! Flight Reservation ID: " + newFlightReservationId + "\n");
 
-
-                
                 reservation.setPassengerList(passengers);
                 
                 } catch(Exception ex) { // for compile
-                    System.out.println("Error: " + ex.getMessage());
+                    System.out.println("Error: " + ex);
                 }
 
             }

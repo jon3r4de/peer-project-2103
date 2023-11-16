@@ -121,7 +121,7 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
                     }*/
                 }
                 returnFlightSchedule.getReservations().add(flightReservation);
-                flightReservation.getReturnFlightSchedules().add(returnFlightSchedule);
+               // flightReservation.getReturnFlightSchedules().add(returnFlightSchedule);
             }
         }
         
@@ -133,26 +133,31 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
     //Reservation reservation = new Reservation(temp, numOfPassengers, creditCard); what reservation has 
     //what reservation lacking :and customer, passenger list
     @Override
-    public Long reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, FlightSchedule flightSchedule, Customer customer, Reservation reservation) {
+    public Reservation reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, FlightSchedule flightSchedule, Customer customer, Reservation reservation) {
         FlightSchedule managedFlightSchedule = em.find(FlightSchedule.class, flightSchedule.getFlightScheduleId());
+        System.out.println(customer);
+        System.out.println(customer.getCustomerId());
         Customer managedCustomer = em.find(Customer.class, customer.getCustomerId());
         //managedFlightSchedule.getFlightSchedulePlan().getFares().
         reservation.setPassengerList(passengers);
         reservation.setCustomer(managedCustomer);
         reservation.getFlightSchedules().add(managedFlightSchedule);
         em.persist(reservation);
+        em.flush();
+        managedFlightSchedule.getReservations().add(reservation);
+        managedCustomer.getReservations().add(reservation);
         
-        return reservation.getReservationId();
+        return reservation;
     }
     
     public Reservation retrieveReservationByID(Long reservationId) throws ReservationNotFoundException {
-        Reservation flightReservation = em.find(Reservation.class, reservationId);
+        Reservation reservation = em.find(Reservation.class, reservationId);
 
-        if (flightReservation == null) {
+        if (reservation == null) {
             throw new ReservationNotFoundException("Flight Reservation with ID: " + reservationId + " does not exist!");
         }
 
-        return flightReservation;
+        return reservation;
     }
 
     public void persist(Object object) {
