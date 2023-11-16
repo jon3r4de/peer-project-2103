@@ -15,5 +15,7 @@ import javax.ejb.Remote;
 public interface SeatInventorySessionBeanRemote {
 
     public SeatInventory searchForSeatInvenotry(SeatInventory seatInventory);
+
+    public SeatInventory adjustSeatCapacity(SeatInventory seatInventory);
     
 }

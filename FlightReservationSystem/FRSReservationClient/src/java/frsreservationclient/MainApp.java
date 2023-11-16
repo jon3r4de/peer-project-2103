@@ -38,7 +38,6 @@ import java.util.Scanner;
 import util.exception.AirportNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
-import util.exception.NoAvailableSeatsException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -282,11 +281,20 @@ public class MainApp {
             System.out.print("Enter CVV Number> ");
             creditCard.add(scanner.nextLine().trim());
             
-            BigDecimal tempFare = new BigDecimal(1.00);
+            System.out.println("Select Cabin Class For the passengers 1: First Class, 2: Business Class, 3: Premium Economy Class, 4: Economy Class > ");
+                int cabinClass = scanner.nextInt();
+                /*passenger must have reseration tagged to it --> handle during session bean --> pass in reservation id as well
+                for the creation of the passenger*/
+                
+                scanner.nextLine();
             
             List<Passenger> passengers = new ArrayList<>();
+            
+           Double finalFare = 0.0;
            
             for (int i = 1; i <= numOfPassengers; i++) {
+                
+                Double lowestFare = Double.MAX_VALUE;
                 
                 passengers = new ArrayList<>();
                 
@@ -300,14 +308,7 @@ public class MainApp {
                 System.out.println("Enter Passport Number of Passenger " + i + ": > ");
                 String passportNumber = scanner.nextLine().trim();
                 
-
-                System.out.println("Select Cabin Class For Passenger " + i + ": 1: First Class, 2: Business Class, 3: Premium Economy Class, 4: Economy Class> ");
-                int cabinClass = scanner.nextInt();
-                /*passenger must have reseration tagged to it --> handle during session bean --> pass in reservation id as well
-                for the creation of the passenger*/
-                
-                
-                // need to em .find lazy fucker 
+                // need to em .find lazy lazy variable
                 desiredFlightSchedule = flightScheduleSessionBeanRemote.searchGeneralFlightSchedule(desiredFlightSchedule);
                 
                 List<SeatInventory> seatInventories = desiredFlightSchedule.getSeatInventories();
@@ -320,13 +321,50 @@ public class MainApp {
                 
                 for (SeatInventory si : seatInventories) {
                     if (cabinClass == 1 && si.getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                        
                         desiredSeatInventory = si;
+                        FlightSchedulePlan tempFSP = desiredFlightSchedule.getFlightSchedulePlan();
+                        FlightSchedulePlan managedFSP = flightSchedulePlanSessionBeanRemote.retrieveById(tempFSP.getFlightSchedulePlanId());
+                        for (Fare fare : managedFSP.getFares()) {
+                            if (fare.getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                                lowestFare = Math.min(lowestFare, fare.getFareAmount().doubleValue());
+                            }
+                        }
+
+                        
                     } else if (cabinClass == 2 && si.getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                        
                         desiredSeatInventory = si;
+                        FlightSchedulePlan tempFSP = desiredFlightSchedule.getFlightSchedulePlan();
+                        FlightSchedulePlan managedFSP = flightSchedulePlanSessionBeanRemote.retrieveById(tempFSP.getFlightSchedulePlanId());
+                        for (Fare fare : managedFSP.getFares()) {
+                            if (fare.getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                                lowestFare = Math.min(lowestFare, fare.getFareAmount().doubleValue());
+                            }
+                        }
+                        
                     } else if (cabinClass == 3 && si.getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                        
                         desiredSeatInventory = si;
+                        FlightSchedulePlan tempFSP = desiredFlightSchedule.getFlightSchedulePlan();
+                        FlightSchedulePlan managedFSP = flightSchedulePlanSessionBeanRemote.retrieveById(tempFSP.getFlightSchedulePlanId());
+                        for (Fare fare : managedFSP.getFares()) {
+                            if (fare.getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                                lowestFare = Math.min(lowestFare, fare.getFareAmount().doubleValue());
+                            }
+                        }
+                        
                     } else if (cabinClass == 4 && si.getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                        
                         desiredSeatInventory = si;
+                        FlightSchedulePlan tempFSP = desiredFlightSchedule.getFlightSchedulePlan();
+                        FlightSchedulePlan managedFSP = flightSchedulePlanSessionBeanRemote.retrieveById(tempFSP.getFlightSchedulePlanId());
+                        for (Fare fare : managedFSP.getFares()) {
+                            if (fare.getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                                lowestFare = Math.min(lowestFare, fare.getFareAmount().doubleValue());
+                            }
+                        }
+                        
                     } 
                 }
                 
@@ -354,48 +392,42 @@ public class MainApp {
                 Passenger passenger = new Passenger(firstName, lastName, passportNumber, desiredSeatInventory.getCabinClassType().toString()); //need sessionbean for this
                 passenger.getSeats().add(desiredSeat);
                 
-                   
-                Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
-                
-                reservation.setCustomer(customer);
-                
-            //desiredFlightSchedule
-                reservation = reservationSessionBeanRemote.reserveFlight(numOfPassengers,passengers, creditCard,
-                desiredFlightSchedule, this.customer, reservation);
-                
-                System.out.println("Reserved Successfully! Flight Reservation ID: " + reservation.getReservationId() + "\n");
 
                  Passenger newPassenger = passengerSessionBeanRemote.createPassenger(passenger);
                  
-                 newPassenger.setReservation(reservation);
+                 //newPassenger.setReservation(reservation);
                  
                  System.out.println(newPassenger);
 
                 seatSessionBeanRemote.bookSeat(desiredSeat, newPassenger );
                 
-                int tempReserved = desiredSeatInventory.getNumberOfReservedSeats() + 1;
-                desiredSeatInventory.setNumberOfReservedSeats(tempReserved);
-                
-                int tempAvailable = desiredSeatInventory.getNumberOfAvailableSeats() - 1;
-                desiredSeatInventory.setNumberOfAvailableSeats(tempAvailable);
-                
-                int tempBalance = desiredSeatInventory.getNumberOfBalanceSeats() - 1;
-                desiredSeatInventory.setNumberOfBalanceSeats(tempBalance);
+                seatInventorySessionBeanRemote.adjustSeatCapacity(desiredSeatInventory);
                     
-                System.out.println(newPassenger + "   :  debug 3 reservation");
+                //System.out.println(newPassenger + "   :  debug 3 reservation");
                 
                 passengers.add(newPassenger);
-
-                reservation.setPassengerList(passengers);
                 
+                finalFare += lowestFare;
+
                 } catch(Exception ex) { // for compile
                     System.out.println("Error: " + ex);
                 }
 
             }
             
-                       
-
+                //
+                BigDecimal tempFare = new BigDecimal(finalFare);
+                Reservation reservation = new Reservation(tempFare, numOfPassengers, creditCard);
+                
+                reservation.setCustomer(customer);
+                
+                reservation = reservationSessionBeanRemote.reserveFlight(numOfPassengers, passengers, creditCard,
+                desiredFlightSchedule, this.customer, reservation);
+                reservation.setPassengerList(passengers);
+                
+                //for loop  to iterate the passengers to link them to reservation
+                System.out.println("Reserved Successfully! Flight Reservation ID: " + reservation.getReservationId() + "\n");
+                //
                 //set thelist of passenger into reservation
                 //reservation.set(passengers)
                 

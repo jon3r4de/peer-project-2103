@@ -128,6 +128,7 @@ public class SalesManagementModule {
                 System.out.printf("%-20s%-20s%-20s\n", "Available Seats", "Reserved Seats", "Balance Seats");
                 System.out.println("--------------------------------------------------------------------------------------------");
                 
+                //should be copping from seat Inventory
                 Integer availSeats = cc.getNumberOfAvailableSeats();
                 //System.out.println("SM debug 6");
                 Integer resSeats = cc.getNumberOfReservedSeats();

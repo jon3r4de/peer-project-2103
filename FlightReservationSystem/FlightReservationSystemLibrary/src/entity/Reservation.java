@@ -42,7 +42,7 @@ public class Reservation implements Serializable {
     @Min(1)
     private Integer numOfPassengers;
     
-    private Long flightId;
+    private String flightNumber;
     private LocalDate reservationDate;
     private String status;
     private String departureAirport;
@@ -102,13 +102,15 @@ public class Reservation implements Serializable {
         this.passengers = passengerList;
     }
 
-    public Long getFlightId() {
-        return flightId;
+    public String getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
+
+    
 
     public LocalDate getReservationDate() {
         return reservationDate;

@@ -147,6 +147,17 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         managedFlightSchedule.getReservations().add(reservation);
         managedCustomer.getReservations().add(reservation);
         
+        //assosciate passenger with the reservation
+        for(Passenger p : passengers) {
+            Passenger managedP = em.find(Passenger.class, p.getPassengerId());
+            managedP.setReservation(reservation);
+        }
+        
+        reservation.setDepartureDate(managedFlightSchedule.getDepartureDateTime());   
+        reservation.setFlightNumber(managedFlightSchedule.getFlightSchedulePlan().getFlight().getFlightNumber());
+        reservation.setDestinationAirport(managedFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getDestination().getIataAirportcode());
+        reservation.setDepartureAirport(managedFlightSchedule.getFlightSchedulePlan().getFlight().getFlightRoute().getOrigin().getIataAirportcode());
+        
         return reservation;
     }
     
