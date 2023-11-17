@@ -1035,10 +1035,15 @@ public class MainApp {
                 }
             }
             return returnList;
-        } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
+        } catch (AirportNotFoundException ex) {
 
             throw ex;
 
+        } catch (FlightScheduleNotFoundException ex) {
+             System.out.println("Error: " + ex.getMessage());
+            returnList = new ArrayList<>();
+            return returnList;
+            
         } 
         
    }
