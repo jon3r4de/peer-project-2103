@@ -571,7 +571,8 @@ public class MainApp {
             try {
             Long newCustId = customerSessionBeanRemote.registerCustomer(new Customer(firstName, lastName, email, contactNumber, address, username, password));
                 System.out.println("Registered succefully! Customer ID: " + newCustId + "\n");
-                customer = newCustomer;
+                //customer = newCustomer;
+                customer = customerSessionBeanRemote.retrieveCustomerById(newCustId);
             } catch (UnknownPersistenceException ex) {
                 System.out.println(ex.getMessage());
             }
