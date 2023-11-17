@@ -28,12 +28,6 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
-
-    public Reservation retrieveReservationById(Long reservationId) {
-        Reservation res = em.find(Reservation.class, reservationId);
-        
-        return res;
-    }
     
 //    @Override
 //    public Long reserveFlight(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, 
@@ -160,17 +154,18 @@ public class ReservationSessionBean implements ReservationSessionBeanRemote, Res
         return reservation;
     }
     
+    
     public Reservation retrieveReservationByID(Long reservationId) throws ReservationNotFoundException {
         Reservation reservation = em.find(Reservation.class, reservationId);
+        
+        if (reservation == null) {
+            throw new ReservationNotFoundException("Flight Reservation with ID: " + reservationId + " does not exist!");
+        }
+        
         reservation.getCreditCardInfo().size();
         reservation.getFlightSchedules().size();
         reservation.getPassengerList().size();
         reservation.getPassengers().size();
-        
-
-        if (reservation == null) {
-            throw new ReservationNotFoundException("Flight Reservation with ID: " + reservationId + " does not exist!");
-        }
 
         return reservation;
     }
