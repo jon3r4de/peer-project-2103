@@ -695,7 +695,7 @@ public class MainApp {
                 } catch (ParseException ex) {
                     System.out.println("Invalid date input!\n");
                 } catch (AirportNotFoundException | FlightScheduleNotFoundException ex) {
-                    System.out.println("Error: " + ex.getMessage());
+                    System.out.println(ex.getMessage());
                     System.out.println();
                 } catch (InputMismatchException ex) {
                     System.out.println("Input mismatch: " + ex.getMessage());
