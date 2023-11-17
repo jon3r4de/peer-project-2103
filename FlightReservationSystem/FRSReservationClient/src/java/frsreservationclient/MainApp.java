@@ -36,8 +36,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import util.exception.AirportNotFoundException;
+import util.exception.FlightNotFoundException;
 import util.exception.FlightScheduleNotFoundException;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.ReservationNotFoundException;
 import util.exception.UnknownPersistenceException;
 
 /**
@@ -455,7 +457,9 @@ public class MainApp {
             System.out.println("*** FRS Reservation :: View Flight Reservation Details ***\n");
             System.out.print("Enter Reservation ID> ");
             Long reservationId = scanner.nextLong();
-            Reservation res = reservationSessionBeanRemote.retrieveReservationById(reservationId);
+            Reservation res;
+            
+            res = reservationSessionBeanRemote.retrieveReservationByID(reservationId);
 
             List<Passenger> passengers = res.getPassengers();
 
@@ -469,24 +473,38 @@ public class MainApp {
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
             
             List<FlightSchedule> flightSchedules = res.getFlightSchedules();
+            System.out.println(flightSchedules.size());
+            
             for (FlightSchedule fs : flightSchedules) {
+                
                 String flightNum = fs.getFlightNumber();
+
                 Flight flight = flightSessionBeanRemote.retrieveFlightByFlightNumber(flightNum); 
+
                 Date departure = fs.getDepartureDateTime();
+     
                 Date arrival = fs.getArrivalDateTime();
+
                 FlightRoute fr = flight.getFlightRoute();
+
                 String origin = fr.getOrigin().getAirportName();
+
                 String destination = fr.getDestination().getAirportName();
+
                 System.out.printf("%-20s%-20s%-20s%-20s%-20s\n", flightNum, departure, arrival, origin, destination);
             }
 
+
             System.out.print("Reservation Details for Passenger: ");
             for (Passenger p : passengers) {
+
                 System.out.print(p.getFirstName() + " " + p.getLastName());
                 System.out.println();
                 //lazt load
-                passengerSessionBeanRemote.findPassenger(p);
+                p = passengerSessionBeanRemote.findPassenger(p);
+
                 List<Seat> seats = p.getSeats();
+
 
                 for (Seat s : seats) {
                     System.out.printf("%-20s%-20s%-20s\n", "Seat Number", "Cabin Class Type", "Flight Number");
@@ -499,7 +517,7 @@ public class MainApp {
                 }
                 System.out.println();
             }
-        } catch (Exception ex) {
+        } catch (ReservationNotFoundException | FlightNotFoundException ex) {
             System.out.println(ex.getMessage());
         }
     }
