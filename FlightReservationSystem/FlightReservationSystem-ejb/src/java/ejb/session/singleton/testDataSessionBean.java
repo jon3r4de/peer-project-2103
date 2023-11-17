@@ -10,6 +10,7 @@ import ejb.session.stateless.EmployeeSessionBeanLocal;
 import ejb.session.stateless.FlightRouteSessionBeanLocal;
 import ejb.session.stateless.FlightSchedulePlanSessionBeanLocal;
 import ejb.session.stateless.FlightSessionBeanLocal;
+import ejb.session.stateless.PartnerSessionBeanLocal;
 import ejb.session.stateless.aircraftTypeSessionBeanLocal;
 import entity.AirCraftConfig;
 import entity.AirCraftType;
@@ -60,6 +61,9 @@ import util.exception.UnknownPersistenceException;
 @Startup
 //@Startup should be after datainit
 public class testDataSessionBean {
+
+    @EJB
+    private PartnerSessionBeanLocal partnerSessionBeanLocal;
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
@@ -146,8 +150,13 @@ public class testDataSessionBean {
     // Add business logic below. (Right-click in editor and choose
     // "Insert Code > Add Business Method")
     private void doInitialisePartner(){
-        Partner partner = new Partner("partner", "password");
-        //session bean create line
+        try {
+            Partner partner = new Partner("partner", "password", "partnerName");
+            Long partnerId = partnerSessionBeanLocal.registerPartner(partner);
+            System.out.println(partnerId);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }    
     }
 
     private void doInitialiseAirCraftConfig() {

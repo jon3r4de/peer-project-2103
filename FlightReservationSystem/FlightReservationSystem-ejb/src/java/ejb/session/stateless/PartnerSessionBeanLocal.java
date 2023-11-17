@@ -7,6 +7,7 @@ package ejb.session.stateless;
 import entity.Partner;
 import javax.ejb.Local;
 import util.exception.InvalidLoginCredentialException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -15,4 +16,5 @@ import util.exception.InvalidLoginCredentialException;
 @Local
 public interface PartnerSessionBeanLocal {
     public Partner login(String username, String password) throws InvalidLoginCredentialException;
+    public Long registerPartner(Partner p) throws UnknownPersistenceException;
 }

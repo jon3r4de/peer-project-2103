@@ -43,7 +43,7 @@ public class HolidayReservationSystem {
 //                    searchFlight();
 //                    break;
                 } else if (response == 3) {
-                    break;
+                    return;
                 } else {
                     System.out.println("Please choose a valid option.");
                 }

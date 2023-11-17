@@ -4,7 +4,9 @@
  */
 package ejb.session.stateless;
 
+import entity.Partner;
 import javax.ejb.Remote;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -12,5 +14,5 @@ import javax.ejb.Remote;
  */
 @Remote
 public interface PartnerSessionBeanRemote {
-    
+    public Long registerPartner(Partner p) throws UnknownPersistenceException;
 }

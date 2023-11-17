@@ -9,9 +9,11 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import util.exception.InvalidLoginCredentialException;
 import util.exception.PartnerNotFoundException;
+import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -22,6 +24,17 @@ public class PartnerSessionBean implements PartnerSessionBeanRemote, PartnerSess
 
     @PersistenceContext(unitName = "FlightReservationSystem-ejbPU")
     private EntityManager em;
+    
+    @Override
+    public Long registerPartner(Partner p) throws UnknownPersistenceException {
+        try {
+            em.persist(p);
+            em.flush();
+            return p.getPartnerId(); 
+        } catch (PersistenceException ex) {
+            throw new UnknownPersistenceException(ex.getMessage());
+        }
+    }
 
     @Override
     public Partner login(String username, String password) throws InvalidLoginCredentialException {
