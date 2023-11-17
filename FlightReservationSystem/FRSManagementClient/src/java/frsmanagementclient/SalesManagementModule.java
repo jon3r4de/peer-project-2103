@@ -6,6 +6,7 @@ package frsmanagementclient;
 
 import ejb.session.stateless.FlightScheduleSessionBeanRemote;
 import ejb.session.stateless.FlightSessionBeanRemote;
+import ejb.session.stateless.PassengerSessionBeanRemote;
 import ejb.session.stateless.ReservationSessionBeanRemote;
 import entity.FlightSchedule;
 import entity.Passenger;
@@ -31,13 +32,16 @@ public class SalesManagementModule {
     
     private ReservationSessionBeanRemote reservationSessionBeanRemote;
     
+    private PassengerSessionBeanRemote passengerSessionBeanRemote;
+    
     public SalesManagementModule() {
     }
 
-    public SalesManagementModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote) {
+    public SalesManagementModule(FlightSessionBeanRemote flightSessionBeanRemote, FlightScheduleSessionBeanRemote flightScheduleSessionBeanRemote, ReservationSessionBeanRemote reservationSessionBeanRemote, PassengerSessionBeanRemote passengerSessionBeanRemote) {
         this.flightSessionBeanRemote = flightSessionBeanRemote;
         this.flightScheduleSessionBeanRemote = flightScheduleSessionBeanRemote;
         this.reservationSessionBeanRemote = reservationSessionBeanRemote;
+        this.passengerSessionBeanRemote = passengerSessionBeanRemote;
     }
     
     public void menuSalesManagement() {
@@ -167,7 +171,7 @@ public class SalesManagementModule {
         try {
             System.out.print("Enter Reservation ID> ");
             Long reservationId = scanner.nextLong();
-            Reservation res = reservationSessionBeanRemote.retrieveReservationById(reservationId);
+            Reservation res = reservationSessionBeanRemote.retrieveReservationByID(reservationId);
             System.out.println("Reservation Details for reservation: " + res.getReservationId());
             System.out.printf("%-20s%-20s%-20s%-20s\n", "Flight Number", "Departure Airport", "Destination Airport", "Departure Date");
             System.out.println("--------------------------------------------------------------------------------------------");
@@ -181,8 +185,9 @@ public class SalesManagementModule {
             System.out.println("Passenger details:");
             List<Passenger> passengers = res.getPassengerList();
             for (Passenger p : passengers) {
-                List<Seat> seats = p.getSeats();
-                String name = p.getFirstName() + " " + p.getLastName();
+                Passenger managedP = passengerSessionBeanRemote.findPassenger(p);
+                List<Seat> seats = managedP.getSeats();
+                String name = managedP.getFirstName() + " " + managedP.getLastName();
                 for (Seat s : seats) {
                     SeatInventory si = s.getSeatInventory();
                     CabinClassEnum ccType = si.getCabinClassType();
