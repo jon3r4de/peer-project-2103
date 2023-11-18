@@ -34,4 +34,6 @@ public interface FlightSchedulePlanSessionBeanLocal {
 
     public List<FlightSchedulePlan> retrieveFlightSchedulePlansByFlightNumber(String flightNumber) throws FlightSchedulePlanNotFoundException;
     public void updateFlightSchedulePlanName(String name, FlightSchedulePlan fsp);
+    public void setReturnFlightSchedulePlan(Long newFlightSchedulePlanId, Long returnFlightSchedulePlanId) throws GeneralException;
+    public FlightSchedulePlan retrieveById(Long id);
 }

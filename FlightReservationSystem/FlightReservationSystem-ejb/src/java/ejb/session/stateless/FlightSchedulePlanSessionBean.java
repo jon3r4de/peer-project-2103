@@ -296,6 +296,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             throw new GeneralException(ex.getMessage());
         }
     }
+    
 
     
     @Override

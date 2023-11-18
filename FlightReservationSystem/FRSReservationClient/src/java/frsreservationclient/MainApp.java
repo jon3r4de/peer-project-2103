@@ -1082,7 +1082,7 @@ public class MainApp {
             throw ex;
 
         } catch (FlightScheduleNotFoundException ex) {
-             System.out.println("Error: " + ex.getMessage());
+             System.out.println(ex.getMessage());
             returnList = new ArrayList<>();
             return returnList;
             

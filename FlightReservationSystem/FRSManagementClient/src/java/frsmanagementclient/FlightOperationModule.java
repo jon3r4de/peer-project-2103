@@ -370,8 +370,10 @@ public class FlightOperationModule {
                     return null;
                 }
                 
-                System.out.print("Enter Layover Duration: X hrs, X min> ");
+                System.out.println("Enter Layover Duration X hrs eg (5) > ");
                 int layoverHrs = scanner.nextInt();
+                
+                System.out.println("Enter Layover Duration X Minutes eg (5) > ");
                 int layoverMin = scanner.nextInt();
                 Duration layoverDuration = Duration.ofHours(layoverHrs).plusMinutes(layoverMin);
                 
@@ -596,7 +598,7 @@ public class FlightOperationModule {
               
             int recurrence = 0;
             while (recurrence <= 0) {
-                System.out.print("Recurrent every _ days?> ");
+                System.out.print("Recurrent every _ days? > ");
                 if (scanner.hasNextInt()) {
                     recurrence = scanner.nextInt();
                     if (recurrence <= 0) {
@@ -663,8 +665,10 @@ public class FlightOperationModule {
             
             // Use SimpleDateFormat to format the day of the week
             SimpleDateFormat dayOfWeekFormat = new SimpleDateFormat("EEE");
-            String dayOfWeek = dayOfWeekFormat.format(departureDateTime);
+            //String dayOfWeek = dayOfWeekFormat.format(departureDateTime);
 
+            System.out.print("Choose a recurrent day eg (Fri) > ");
+            String dayOfWeek = scanner.nextLine().trim();
             System.out.println("Recurrent day of week chosen: " + dayOfWeek + ".");
 
             System.out.print("Enter the Flight Duration hours (eg '5') > ");
@@ -676,7 +680,7 @@ public class FlightOperationModule {
             
             scanner.nextLine();
             
-            System.out.print("Enter End Date (day MONTH year))> ");
+            System.out.print("Enter End Date (day MONTH year) eg (08 Nov 23)> ");
             String endDateString = scanner.nextLine().trim();
             DateFormat endDateFormat = new SimpleDateFormat("dd MMM yy");
             Date endDate = endDateFormat.parse(endDateString);
