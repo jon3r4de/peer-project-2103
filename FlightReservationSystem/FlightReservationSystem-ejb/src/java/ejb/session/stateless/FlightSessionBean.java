@@ -127,26 +127,27 @@ public class FlightSessionBean implements FlightSessionBeanRemote, FlightSession
 
     @Override
     public void deleteFlight(Flight flight) throws FlightNotFoundException, DeleteFlightException {
-        
+        Flight managedFlight = em.find(Flight.class, flight.getFlightId());
+        managedFlight.getFlightSchedulePlans().size();
 
-        if (flight.getFlightSchedulePlans().isEmpty()) {
-            flight.getFlightRoute().getFlights().remove(flight);
-            flight.getAirCraftConfig().getFlights().remove(flight);
+        if (managedFlight.getFlightSchedulePlans().isEmpty()) {
+            managedFlight.getFlightRoute().getFlights().remove(flight);
+            managedFlight.getAirCraftConfig().getFlights().remove(flight);
             
-            if (flight.getComplementaryReturnFlight() != null) {
+            if (managedFlight.getComplementaryReturnFlight() != null) {
                 //Flight compFlight = flight.getComplementaryReturnFlight();
-                flight.getComplementaryReturnFlight().setComplementaryReturnFlight(null);
-                flight.setComplementaryReturnFlight(null);
+                managedFlight.getComplementaryReturnFlight().setComplementaryReturnFlight(null);
+                managedFlight.setComplementaryReturnFlight(null);
                 //deleteComplementaryFlight(compFlight);
             }
-            if (!em.contains(flight)) {
-                flight = em.merge(flight);
+            if (!em.contains(managedFlight)) {
+                managedFlight = em.merge(flight);
             }
             
-            em.remove(flight);
+            em.remove(managedFlight);
         } else {
-            flight.setDisabled(true);
-            throw new DeleteFlightException("Flight no. " + flight.getFlightNumber() + " is in use and cannot be deleted! Instaed, it is set as disabled. ");
+            managedFlight.setDisabled(true);
+            throw new DeleteFlightException("Flight no. " + managedFlight.getFlightNumber() + " is in use and cannot be deleted! Instaed, it is set as disabled. ");
         }
     }
     

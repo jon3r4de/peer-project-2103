@@ -123,11 +123,11 @@ public class testDataSessionBean {
             System.out.println("initialised flight route");
         }
         
-        if(em.find(Flight.class, 1l) == null)
+       /* if(em.find(Flight.class, 1l) == null)
         {
             doInitialiseFlight();
             System.out.println("initialised flight");
-        }
+        }*/
         
         if(em.find(Partner.class, 1l) == null)
         {
@@ -136,10 +136,10 @@ public class testDataSessionBean {
         }
         
         //errata now
-        if(em.find(FlightSchedulePlan.class, 1l) == null){
+        /*if(em.find(FlightSchedulePlan.class, 1l) == null){
             doInitialiseFlightSchedulePlan();
             System.out.println("initialised fsp");
-        }
+        }*/
         
     }
     

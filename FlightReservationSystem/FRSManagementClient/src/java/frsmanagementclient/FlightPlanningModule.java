@@ -338,6 +338,7 @@ public class FlightPlanningModule {
         try {
             Long flightRouteId = flightRouteSessionBeanRemote.deleteFlightRoute(originCode, destinationCode);
             System.out.println("The Flight Route " + flightRouteId + " is deleted successfully!\n");
+            System.out.println("If it had a complementary route that was not used, it would have been deleted as well!\n");
             
         } catch (DeleteFlightRouteException ex) {
             System.out.println("Flight route from " + originCode + " to " + destinationCode + " is set disabled!");

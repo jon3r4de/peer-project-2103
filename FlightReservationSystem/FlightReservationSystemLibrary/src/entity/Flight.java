@@ -61,6 +61,7 @@ public class Flight implements Serializable {
     public Flight() {
         this.flightSchedulePlans = new ArrayList<>();
         this.disabled = false;
+        this.hasComplementaryReturnFlight = false;//when initialising flight always start out as false
     }
 
     public Flight(String flightNumber) {
