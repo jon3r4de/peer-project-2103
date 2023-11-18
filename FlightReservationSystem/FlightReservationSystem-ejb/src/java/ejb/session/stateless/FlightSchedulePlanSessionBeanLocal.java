@@ -31,7 +31,7 @@ public interface FlightSchedulePlanSessionBeanLocal {
     public void updateSingleFlightSchedule(FlightSchedulePlan flightSchedulePlan, FlightSchedule flightSchedule, Date departureDate, Date departureTime, int estimatedDurationTimeHours, int estimatedDurationTimeMinutes) throws UpdateFlightSchedulePlanException, ParseException;
 
     public void updateRecurrentWeekFlightSchedule(FlightSchedulePlan flightSchedulePlan, Date endDate) throws UpdateFlightSchedulePlanException;
-
+    public FlightSchedulePlan retrieveById(Long id);
     public List<FlightSchedulePlan> retrieveFlightSchedulePlansByFlightNumber(String flightNumber) throws FlightSchedulePlanNotFoundException;
     public void updateFlightSchedulePlanName(String name, FlightSchedulePlan fsp);
 }

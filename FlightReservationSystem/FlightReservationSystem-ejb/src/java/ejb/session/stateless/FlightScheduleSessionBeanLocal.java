@@ -4,7 +4,13 @@
  */
 package ejb.session.stateless;
 
+import entity.FlightSchedule;
+import enumeration.CabinClassEnum;
+import java.util.Date;
+import java.util.List;
 import javax.ejb.Local;
+import util.exception.AirportNotFoundException;
+import util.exception.FlightScheduleNotFoundException;
 
 /**
  *
@@ -12,5 +18,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface FlightScheduleSessionBeanLocal {
-    
+    public List<FlightSchedule> searchDirectFlightSchedules(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException;
 }

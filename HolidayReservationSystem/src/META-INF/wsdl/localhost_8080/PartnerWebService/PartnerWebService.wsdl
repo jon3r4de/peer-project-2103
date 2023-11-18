@@ -4,6 +4,12 @@
 <xsd:import namespace="http://ws.session.ejb/" schemaLocation="http://localhost:8080/PartnerWebService/PartnerWebService?xsd=1"/>
 </xsd:schema>
 </types>
+<message name="getFlightSchedulePlanById">
+<part name="parameters" element="tns:getFlightSchedulePlanById"/>
+</message>
+<message name="getFlightSchedulePlanByIdResponse">
+<part name="parameters" element="tns:getFlightSchedulePlanByIdResponse"/>
+</message>
 <message name="partnerLogin">
 <part name="parameters" element="tns:partnerLogin"/>
 </message>
@@ -19,7 +25,23 @@
 <message name="helloResponse">
 <part name="parameters" element="tns:helloResponse"/>
 </message>
+<message name="searchDirectFlightSchedules">
+<part name="parameters" element="tns:searchDirectFlightSchedules"/>
+</message>
+<message name="searchDirectFlightSchedulesResponse">
+<part name="parameters" element="tns:searchDirectFlightSchedulesResponse"/>
+</message>
+<message name="AirportNotFoundException">
+<part name="fault" element="tns:AirportNotFoundException"/>
+</message>
+<message name="FlightScheduleNotFoundException">
+<part name="fault" element="tns:FlightScheduleNotFoundException"/>
+</message>
 <portType name="PartnerWebService">
+<operation name="getFlightSchedulePlanById">
+<input wsam:Action="http://ws.session.ejb/PartnerWebService/getFlightSchedulePlanByIdRequest" message="tns:getFlightSchedulePlanById"/>
+<output wsam:Action="http://ws.session.ejb/PartnerWebService/getFlightSchedulePlanByIdResponse" message="tns:getFlightSchedulePlanByIdResponse"/>
+</operation>
 <operation name="partnerLogin">
 <input wsam:Action="http://ws.session.ejb/PartnerWebService/partnerLoginRequest" message="tns:partnerLogin"/>
 <output wsam:Action="http://ws.session.ejb/PartnerWebService/partnerLoginResponse" message="tns:partnerLoginResponse"/>
@@ -29,9 +51,24 @@
 <input wsam:Action="http://ws.session.ejb/PartnerWebService/helloRequest" message="tns:hello"/>
 <output wsam:Action="http://ws.session.ejb/PartnerWebService/helloResponse" message="tns:helloResponse"/>
 </operation>
+<operation name="searchDirectFlightSchedules">
+<input wsam:Action="http://ws.session.ejb/PartnerWebService/searchDirectFlightSchedulesRequest" message="tns:searchDirectFlightSchedules"/>
+<output wsam:Action="http://ws.session.ejb/PartnerWebService/searchDirectFlightSchedulesResponse" message="tns:searchDirectFlightSchedulesResponse"/>
+<fault message="tns:AirportNotFoundException" name="AirportNotFoundException" wsam:Action="http://ws.session.ejb/PartnerWebService/searchDirectFlightSchedules/Fault/AirportNotFoundException"/>
+<fault message="tns:FlightScheduleNotFoundException" name="FlightScheduleNotFoundException" wsam:Action="http://ws.session.ejb/PartnerWebService/searchDirectFlightSchedules/Fault/FlightScheduleNotFoundException"/>
+</operation>
 </portType>
 <binding name="PartnerWebServicePortBinding" type="tns:PartnerWebService">
 <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+<operation name="getFlightSchedulePlanById">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+</operation>
 <operation name="partnerLogin">
 <soap:operation soapAction=""/>
 <input>
@@ -52,6 +89,21 @@
 <output>
 <soap:body use="literal"/>
 </output>
+</operation>
+<operation name="searchDirectFlightSchedules">
+<soap:operation soapAction=""/>
+<input>
+<soap:body use="literal"/>
+</input>
+<output>
+<soap:body use="literal"/>
+</output>
+<fault name="AirportNotFoundException">
+<soap:fault name="AirportNotFoundException" use="literal"/>
+</fault>
+<fault name="FlightScheduleNotFoundException">
+<soap:fault name="FlightScheduleNotFoundException" use="literal"/>
+</fault>
 </operation>
 </binding>
 <service name="PartnerWebService">

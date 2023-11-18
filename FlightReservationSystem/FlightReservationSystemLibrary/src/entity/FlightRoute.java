@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,7 +17,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -70,10 +69,12 @@ public class FlightRoute implements Serializable {
         this.odPair = origin.getIataAirportcode() + "-" + destination.getIataAirportcode();
     }
 
+    @XmlTransient
     public Airport getOrigin() {
         return origin;
     }
-
+    
+    @XmlTransient
     public Airport getDestination() {
         return destination;
     }
