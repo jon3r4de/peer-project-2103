@@ -234,7 +234,7 @@ public class MainApp {
                     
             Date returnDate = null;
             if (tripType == 2) {
-                System.out.print("Enter Return Date (dd Mmm yy ie  '31 Dec 23') > ");
+                System.out.print("Enter Return Date (dd Mmm yy ie  '31 Dec 23')> ");
                 try {
                     returnDate = inputDateFormat.parse(scanner.nextLine().trim());
                 } catch (ParseException ex) {
@@ -632,7 +632,7 @@ public class MainApp {
             departureDate = inputDateFormat.parse(scanner.nextLine().trim());
             
             if (tripType == 2) {
-                System.out.println("Enter Return Date (dd MMM yyyy '01 JAN 2023')> ");
+                System.out.print("Enter Return Date (dd MMM yyyy '01 JAN 2023')> ");
                 returnDate = inputDateFormat.parse(scanner.nextLine().trim());
             }
             
@@ -778,7 +778,7 @@ public class MainApp {
                 //on required departure date
                 
                 try {
-                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, departureDate, cabinClassType);
+                    flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, returnDate, cabinClassType);
                     returnList.addAll(flightSchedules);
                 } catch(FlightScheduleNotFoundException ex) {
                     flightSchedules = new ArrayList<>();
@@ -793,11 +793,10 @@ public class MainApp {
 
                 //3 days before
                 for (int i = 3; i > 0; --i) {
-                    ;
                     Date newReturnDate = new Date(returnDate.getTime() - i * 24 * 60 * 60 * 1000);
                     
                     try {
-                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newReturnDate, cabinClassType);
+                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, newReturnDate, cabinClassType);
                         returnList.addAll(flightSchedules);
                     } catch(FlightScheduleNotFoundException ex) {
                         flightSchedules = new ArrayList<>();
@@ -813,11 +812,10 @@ public class MainApp {
 
                 //3 days after
                 for (int i = 1; i < 4; ++i) {
-                    
-                    Date newReturnDate = new Date(departureDate.getTime() + i * 24 * 60 * 60 * 1000);
+                    Date newReturnDate = new Date(returnDate.getTime() + i * 24 * 60 * 60 * 1000);
                    
                     try {
-                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(departureAirportiATACode, destinationAirportiATACode, newReturnDate, cabinClassType);
+                        flightSchedules = flightScheduleSessionBeanRemote.searchDirectFlightSchedules(destinationAirportiATACode, departureAirportiATACode, newReturnDate, cabinClassType);
                         returnList.addAll(flightSchedules);
                     } catch(FlightScheduleNotFoundException ex) {
                         flightSchedules = new ArrayList<>();
@@ -1068,7 +1066,7 @@ public class MainApp {
 
                 //3 days after
                 for (int i = 1; i < 4; ++i) {
-                    Date newReturnDate = new Date(departureDate.getTime() + i * 24 * 60 * 60 * 1000);
+                    Date newReturnDate = new Date(returnDate.getTime() + i * 24 * 60 * 60 * 1000);
                     flightSchedules = flightScheduleSessionBeanRemote.searchConnectingFlightScehdules(destinationAirportiATACode, departureAirportiATACode, newReturnDate, cabinClassType);
                     System.out.println("----- Return On " + returnDate + "\n");
                     printConnectingFlightSchedulesTable(flightSchedules, cabinClassType, numOfPassengers);
