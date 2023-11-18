@@ -25,12 +25,13 @@ public class SeatSessionBean implements SeatSessionBeanRemote, SeatSessionBeanLo
     public Long createSeat(Seat seat, SeatInventory seatInventory) {
             SeatInventory temp = em.find(SeatInventory.class, seatInventory.getSeatInventoryId());
             
+            //System.out.println("todays daily bean 11");
             
-            
-            seat.setSeatInventory(seatInventory);
+            seat.setSeatInventory(temp);
             //cabinClass.getSeats().add(seat);
             em.persist(seat);
             em.flush();
+            //System.out.println("todays daily bean 12");
             return seat.getSeatId();
         }
     

@@ -41,10 +41,13 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
         flightSchedule.getFlightSchedulePlan().getFlight().getAirCraftConfig().getCabinClasses().size();
         List<CabinClass> cabinclasses = flightSchedule.getFlightSchedulePlan().getFlight().getAirCraftConfig().getCabinClasses();
         
+        //System.out.println("todays daily bean 5");
         for (CabinClass c : cabinclasses) {
+            //System.out.println("todays daily bean 6");
             SeatInventory seatInventory = new SeatInventory(c, flightSchedule, c.getMaxSeatCapacity());
             em.persist(seatInventory);
             em.flush(); 
+            //System.out.println("todays daily bean 7");
             aircraftconfigSessionBeanLocal.generateSeats(c, seatInventory);
             flightSchedule.getSeatInventories().add(seatInventory);
             em.flush();

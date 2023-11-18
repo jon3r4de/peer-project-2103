@@ -381,21 +381,23 @@ public class FlightOperationModule {
                 Long returnFlightSchedulePlanId;
                 
                 if (returnFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.SINGLE)) {
+                    FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
                     int estimatedFlightDurationHours;
                     int estimatedFlightDurationMinutes;
                     Date newDepartureDateTime;
                     
-                    estimatedFlightDurationHours = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                    estimatedFlightDurationMinutes = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                    newDepartureDateTime = new Date(newFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
+                    estimatedFlightDurationHours = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
+                    estimatedFlightDurationMinutes = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
+                    newDepartureDateTime = new Date(managedFlightSchedule.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
 
                     returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes);
-                } else if (newFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {                            
+                } else if (newFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {   
+                    FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
                     List<Integer> estimatedFlightDurationsHours = new ArrayList<>();
                     List<Integer> estimatedFlightDurationsMinutes = new ArrayList<>();
                     List<Date> newDepartureDateTimes = new ArrayList<>();
 
-                    for (FlightSchedule flightSchedule : newFlightSchedulePlan.getFlightSchedules()) {
+                    for (FlightSchedule flightSchedule : managedFlightSchedule.getFlightSchedules()) {
                         estimatedFlightDurationsHours.add(flightSchedule.getEstimatedFlightDurationHours());
                         estimatedFlightDurationsMinutes.add(flightSchedule.getEstimatedFlightDurationMinutes());
                         newDepartureDateTimes.add(new Date(flightSchedule.getArrivalDateTime().getTime() + layoverDuration.toMillis()));
@@ -403,24 +405,24 @@ public class FlightOperationModule {
 
                     returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTimes, estimatedFlightDurationsHours, estimatedFlightDurationsMinutes);
                 } else {                      
-                    System.out.println("error debug2");
+
                     int estimatedFlightDurationHours;
                     int estimatedFlightDurationMinutes;
                     Date newDepartureDateTime;
                             
                     FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
                     estimatedFlightDurationHours = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                    System.out.println("error debug3");
-                    estimatedFlightDurationMinutes = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                    System.out.println("error debug4");
-                    newDepartureDateTime = new Date(managedFlightSchedule.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
 
-                    System.out.println("error debug5");
+                    estimatedFlightDurationMinutes = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
+
+                    newDepartureDateTime = new Date(managedFlightSchedule.getFlightSchedules().get(0).getDepartureDateTime().getTime() + layoverDuration.toMillis());
+                                             
+
                     returnFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, managedFlightSchedule.getEndDate(), managedFlightSchedule.getRecurrence(), managedFlightSchedule.getReccurrentDay(), managedFlightSchedule.getLayoverDuration());
-                    System.out.println("error debug6");
+
                 }
                 
-                flightSchedulePlanSessionBeanRemote.setReturnFlightSchedulePlan(newFlightSchedulePlan.getFlightSchedulePlanId(),returnFlightSchedulePlan.getFlightSchedulePlanId());
+                flightSchedulePlanSessionBeanRemote.setReturnFlightSchedulePlan(newFlightSchedulePlan.getFlightSchedulePlanId(),returnFlightSchedulePlanId);
                 return returnFlightSchedulePlanId;
             } else {
                 return null;
@@ -539,8 +541,8 @@ public class FlightOperationModule {
             Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewSingleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, durationHours, durationMinutes);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
-            
-            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, newFlightSchedulePlan);
+             FlightSchedulePlan nfsp = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlanId);
+            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, nfsp);
             if (complementaryFlightSchedulePlanId != null) {
                 System.out.println("Return Flight Schedule Plan with ID: " + complementaryFlightSchedulePlanId + " has been created.\n");
             }
@@ -589,8 +591,8 @@ public class FlightOperationModule {
             Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTimes, estimatedFlightDurationsHours, estimatedFlightDurationsMinutes);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
-            
-            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, newFlightSchedulePlan);
+            FlightSchedulePlan nfsp = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlanId);
+            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, nfsp);
             if (complementaryFlightSchedulePlanId != null) {
                 System.out.println("Return Flight Schedule Plan with ID: " + complementaryFlightSchedulePlanId + " has been created.\n");
             }
@@ -647,11 +649,14 @@ public class FlightOperationModule {
             List<Fare> fares = createFares(scanner, flight);
             
             FlightSchedulePlan newFlightSchedulePlan = new FlightSchedulePlan(FlightScheduleEnum.RECURRENTDAY, fares); 
+            
             Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanRemote.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getFlightId(), departureDateTime, durationHours,durationMinutes, endDate, recurrence, dayOfWeek, Duration.ZERO);
 
             System.out.println("Flight Schedule Plan with ID: " + newFlightSchedulePlanId + " has been created.\n");
             
-            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, newFlightSchedulePlan);
+            FlightSchedulePlan nfsp = flightSchedulePlanSessionBeanRemote.retrieveById(newFlightSchedulePlanId);
+            
+            Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(scanner, flight, nfsp);
             if (complementaryFlightSchedulePlanId != null) {
                 System.out.println("Return Flight Schedule Plan with ID: " + complementaryFlightSchedulePlanId + " has been created.\n");
             }

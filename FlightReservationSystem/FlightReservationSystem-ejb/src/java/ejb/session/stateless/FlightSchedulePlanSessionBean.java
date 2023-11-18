@@ -172,14 +172,20 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
     @Override
     public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, int estimatedFlightDurationHours, int estimatedFlightDurationMinutes, Date endDate, int recurrence, String startDay, Duration layoverDuration) throws FlightSchedulePlanExistException, GeneralException {
         try {
-            em.persist(newFlightSchedulePlan);
             
+            em.persist(newFlightSchedulePlan);
+            newFlightSchedulePlan.setRecurrence(recurrence);
+            
+            System.out.println("todays daily bean 1");
             Date adjustedDate = this.adjustStartDate(startDay, departureDateTime);
+            System.out.println(adjustedDate);
             newFlightSchedulePlan.setLayoverDuration(layoverDuration);
+            System.out.println(layoverDuration);
             newFlightSchedulePlan.setReccurrentDay(startDay);
             //System.out.println("cnrfsp debug1");
             newFlightSchedulePlan.setStartDate(adjustedDate);
             newFlightSchedulePlan.setEndDate(endDate);
+            System.out.println(endDate);
             // link flight and flightscheduleplan
             //System.out.println("cnrfsp debug2");
             Flight flight = em.find(Flight.class, flightId);
@@ -203,17 +209,25 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             
             Date tempDate = new Date(adjustedDate.getTime());
             
+            System.out.println("initial tempdate " + tempDate);
+            
+            em.flush();
+            
             while (tempDate.getTime() <= endDate.getTime()) {
                 //Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
                 //System.out.println("cnrfsp debug8");
+                System.out.println(endDate.getTime());
                 FlightSchedule newFlightSchedule = new FlightSchedule(tempDate, estimatedFlightDurationHours, estimatedFlightDurationMinutes, flight.getFlightNumber(), newFlightSchedulePlan);
                 //System.out.println("cnrfsp debug9");
                 newFlightSchedule.calculateArrivalTime();
                 //System.out.println("cnrfsp debug10");
+                //System.out.println("todays daily bean 2 " + recurrence);
                 em.persist(newFlightSchedule);
                 em.flush();
+                //System.out.println("todays daily bean 3");
                 seatInventorySessionBeanLocal.createSeatInventory(newFlightSchedule);
 
+                //System.out.println("todays daily bean 4");
                 //System.out.println("cnrfsp debug11");
                 newFlightSchedule.setFlightSchedulePlan(newFlightSchedulePlan);
                 //System.out.println("cnrfsp debug12");

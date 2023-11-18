@@ -143,10 +143,10 @@ public class testDataSessionBean {
         }
         
         //errata now
-        /*if(em.find(FlightSchedulePlan.class, 1l) == null){
+        if(em.find(FlightSchedulePlan.class, 1l) == null){
             doInitialiseFlightSchedulePlan();
             System.out.println("initialised fsp");
-        }*/
+        }
         
     }
     
@@ -410,26 +410,8 @@ public class testDataSessionBean {
             // fsp test case 1 
             
             // fsp test case 1 comp
-            /*
-                int layoverHrs = 2;
-                
-                int layoverMin = 0;
-                Duration layoverDuration = Duration.ofHours(layoverHrs).plusMinutes(layoverMin);
-                
-                FlightSchedulePlan returnFlightSchedulePlan1 = new FlightSchedulePlan(managedNewFlightSchedulePlan.getFlightScheduleType(), managedNewFlightSchedulePlan.getFares());
-            
-                int estimatedFlightDurationHours;
-                int estimatedFlightDurationMinutes;
-                Date newDepartureDateTime;
-                            
-                estimatedFlightDurationHours = managedNewFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                estimatedFlightDurationMinutes = managedNewFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                newDepartureDateTime = new Date(managedNewFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
 
-                Long returnFlightSchedulePlan1Id = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(managedNewFlightSchedulePlan, f1.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, managedNewFlightSchedulePlan.getEndDate(), managedNewFlightSchedulePlan.getRecurrence(), managedNewFlightSchedulePlan.getReccurrentDay(), managedNewFlightSchedulePlan.getLayoverDuration());
-
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(managedNewFlightSchedulePlan.getFlightSchedulePlanId(), returnFlightSchedulePlan1.getFlightSchedulePlanId());
-               */
+                Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(f1, managedNewFlightSchedulePlan, 2, 0);
             // fsp test case 1 comp
             
             
@@ -474,27 +456,10 @@ public class testDataSessionBean {
             // fsp test case 2
             
             // fsp test case 2 comp
-            /*
-                FlightSchedulePlan managedNewFlightSchedulePlan2 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId1);
-                int layoverHrs2 = 2;
-                
-                int layoverMin2 = 0;
-                Duration layoverDuration2 = Duration.ofHours(layoverHrs2).plusMinutes(layoverMin2);
-                
-                FlightSchedulePlan returnFlightSchedulePlan2 = new FlightSchedulePlan(managedNewFlightSchedulePlan2.getFlightScheduleType(), managedNewFlightSchedulePlan2.getFares());
             
-                int estimatedFlightDurationHours2;
-                int estimatedFlightDurationMinutes2;
-                Date newDepartureDateTime2;
-                            
-                estimatedFlightDurationHours2 = managedNewFlightSchedulePlan2.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                estimatedFlightDurationMinutes2 = managedNewFlightSchedulePlan2.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                newDepartureDateTime2 = new Date(managedNewFlightSchedulePlan2.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration2.toMillis());
+                FlightSchedulePlan managedNewFlightSchedulePlan2 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId1);
 
-                Long returnFlightSchedulePlan1Id2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(managedNewFlightSchedulePlan2, f11.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime2, estimatedFlightDurationHours2, estimatedFlightDurationMinutes2, managedNewFlightSchedulePlan2.getEndDate(), managedNewFlightSchedulePlan2.getRecurrence(), managedNewFlightSchedulePlan2.getReccurrentDay(), managedNewFlightSchedulePlan2.getLayoverDuration());
-
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(managedNewFlightSchedulePlan2.getFlightSchedulePlanId(), returnFlightSchedulePlan2.getFlightSchedulePlanId());
-               */
+                Long complementaryFlightSchedulePlanId2 = createComplementaryReturnFlight(f11, managedNewFlightSchedulePlan2, 2, 0);
             // fsp test case 2 comp
             
             // fsp test case 3
@@ -535,27 +500,10 @@ public class testDataSessionBean {
             // fsp test case 3
             
             // fsp test case 3 comp
-            /*
-                FlightSchedulePlan managedNewFlightSchedulePlan3 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId2);
-                int layoverHrs3 = 2;
-                
-                int layoverMin3 = 0;
-                Duration layoverDuration3 = Duration.ofHours(layoverHrs3).plusMinutes(layoverMin3);
-                
-                FlightSchedulePlan returnFlightSchedulePlan3 = new FlightSchedulePlan(managedNewFlightSchedulePlan3.getFlightScheduleType(), managedNewFlightSchedulePlan3.getFares());
             
-                int estimatedFlightDurationHours3;
-                int estimatedFlightDurationMinutes3;
-                Date newDepartureDateTime3;
-                            
-                estimatedFlightDurationHours3 = managedNewFlightSchedulePlan3.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                estimatedFlightDurationMinutes3 = managedNewFlightSchedulePlan3.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                newDepartureDateTime3 = new Date(managedNewFlightSchedulePlan3.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration3.toMillis());
+                FlightSchedulePlan managedNewFlightSchedulePlan3 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId2);
 
-                Long returnFlightSchedulePlan1Id2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(managedNewFlightSchedulePlan3, f11.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime3, estimatedFlightDurationHours3, estimatedFlightDurationMinutes3, managedNewFlightSchedulePlan3.getEndDate(), managedNewFlightSchedulePlan3.getRecurrence(), managedNewFlightSchedulePlan3.getReccurrentDay(), managedNewFlightSchedulePlan3.getLayoverDuration());
-
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(managedNewFlightSchedulePlan3.getFlightSchedulePlanId(), returnFlightSchedulePlan3.getFlightSchedulePlanId());
-               */
+                Long complementaryFlightSchedulePlanId3 = createComplementaryReturnFlight(f12, managedNewFlightSchedulePlan3, 2, 0);
             // fsp test case 3 comp
             
             // fsp test case 4
@@ -573,9 +521,9 @@ public class testDataSessionBean {
             List<Fare> fares3 = new ArrayList<>();
             
             //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
-            fares3.add(new Fare("ML312_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
-            fares3.add(new Fare("ML312_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
-            fares3.add(new Fare("ML312_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
+            fares3.add(new Fare("ML311_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
+            fares3.add(new Fare("ML311_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
+            fares3.add(new Fare("ML311_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
             
             Duration duration3 = Duration.ofHours(3);
             
@@ -589,7 +537,7 @@ public class testDataSessionBean {
             newFlightSchedulePlan3.setReccurrentDay(dayOfWeek3);
             
             Query query13 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
-            query13.setParameter("inFlightNumber", "ML312");
+            query13.setParameter("inFlightNumber", "ML311");
             Flight f13 = (Flight) query13.getSingleResult();
             
 
@@ -598,27 +546,10 @@ public class testDataSessionBean {
             // fsp test case 4
             
             // fsp test case 4 comp
-            /*
-                FlightSchedulePlan managedNewFlightSchedulePlan4 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId3);
-                int layoverHrs4 = 2;
-                
-                int layoverMin4 = 0;
-                Duration layoverDuration4 = Duration.ofHours(layoverHrs4).plusMinutes(layoverMin4);
-                
-                FlightSchedulePlan returnFlightSchedulePlan4 = new FlightSchedulePlan(managedNewFlightSchedulePlan4.getFlightScheduleType(), managedNewFlightSchedulePlan4.getFares());
             
-                int estimatedFlightDurationHours4;
-                int estimatedFlightDurationMinutes4;
-                Date newDepartureDateTime4;
-                            
-                estimatedFlightDurationHours4 = managedNewFlightSchedulePlan4.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                estimatedFlightDurationMinutes4 = managedNewFlightSchedulePlan4.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                newDepartureDateTime4 = new Date(managedNewFlightSchedulePlan4.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration4.toMillis());
+                FlightSchedulePlan managedNewFlightSchedulePlan4 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId3);
 
-                Long returnFlightSchedulePlan4Id = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(managedNewFlightSchedulePlan4, f11.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime4, estimatedFlightDurationHours4, estimatedFlightDurationMinutes4, managedNewFlightSchedulePlan4.getEndDate(), managedNewFlightSchedulePlan4.getRecurrence(), managedNewFlightSchedulePlan4.getReccurrentDay(), managedNewFlightSchedulePlan4.getLayoverDuration());
-
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(managedNewFlightSchedulePlan4.getFlightSchedulePlanId(), returnFlightSchedulePlan4.getFlightSchedulePlanId());
-               */
+                Long complementaryFlightSchedulePlanId4 = createComplementaryReturnFlight(f13, managedNewFlightSchedulePlan4, 3, 0);
             // fsp test case 4 comp
             
             // fsp test case 5
@@ -637,9 +568,9 @@ public class testDataSessionBean {
             List<Fare> fares4 = new ArrayList<>();
             
             //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
-            fares4.add(new Fare("ML412_F1", CabinClassEnum.FIRST,new BigDecimal("2900")));
-            fares4.add(new Fare("ML412_J1", CabinClassEnum.BUSINESS,new BigDecimal("1400")));
-            fares4.add(new Fare("ML412_Y1", CabinClassEnum.ECONOMY,new BigDecimal("400")));
+            fares4.add(new Fare("ML411_F1", CabinClassEnum.FIRST,new BigDecimal("2900")));
+            fares4.add(new Fare("ML411_J1", CabinClassEnum.BUSINESS,new BigDecimal("1400")));
+            fares4.add(new Fare("ML411_Y1", CabinClassEnum.ECONOMY,new BigDecimal("400")));
             
             Duration duration4 = Duration.ofHours(4);
             
@@ -650,7 +581,7 @@ public class testDataSessionBean {
             }
             
             Query query14 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
-            query14.setParameter("inFlightNumber", "ML412");
+            query14.setParameter("inFlightNumber", "ML411");
             Flight f14 = (Flight) query14.getSingleResult();
             
             newFlightSchedulePlan4.setLayoverDuration(duration4);
@@ -659,28 +590,13 @@ public class testDataSessionBean {
            
         // fsp test case 5
         
+        
             // fsp test case 5 comp
-            /*
-                FlightSchedulePlan managedNewFlightSchedulePlan5 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId4);
-                int layoverHrs5 = 2;
-                
-                int layoverMin5 = 0;
-                Duration layoverDuration5 = Duration.ofHours(layoverHrs5).plusMinutes(layoverMin5);
-                
-                FlightSchedulePlan returnFlightSchedulePlan5 = new FlightSchedulePlan(managedNewFlightSchedulePlan5.getFlightScheduleType(), managedNewFlightSchedulePlan5.getFares());
             
-                int estimatedFlightDurationHours5;
-                int estimatedFlightDurationMinutes5;
-                Date newDepartureDateTime5;
-                            
-                estimatedFlightDurationHours5 = managedNewFlightSchedulePlan5.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                estimatedFlightDurationMinutes5 = managedNewFlightSchedulePlan5.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                newDepartureDateTime5 = new Date(managedNewFlightSchedulePlan5.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration5.toMillis());
+                FlightSchedulePlan managedNewFlightSchedulePlan5 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId4);
 
-                Long returnFlightSchedulePlan4Id = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(managedNewFlightSchedulePlan5, f11.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime5, estimatedFlightDurationHours5, estimatedFlightDurationMinutes5, managedNewFlightSchedulePlan5.getEndDate(), managedNewFlightSchedulePlan5.getRecurrence(), managedNewFlightSchedulePlan5.getReccurrentDay(), managedNewFlightSchedulePlan5.getLayoverDuration());
+                Long complementaryFlightSchedulePlanId5 = createComplementaryReturnFlight(f14, managedNewFlightSchedulePlan5, 2, 0);
 
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(managedNewFlightSchedulePlan5.getFlightSchedulePlanId(), returnFlightSchedulePlan5.getFlightSchedulePlanId());
-               */
             // fsp test case 5 comp
         
         //fsp test case 6
@@ -720,9 +636,9 @@ public class testDataSessionBean {
             List<Fare> fares5 = new ArrayList<>();
             
             //String fareBasisCode, CabinClassEnum cabinClassType, BigDecimal fareAmount
-            fares5.add(new Fare("ML512_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
-            fares5.add(new Fare("ML512_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
-            fares5.add(new Fare("ML512_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
+            fares5.add(new Fare("ML511_F1", CabinClassEnum.FIRST,new BigDecimal("3100")));
+            fares5.add(new Fare("ML511_J1", CabinClassEnum.BUSINESS,new BigDecimal("1600")));
+            fares5.add(new Fare("ML511_Y1", CabinClassEnum.ECONOMY,new BigDecimal("600")));
             
             Duration duration5 = Duration.ofHours(2);
             
@@ -736,17 +652,17 @@ public class testDataSessionBean {
             newFlightSchedulePlan5.setLayoverDuration(duration5);
             
             Query query15 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
-            query15.setParameter("inFlightNumber", "ML512");
+            query15.setParameter("inFlightNumber", "ML511");
             Flight f15 = (Flight) query15.getSingleResult();
 
             Long newFlightSchedulePlanId5 = flightSchedulePlanSessionBeanLocal.createNewMultipleFlightSchedulePlan(newFlightSchedulePlan5, f15.getFlightId(), departureDateTimes, estimatedFlightDurationsHours, estimatedFlightDurationsMinutes);
            
         //fsp test case 6
         //fsp comp 6
-        /*
+        
         FlightSchedulePlan managedNewFlightSchedulePlan6 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId5);
-        Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(f15, managedNewFlightSchedulePlan6, 2, 0);
-       */
+        Long complementaryFlightSchedulePlanId6 = createComplementaryReturnFlight(f15, managedNewFlightSchedulePlan6, 2, 0);
+       
         //fsp comp 6
             
         } catch (Exception ex) {
@@ -759,11 +675,10 @@ public class testDataSessionBean {
         private Long createComplementaryReturnFlight(Flight flight, FlightSchedulePlan newFlightSchedulePlan, int lh,int lm) throws Exception {
         try {
             if (flight.isHasComplementaryReturnFlight()) {
+
                 
-                System.out.println("Enter Layover Duration X hrs eg (5) > ");
                 int layoverHrs = lh;
-                
-                System.out.println("Enter Layover Duration X Minutes eg (5) > ");
+
                 int layoverMin = lm;
                 Duration layoverDuration = Duration.ofHours(layoverHrs).plusMinutes(layoverMin);
                 
@@ -771,45 +686,54 @@ public class testDataSessionBean {
                 Long returnFlightSchedulePlanId;
                 
                 if (returnFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.SINGLE)) {
+                    FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
                     int estimatedFlightDurationHours;
                     int estimatedFlightDurationMinutes;
                     Date newDepartureDateTime;
                     
-                    estimatedFlightDurationHours = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                    estimatedFlightDurationMinutes = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                    newDepartureDateTime = new Date(newFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
+                    estimatedFlightDurationHours = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
+                    estimatedFlightDurationMinutes = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
+                    newDepartureDateTime = new Date(managedFlightSchedule.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
 
                     returnFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewSingleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes);
-                } else if (newFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {                            
+                } else if (newFlightSchedulePlan.getFlightScheduleType().equals(FlightScheduleEnum.MULTIPLE)) {   
+                    FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
                     List<Integer> estimatedFlightDurationsHours = new ArrayList<>();
                     List<Integer> estimatedFlightDurationsMinutes = new ArrayList<>();
                     List<Date> newDepartureDateTimes = new ArrayList<>();
 
-                    for (FlightSchedule flightSchedule : newFlightSchedulePlan.getFlightSchedules()) {
+                    for (FlightSchedule flightSchedule : managedFlightSchedule.getFlightSchedules()) {
                         estimatedFlightDurationsHours.add(flightSchedule.getEstimatedFlightDurationHours());
                         estimatedFlightDurationsMinutes.add(flightSchedule.getEstimatedFlightDurationMinutes());
                         newDepartureDateTimes.add(new Date(flightSchedule.getArrivalDateTime().getTime() + layoverDuration.toMillis()));
                     }
 
                     returnFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewMultipleFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTimes, estimatedFlightDurationsHours, estimatedFlightDurationsMinutes);
-                } else {                            
+                } else {                      
+
                     int estimatedFlightDurationHours;
                     int estimatedFlightDurationMinutes;
                     Date newDepartureDateTime;
                             
-                    estimatedFlightDurationHours = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
-                    estimatedFlightDurationMinutes = newFlightSchedulePlan.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
-                    newDepartureDateTime = new Date(newFlightSchedulePlan.getFlightSchedules().get(0).getArrivalDateTime().getTime() + layoverDuration.toMillis());
+                    FlightSchedulePlan managedFlightSchedule = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlan.getFlightSchedulePlanId());
+                    estimatedFlightDurationHours = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationHours();
 
-                    returnFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, newFlightSchedulePlan.getEndDate(), newFlightSchedulePlan.getRecurrence(), newFlightSchedulePlan.getReccurrentDay(), newFlightSchedulePlan.getLayoverDuration());
+                    estimatedFlightDurationMinutes = managedFlightSchedule.getFlightSchedules().get(0).getEstimatedFlightDurationMinutes();
+
+                    newDepartureDateTime = new Date(managedFlightSchedule.getFlightSchedules().get(0).getDepartureDateTime().getTime() + layoverDuration.toMillis());
+                                             
+
+                    returnFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(returnFlightSchedulePlan, flight.getComplementaryReturnFlight().getFlightId(), newDepartureDateTime, estimatedFlightDurationHours, estimatedFlightDurationMinutes, managedFlightSchedule.getEndDate(), managedFlightSchedule.getRecurrence(), managedFlightSchedule.getReccurrentDay(), managedFlightSchedule.getLayoverDuration());
+
                 }
                 
-                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(newFlightSchedulePlan.getFlightSchedulePlanId(),returnFlightSchedulePlan.getFlightSchedulePlanId());
+                flightSchedulePlanSessionBeanLocal.setReturnFlightSchedulePlan(newFlightSchedulePlan.getFlightSchedulePlanId(),returnFlightSchedulePlanId);
                 return returnFlightSchedulePlanId;
             } else {
                 return null;
             }
         } catch (Exception ex) {
+            System.out.println("error debug1");
             throw ex;
         }
     }

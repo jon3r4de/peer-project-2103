@@ -49,7 +49,7 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
                 aircraftType.getConfigs().add(newAircraftConfiguration);
                 //newAircraftConfiguration.setCabinClasses(cabinClasses);
 
-                System.out.println("dawwen debug 1");
+                //System.out.println("dawwen debug 1");
                 for (CabinClass cabinClass: cabinClasses)
                 {
                     //cabinClass.setCabinClassType(CabinClassEnum.BUSINESS);
@@ -138,10 +138,16 @@ public class AircraftconfigSessionBean implements AircraftconfigSessionBeanRemot
         //try {
             Integer numOfRows = cabinClass.getNumberOfRows();
             Integer numOfSeatsAbreast = cabinClass.getNumOfSeatsAbreast();
-
+            //System.out.println("todays daily bean 8");
+            //System.out.println("CabinClass :" + cabinClass);
 
             for (int row = 1; row <= numOfRows; row++) {
+                //System.out.println("num of rows" + numOfRows);
+                //System.out.println("index" + row);
                 for (int seatLetter = 0; seatLetter < numOfSeatsAbreast; seatLetter++) {
+                    //System.out.println("todays daily bean 10");
+                    //System.out.println("num of seat abreast" + numOfSeatsAbreast);
+                    //System.out.println(seatLetter);
                     char letter = (char) ('A' + seatLetter);
                     String seatNumber = String.valueOf(row) + letter;
                     Seat seat = new Seat(seatNumber, SeatStatusEnum.AVAILABLE);
