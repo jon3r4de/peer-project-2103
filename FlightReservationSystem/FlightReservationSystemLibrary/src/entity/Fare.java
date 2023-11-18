@@ -28,7 +28,7 @@ public class Fare implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long fareId;
     
-    @Column(nullable = false, length = 32, unique = true)
+    @Column(nullable = false, length = 32)//, unique = true)
     @NotNull
     private String fareBasisCode;
     

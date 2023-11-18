@@ -743,8 +743,10 @@ public class testDataSessionBean {
            
         //fsp test case 6
         //fsp comp 6
+        /*
         FlightSchedulePlan managedNewFlightSchedulePlan6 = flightSchedulePlanSessionBeanLocal.retrieveById(newFlightSchedulePlanId5);
         Long complementaryFlightSchedulePlanId = createComplementaryReturnFlight(f15, managedNewFlightSchedulePlan6, 2, 0);
+       */
         //fsp comp 6
             
         } catch (Exception ex) {
