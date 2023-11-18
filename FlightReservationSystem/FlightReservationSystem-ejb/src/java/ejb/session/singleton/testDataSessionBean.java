@@ -127,7 +127,8 @@ public class testDataSessionBean {
             System.out.println("initialised flight route");
         }
         
-        if(em.find(Flight.class, 1l) == null)
+
+       if(em.find(Flight.class, 1l) == null)
         {
             doInitialiseFlight();
             System.out.println("initialised flight");

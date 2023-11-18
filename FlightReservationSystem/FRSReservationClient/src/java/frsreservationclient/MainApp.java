@@ -659,6 +659,7 @@ public class MainApp {
                     cabinClassType = CabinClassEnum.ECONOMY;
                     break;
                 default:
+                    cabinClassType = null;
                     break;
             }
             
@@ -865,7 +866,7 @@ public class MainApp {
             for (SeatInventory ss : flightSchedule.getSeatInventories()) {
                 
                 
-                if (cabinClassType.equals(CabinClassEnum.FIRST) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                if (cabinClassType != null && (cabinClassType.equals(CabinClassEnum.FIRST) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.FIRST))) {
 
                     firstClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
                     
@@ -878,7 +879,7 @@ public class MainApp {
                     }
                 }
                 
-                if (cabinClassType.equals(CabinClassEnum.BUSINESS) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                else if (cabinClassType != null && (cabinClassType.equals(CabinClassEnum.BUSINESS) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.BUSINESS))) {
                     businessClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
                     
                     FlightSchedulePlan fsp = flightSchedulePlanSessionBeanRemote.retrieveById(flightSchedule.getFlightSchedulePlan().getFlightSchedulePlanId());
@@ -890,7 +891,7 @@ public class MainApp {
                     }
                 }
                 
-                if (cabinClassType.equals(CabinClassEnum.PREMIUMECONOMY) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                else if (cabinClassType != null && (cabinClassType.equals(CabinClassEnum.PREMIUMECONOMY) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY))) {
                     premiumEcoClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
                     
                      FlightSchedulePlan fsp = flightSchedulePlanSessionBeanRemote.retrieveById(flightSchedule.getFlightSchedulePlan().getFlightSchedulePlanId());
@@ -902,7 +903,7 @@ public class MainApp {
                     }
                 }
                 
-                if (cabinClassType.equals(CabinClassEnum.ECONOMY) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                else if (cabinClassType != null && (cabinClassType.equals(CabinClassEnum.ECONOMY) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.ECONOMY))) {
                     economyClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
                     
                      FlightSchedulePlan fsp = flightSchedulePlanSessionBeanRemote.retrieveById(flightSchedule.getFlightSchedulePlan().getFlightSchedulePlanId());
@@ -912,6 +913,45 @@ public class MainApp {
                         lowestFareEconomyClass = Math.min(lowestFareEconomyClass, fare.getFareAmount().doubleValue());
                         }
                     }
+                    
+                } else {
+                    
+                    FlightSchedulePlan fsp = flightSchedulePlanSessionBeanRemote.retrieveById(flightSchedule.getFlightSchedulePlan().getFlightSchedulePlanId());
+                    
+                    if (ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                        firstClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
+                    } 
+                    
+                    if (ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                        businessClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
+                    }
+                    
+                    if (ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                        premiumEcoClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
+                    }
+                    
+                    if (ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                        economyClassAvailableSeats = ss.getNumberOfBalanceSeats().toString();
+                    }
+                     
+                    for (Fare fare : fsp.getFares()) {
+                        
+                        if (fare.getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                            lowestFareFirstClass = Math.min(lowestFareFirstClass, fare.getFareAmount().doubleValue());
+                        }
+                        
+                        if (fare.getCabinClassType().equals(CabinClassEnum.BUSINESS)) {
+                            lowestFareBusinessClass = Math.min(lowestFareBusinessClass, fare.getFareAmount().doubleValue());
+                         }
+
+                        if (fare.getCabinClassType().equals(CabinClassEnum.PREMIUMECONOMY)) {
+                            lowestFarePremiumEconomyClass = Math.min(lowestFarePremiumEconomyClass, fare.getFareAmount().doubleValue());
+                         }
+                        
+                        if (fare.getCabinClassType().equals(CabinClassEnum.ECONOMY)) {
+                        lowestFareEconomyClass = Math.min(lowestFareEconomyClass, fare.getFareAmount().doubleValue());
+                        }
+                    }                   
                     
                 }
             }
@@ -1082,7 +1122,7 @@ public class MainApp {
             
             for (SeatInventory ss : firstFlightSchedule.getSeatInventories()) {
                 
-                if (cabinClassType.equals(CabinClassEnum.FIRST) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.FIRST)) {
+                if (cabinClassType.equals(CabinClassEnum.FIRST) && ss.getCabinClass().getCabinClassType().equals(CabinClassEnum.FIRST) ) {
 
                     firstClassAvailableSeats1 = ss.getNumberOfBalanceSeats().toString();
                     

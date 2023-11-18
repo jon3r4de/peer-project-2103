@@ -138,7 +138,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             
         } catch (NoResultException ex) {
             throw new FlightRouteNotFoundException("Flight route with origin " + originCode + " and destination " + destinationCode + " is not found!");
-        }
+            }
     }
     
 
