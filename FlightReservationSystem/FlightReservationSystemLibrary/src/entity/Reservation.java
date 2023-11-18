@@ -42,7 +42,7 @@ public class Reservation implements Serializable {
     @Min(1)
     private Integer numOfPassengers;
     
-    private Long flightId;
+    private String flightNumber;
     private LocalDate reservationDate;
     private String status;
     private String departureAirport;
@@ -70,14 +70,9 @@ public class Reservation implements Serializable {
     @JoinColumn(nullable = false)
     private List<FlightSchedule> flightSchedules;
     
-    @ManyToMany
-    @JoinColumn(nullable = false)
-    private List<FlightSchedule> returnFlightSchedules;
-    
     public Reservation() {
        this.passengers = new ArrayList<>();
        this.flightSchedules = new ArrayList<>();
-       this.returnFlightSchedules = new ArrayList<>();
     }
     
     public Reservation(BigDecimal totalAmount, Integer numOfPassengers, List<String> creditCardInfo) {
@@ -87,7 +82,7 @@ public class Reservation implements Serializable {
         this.creditCardInfo = creditCardInfo;
     }
     
-    public Reservation(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, String departureAirport, String destinationAirport, Date departureDate, Date returnDate, Customer customer) {
+     Reservation(Integer numOfPassengers, List<Passenger> passengers, List<String> creditCard, String departureAirport, String destinationAirport, Date departureDate, Date returnDate, Customer customer) {
         this.numOfPassengers = numOfPassengers;
         this.passengers = passengers;
         this.creditCardInfo = creditCard;
@@ -107,21 +102,15 @@ public class Reservation implements Serializable {
         this.passengers = passengerList;
     }
 
-    public List<FlightSchedule> getReturnFlightSchedules() {
-        return returnFlightSchedules;
+    public String getFlightNumber() {
+        return flightNumber;
     }
 
-    public void setReturnFlightSchedules(List<FlightSchedule> returnFlightSchedules) {
-        this.returnFlightSchedules = returnFlightSchedules;
+    public void setFlightNumber(String flightNumber) {
+        this.flightNumber = flightNumber;
     }
 
-    public Long getFlightId() {
-        return flightId;
-    }
-
-    public void setFlightId(Long flightId) {
-        this.flightId = flightId;
-    }
+    
 
     public LocalDate getReservationDate() {
         return reservationDate;
@@ -259,7 +248,7 @@ public class Reservation implements Serializable {
 
     @Override
     public String toString() {
-        return "FlightReservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengers + ", creditCard=" + creditCardInfo + 
+        return "Reservation{" + "numOfPassengers=" + numOfPassengers + ", passengers=" + passengers + ", creditCard=" + creditCardInfo + 
                  ", customer=" + customer;
     }
     

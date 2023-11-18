@@ -51,4 +51,35 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
         }
         
     }
+    
+    @Override
+    public SeatInventory searchForSeatInvenotry(SeatInventory seatInventory) {
+        SeatInventory managedSeatInventory = em.find(SeatInventory.class, seatInventory.getSeatInventoryId());
+       
+        //lazy loading
+        managedSeatInventory.getSeats().size();
+        
+        return managedSeatInventory;
+    }
+    
+    @Override
+    public SeatInventory adjustSeatCapacity(SeatInventory seatInventory) {
+        SeatInventory managedSeatInventory = this.searchForSeatInvenotry(seatInventory);
+        
+        int tempReserved = managedSeatInventory.getNumberOfReservedSeats() + 1;
+        managedSeatInventory.setNumberOfReservedSeats(tempReserved);
+                
+        int tempAvailable = managedSeatInventory.getNumberOfAvailableSeats() - 1;
+        managedSeatInventory.setNumberOfAvailableSeats(tempAvailable);
+                
+        int tempBalance = managedSeatInventory.getNumberOfBalanceSeats() - 1;
+        managedSeatInventory.setNumberOfBalanceSeats(tempBalance);
+                
+        em.flush();
+
+        return managedSeatInventory;
+    }
+    
+    
+    
 }

@@ -4,6 +4,7 @@
  */
 package ejb.session.stateless;
 
+import entity.Passenger;
 import entity.Seat;
 import entity.SeatInventory;
 import javax.ejb.Remote;
@@ -16,4 +17,6 @@ import util.exception.UnknownPersistenceException;
 @Remote
 public interface SeatSessionBeanRemote {
     public Long createSeat(Seat seat, SeatInventory seatInventory);
+
+    public void bookSeat(Seat seat, Passenger passenger);
 }

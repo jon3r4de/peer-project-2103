@@ -4,14 +4,13 @@
  */
 package ejb.session.stateless;
 
-import entity.CabinClass;
+import entity.Passenger;
 import entity.Seat;
 import entity.SeatInventory;
+import enumeration.SeatStatusEnum;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import util.exception.UnknownPersistenceException;
 
 /**
  *
@@ -34,6 +33,15 @@ public class SeatSessionBean implements SeatSessionBeanRemote, SeatSessionBeanLo
             em.flush();
             return seat.getSeatId();
         }
+    
+    @Override
+    public void bookSeat(Seat seat, Passenger passenger) {
+        Seat managedSeat = em.find(Seat.class, seat.getSeatId());
+        managedSeat.setPassenger(passenger);
+        managedSeat.setSeatStatus(SeatStatusEnum.RESERVED);
+        
+        em.flush();
+    }
         
     
 

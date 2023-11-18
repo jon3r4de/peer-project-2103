@@ -127,7 +127,8 @@ public class testDataSessionBean {
             System.out.println("initialised flight route");
         }
         
-        if(em.find(Flight.class, 1l) == null)
+
+       if(em.find(Flight.class, 1l) == null)
         {
             doInitialiseFlight();
             System.out.println("initialised flight");
@@ -401,7 +402,7 @@ public class testDataSessionBean {
             Flight f1 = (Flight) query1.getSingleResult();
             
             
-            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, f1.getFlightId(), departureDateTime, 14, 0, endDate, recurrence);
+            Long newFlightSchedulePlanId = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan, f1.getFlightId(), departureDateTime, 14, 0, endDate, recurrence, dayOfWeek, duration);
             
             // fsp test case 1
             
@@ -440,7 +441,7 @@ public class testDataSessionBean {
             query11.setParameter("inFlightNumber", "ML611");
             Flight f11 = (Flight) query11.getSingleResult();
 
-            Long newFlightSchedulePlanId1 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan1, f11.getFlightId(), departureDateTime1, 8, 0, endDate1, recurrence);
+            Long newFlightSchedulePlanId1 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan1, f11.getFlightId(), departureDateTime1, 8, 0, endDate1, recurrence, dayOfWeek1, duration1);
 
             // fsp test case 2
             
@@ -469,7 +470,7 @@ public class testDataSessionBean {
             for(Fare f : fares2) {
                 f.setFlightSchedulePlan(newFlightSchedulePlan2);
             }
-            newFlightSchedulePlan2.setLayoverDuration(duration);
+            newFlightSchedulePlan2.setLayoverDuration(duration2);
             newFlightSchedulePlan2.setReccurrentDay(dayOfWeek2);
             
             Query query12 = em.createQuery("SELECT f FROM Flight f WHERE f.flightNumber = :inFlightNumber");
@@ -477,7 +478,7 @@ public class testDataSessionBean {
             Flight f12 = (Flight) query12.getSingleResult();
             
 
-            Long newFlightSchedulePlanId2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan2, f12.getFlightId(), departureDateTime2, 8, 0, endDate2, recurrence);
+            Long newFlightSchedulePlanId2 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan2, f12.getFlightId(), departureDateTime2, 8, 0, endDate2, recurrence, dayOfWeek2, duration2);
 
             // fsp test case 3
             
@@ -516,15 +517,19 @@ public class testDataSessionBean {
             Flight f13 = (Flight) query13.getSingleResult();
             
 
-            Long newFlightSchedulePlanId3 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan3, f13.getFlightId(), departureDateTime3, 6, 30, endDate3, recurrence);
+            Long newFlightSchedulePlanId3 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan3, f13.getFlightId(), departureDateTime3, 6, 30, endDate3, recurrence, dayOfWeek3, duration3);
 
             // fsp test case 4
             
             // fsp test case 5
-        int reccurence = 2;
-        Date departureDateTime4 = DATE_TIME_FORMAT.parse("1 Dec 23 01:00 PM");
-        //Date estimatedFlightDuration4 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("04 Hours 00 Minute");
+            int reccurence = 2;
+            Date departureDateTime4 = DATE_TIME_FORMAT.parse("1 Dec 23 01:00 PM");
+            //Date estimatedFlightDuration4 = ESTIMATED_FLIGHT_DURATION_FORMAT.parse("04 Hours 00 Minute");
     
+            // Create a SimpleDateFormat to format the day of the week
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE");
+            // Format the date to get the day of the week as a string
+            String dayOfWeek4 = dayFormat.format(departureDateTime4);
 
             String endDateString4 = "31 Dec 23";
             Date endDate4 = endDateFormat.parse(endDateString4);
@@ -550,7 +555,7 @@ public class testDataSessionBean {
             
             newFlightSchedulePlan4.setLayoverDuration(duration4);
             
-            Long newFlightSchedulePlanId4 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan4, f14.getFlightId(), departureDateTime4, 4, 0, endDate4, reccurence);
+            Long newFlightSchedulePlanId4 = flightSchedulePlanSessionBeanLocal.createNewRecurrentFlightSchedulePlan(newFlightSchedulePlan4, f14.getFlightId(), departureDateTime4, 4, 0, endDate4, reccurence, dayOfWeek4, duration4);
            
         // fsp test case 5
         

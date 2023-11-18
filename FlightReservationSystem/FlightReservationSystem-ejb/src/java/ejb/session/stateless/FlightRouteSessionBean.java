@@ -138,7 +138,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             
         } catch (NoResultException ex) {
             throw new FlightRouteNotFoundException("Flight route with origin " + originCode + " and destination " + destinationCode + " is not found!");
-        }
+            }
     }
     
 
@@ -157,6 +157,9 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
             if (flightRoute.getComplementaryReturn() != null) {
                 flightRoute.getComplementaryReturn().setComplementaryReturn(null);
                 flightRoute.setHasComplementaryReturnRoute(false);
+                //might cause infinite loop but lets geddit
+                FlightRoute managedCompFlight = em.find(FlightRoute.class, flightRoute.getComplementaryReturn().getFlightRouteId());
+                this.deleteFlightRoute(managedCompFlight.getOrigin().getIataAirportcode(), managedCompFlight.getDestination().getIataAirportcode());
             }
             
             flightRoute.setComplementaryReturn(null);
@@ -180,7 +183,7 @@ public class FlightRouteSessionBean implements FlightRouteSessionBeanRemote, Fli
         
         FlightRoute flightRoute = retrieveFlightRouteByOdPair(compOriginCode, compDestinationCode);
         
-        return (flightRoute.getComplementaryReturn() != null);
+        return (flightRoute != null);
 
     }
 }

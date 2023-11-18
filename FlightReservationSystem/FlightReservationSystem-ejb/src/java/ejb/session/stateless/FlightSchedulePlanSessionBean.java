@@ -4,14 +4,13 @@
  */
 package ejb.session.stateless;
 
-import entity.CabinClass;
 import entity.Fare;
 import entity.Flight;
 import entity.FlightSchedule;
 import entity.FlightSchedulePlan;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -171,12 +170,15 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
      * @throws GeneralException
      */
     @Override
-    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, int estimatedFlightDurationHours, int estimatedFlightDurationMinutes, Date endDate, int recurrence) throws FlightSchedulePlanExistException, GeneralException {
+    public Long createNewRecurrentFlightSchedulePlan(FlightSchedulePlan newFlightSchedulePlan, Long flightId, Date departureDateTime, int estimatedFlightDurationHours, int estimatedFlightDurationMinutes, Date endDate, int recurrence, String startDay, Duration layoverDuration) throws FlightSchedulePlanExistException, GeneralException {
         try {
             em.persist(newFlightSchedulePlan);
             
+            Date adjustedDate = this.adjustStartDate(startDay, departureDateTime);
+            newFlightSchedulePlan.setLayoverDuration(layoverDuration);
+            newFlightSchedulePlan.setReccurrentDay(startDay);
             //System.out.println("cnrfsp debug1");
-            newFlightSchedulePlan.setStartDate(departureDateTime);
+            newFlightSchedulePlan.setStartDate(adjustedDate);
             newFlightSchedulePlan.setEndDate(endDate);
             // link flight and flightscheduleplan
             //System.out.println("cnrfsp debug2");
@@ -199,7 +201,7 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
             }
            // System.out.println("cnrfsp debug7");
             
-            Date tempDate = new Date(departureDateTime.getTime());
+            Date tempDate = new Date(adjustedDate.getTime());
             
             while (tempDate.getTime() <= endDate.getTime()) {
                 //Date arrivalDateTime = this.findArrivalDateTime(tempDate, estimatedFlightDuration);
@@ -235,6 +237,47 @@ public class FlightSchedulePlanSessionBean implements FlightSchedulePlanSessionB
                 throw new GeneralException("An unexpected error has occurred: " + ex.getMessage());
             }
         }
+    }
+    
+    private Date adjustStartDate(String startDay, Date creationDate) {
+        // Specify the day of the week you want to start the first flight (Calendar.MONDAY in this example)\
+        int desiredDayOfWeek;
+        if (startDay.equals("Mon")) {
+            desiredDayOfWeek = Calendar.MONDAY;
+        } else if (startDay.equals("Tue")) {
+            desiredDayOfWeek = Calendar.TUESDAY;
+        } else if (startDay.equals("Wed")) {
+            desiredDayOfWeek = Calendar.WEDNESDAY;
+        } else if (startDay.equals("Thu")) {
+            desiredDayOfWeek = Calendar.THURSDAY;
+        } else if (startDay.equals("Fri")) {
+            desiredDayOfWeek = Calendar.FRIDAY;
+        } else if (startDay.equals("Sat")) {
+            desiredDayOfWeek = Calendar.SATURDAY;
+        } else {
+            desiredDayOfWeek = Calendar.SUNDAY;
+        }
+         
+        // Create a Calendar instance and set it to the creation date
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(creationDate);
+
+        // Find the next occurrence of the desired day of the week after the creation date
+        while (calendar.get(Calendar.DAY_OF_WEEK) != desiredDayOfWeek) {
+            calendar.add(Calendar.DAY_OF_WEEK, 1);
+        }
+
+        // Use the time from the creation date to set the time for the first flight
+        Calendar creationTime = Calendar.getInstance();
+        creationTime.setTime(creationDate);
+        calendar.set(Calendar.HOUR_OF_DAY, creationTime.get(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, creationTime.get(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, creationTime.get(Calendar.SECOND));
+
+        // Now 'calendar' contains the desired date and time for the first flight
+        Date adjustedDate = calendar.getTime();
+        System.out.println(adjustedDate);
+        return adjustedDate;
     }
     
     @Override

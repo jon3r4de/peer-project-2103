@@ -4,7 +4,6 @@
  */
 package ejb.session.stateless;
 
-import entity.Reservation;
 import javax.ejb.Local;
 
 /**
@@ -12,6 +11,6 @@ import javax.ejb.Local;
  * @author jonang
  */
 @Local
-public interface ReservationSessionBeanLocal {
+public interface PassengerSessionBeanLocal {
     
 }

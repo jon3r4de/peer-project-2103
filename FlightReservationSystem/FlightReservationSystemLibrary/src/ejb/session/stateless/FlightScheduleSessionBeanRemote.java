@@ -24,4 +24,6 @@ public interface FlightScheduleSessionBeanRemote {
     public List<FlightSchedule> searchDirectFlightSchedules(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException;
 
     public List<List<FlightSchedule>> searchConnectingFlightScehdules(String departureAirportiATACode, String destinationAirportiATACode, Date departureDate, CabinClassEnum cabinClassType) throws AirportNotFoundException, FlightScheduleNotFoundException;
+
+    public FlightSchedule searchGeneralFlightSchedule(FlightSchedule fs);
 }
