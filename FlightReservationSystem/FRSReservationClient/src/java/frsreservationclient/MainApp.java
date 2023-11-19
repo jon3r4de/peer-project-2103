@@ -199,13 +199,13 @@ public class MainApp {
             System.out.println("No available reservations!");
             return;
         }
-        System.out.printf("%-20s%-30s%-40s%-20s%-25s%-20s\n", "Index", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport", "Return Date");
+        System.out.printf("%-20s%-30s%-40s%-25s%-25s\n", "Index", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport");
         System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
         Integer num = 0;
 
         for (Reservation res : flightReservations) {
             num++;
-            System.out.printf("%-20s%-30s%-40s%-20s%-25s%-20s\n", num, res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport(), res.getReturnDate());
+            System.out.printf("%-20s%-30s%-40s%-25s%-25s\n", num, res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport());
         }
 
         System.out.println();
@@ -429,9 +429,9 @@ public class MainApp {
             List<Passenger> passengers = res.getPassengers();
 
             System.out.println("Overall Reservation Details: ");
-            System.out.printf("%-30s%-40s%-20s%-25s\n", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport");
+            System.out.printf("%-30s%-40s%-25s%-25s\n", "Flight Reservation ID", "Departure Date", "Departure Airport", "Destination Airport");
             System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------------------");
-            System.out.printf("%-30s%-40s%-20s%-25s\n", res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport());
+            System.out.printf("%-30s%-40s%-25s%-25s\n", res.getReservationId(), res.getDepartureDate(), res.getDepartureAirport(), res.getDestinationAirport());
             System.out.println();
             
             System.out.println("Flights in Reservations:");
