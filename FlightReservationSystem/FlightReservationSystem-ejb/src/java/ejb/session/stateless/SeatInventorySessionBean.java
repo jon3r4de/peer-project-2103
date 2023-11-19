@@ -72,8 +72,8 @@ public class SeatInventorySessionBean implements SeatInventorySessionBeanRemote,
         int tempReserved = managedSeatInventory.getNumberOfReservedSeats() + 1;
         managedSeatInventory.setNumberOfReservedSeats(tempReserved);
                 
-        int tempAvailable = managedSeatInventory.getNumberOfAvailableSeats() - 1;
-        managedSeatInventory.setNumberOfAvailableSeats(tempAvailable);
+//        int tempAvailable = managedSeatInventory.getNumberOfAvailableSeats() - 1;
+//        managedSeatInventory.setNumberOfAvailableSeats(tempAvailable);
                 
         int tempBalance = managedSeatInventory.getNumberOfBalanceSeats() - 1;
         managedSeatInventory.setNumberOfBalanceSeats(tempBalance);

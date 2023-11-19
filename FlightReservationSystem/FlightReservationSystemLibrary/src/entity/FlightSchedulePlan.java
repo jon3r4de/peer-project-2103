@@ -242,13 +242,12 @@ public class FlightSchedulePlan implements Serializable {
         SimpleDateFormat outputLayoverFormat = new SimpleDateFormat("hh 'Hours' mm 'Minutes'");
         //String endDateString = outputEndDateFormat.format(endDate);
         String endDateString = (endDate != null) ? outputEndDateFormat.format(endDate) : "N/A";
-        String layoverString = (layoverDuration != null) ? String.format("%d Hours", layoverDuration.toHours()) : "N/A";
         if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTWEEK)) {
-            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", End Date = " + endDateString + ", Layover Duration = " + layoverString +  ']';
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", End Date = " + endDateString + ']';
         } else if (this.getFlightScheduleType().equals(FlightScheduleEnum.RECURRENTDAY)) {
-            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Recurrence = " + recurrence + ", End Date = " + endDateString + ", Layover Duration = " + layoverString +  ']';
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Recurrence = " + recurrence + ", End Date = " + endDateString +  ']';
         } else {
-            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType + ", Layover Duration = " + layoverString +  ']';
+            return "[Flight = " + flight + "Flight Schedule Type = " + flightScheduleType +  ']';
         }
     }
     

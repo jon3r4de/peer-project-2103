@@ -58,10 +58,10 @@ public class Main {
     
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("deployed1");
+        //System.out.println("deployed1");
          MainApp mainApp = new MainApp(employeeSessionBeanRemote, aircraftTypeSessionBeanRemote, aircraftconfigSessionBeanRemote, 
                  flightRouteSessionBeanRemote, flightSessionBeanRemote, flightSchedulePlanSessionBeanRemote, cabinClassSessionBeanRemote, flightScheduleSessionBeanRemote, reservationSessionBeanRemote, passengerSessionBeanRemote);
-        System.out.println("deployed2");
+        //System.out.println("deployed2");
         mainApp.runApp();
     }
     

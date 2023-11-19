@@ -61,7 +61,7 @@ public class Main {
              passengerSessionBeanRemote, seatSessionBeanRemote, seatInventorySessionBeanRemote);
 
         
-        System.out.println("deployed2");
+        //System.out.println("deployed2");
         mainApp.runApp();
     }
     
